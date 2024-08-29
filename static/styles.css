@@ -1,0 +1,64 @@
+/* Custom styles for Connective Issues */
+
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    max-width: 800px;
+}
+
+#preproductionZone {
+    background-color: #f8f9fa;
+    border-left: 4px solid #4f46e5;
+}
+
+#theme {
+    resize: vertical;
+}
+
+#messages {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#finalScript {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.pdf-input {
+    transition: all 0.3s ease;
+}
+
+.pdf-input:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#addMore, #downloadPodcast {
+    transition: all 0.3s ease;
+}
+
+#addMore:hover, #downloadPodcast:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes loading {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+}
+
+.loading-bar {
+    animation: loading 2s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+#currentStatus {
+    animation: fadeInOut 4s ease-in-out infinite;
+}
