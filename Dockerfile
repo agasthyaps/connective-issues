@@ -14,4 +14,4 @@ RUN mkdir -p uploads temp
 EXPOSE 8080
 
 # Run the application
-CMD exec python run.py
+CMD ["python", "run.py"]
