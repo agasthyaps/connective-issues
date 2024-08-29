@@ -77,13 +77,13 @@ def create_podcast(session_id, pdfs, theme):
     else:
         addl_prompt = ""
     try:
-        socketio.emit('update', {'data': 'Podcast production team started!'})
+        socketio.emit('update', {'data': 'Podcast production team started!','session_id': session_id})
         
         # Extract text from PDFs
         texts = []
         truncated_texts = []
         for file in pdfs:
-            socketio.emit('update', {'data': f"📚 reading through {os.path.basename(file['pdf'])}"})
+            socketio.emit('update', {'data': f"📚 reading through {os.path.basename(file['pdf'])},'session_id': session_id"})
             text = extract_text_from_pdf(file['pdf'])
             text = addl_prompt + text
             truncated_text = text[:15000]
@@ -93,13 +93,13 @@ def create_podcast(session_id, pdfs, theme):
         # Summarize articles
         summaries = []
         for i, text in enumerate(texts):
-            socketio.emit('update', {'data': f"🔬 research team is summarizing article {i+1}"})
+            socketio.emit('update', {'data': f"🔬 research team is summarizing article {i+1},'session_id': session_id"})
             summary = conversation_engine(summarizer, text)
             summaries.append(summary)
         
         # Create multi-article summary if necessary
         if len(summaries) > 1:
-            socketio.emit('update', {'data': "🔗 research team is finding connections"})
+            socketio.emit('update', {'data': "🔗 research team is finding connections",'session_id': session_id})
             joined_summaries = f"{theme}\n" + "\n".join(summaries) if theme else "\n".join(summaries)
             final_summary = conversation_engine(multi_summarizer, joined_summaries)
         else:
@@ -109,25 +109,25 @@ def create_podcast(session_id, pdfs, theme):
         final_truncated_text = "\n".join(truncated_texts)
         
         # Create outline
-        socketio.emit('update', {'data': "✍️ writers creating outline"})
+        socketio.emit('update', {'data': "✍️ writers creating outline",'session_id': session_id})
         outline = conversation_engine(outliner, f"{theme}\nARTICLE(s):\n {final_text}\nSUMMARY:\n {final_summary}")
         
         # Create first script
-        socketio.emit('update', {'data': "✍️ writers creating first script"})
+        socketio.emit('update', {'data': "✍️ writers creating first script",'session_id': session_id})
         script = conversation_engine(scripter, f"ARTICLE(s) EXCERPT(s):\n {final_truncated_text}\nOUTLINE:\n {outline}")
         
         # Revise script
         for i in range(1):  # Adjust the number of revisions as needed
-            socketio.emit('update', {'data': f"👓 editors revising script (round {i+1})"})
+            socketio.emit('update', {'data': f"👓 editors revising script (round {i+1})",'session_id': session_id})
             feedback = conversation_engine(feedback_giver, f"{theme}\nSCRIPT:\n {script}")
             script = conversation_engine(scripter, f"You received feedback. Here is the feedback:\n {feedback}\n{theme}")
         
         # Create casual script
-        socketio.emit('update', {'data': "👨‍🏫 making script more human"})
+        socketio.emit('update', {'data': "👨‍🏫 making script more human",'session_id': session_id})
         casual_script = conversation_engine(casual_editor, script)
         
         # Create audio (you'll need to implement this part based on your existing code)
-        socketio.emit('update', {'data': "🎙️ recording the pod"})
+        socketio.emit('update', {'data': "🎙️ recording the pod",'session_id': session_id})
         # When the podcast is created:
         audio_path = create_podcast_from_script(casual_script, TEMP_FOLDER, STATIC_FOLDER, app.root_path)
         audio_filename = os.path.basename(audio_path)
