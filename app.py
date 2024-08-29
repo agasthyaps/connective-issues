@@ -157,4 +157,5 @@ def handle_disconnect():
         session.pop(sid, None)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    port = int(os.environ.get('PORT', 8080))
+    socketio.run(app, host='0.0.0.0', port=port)
