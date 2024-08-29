@@ -37,6 +37,9 @@ def index():
 @app.route('/upload', methods=['POST'])
 def upload():
     pdfs = []
+    uploaded_files = []
+    theme = request.form.get('theme', '')
+
     for i in range(4):  # Allow up to 4 PDFs
         if f'pdf_{i}' in request.files:
             file = request.files[f'pdf_{i}']
@@ -48,9 +51,10 @@ def upload():
                     'pdf': filepath,
                     'kind': request.form[f'kind_{i}']
                 })
+                uploaded_files.append(filepath)
     
-    theme = request.form.get('theme', '')
-    
+    session[request.sid] = {'uploaded_files': uploaded_files}
+
     # Start the podcast creation process in a background task
     socketio.start_background_task(create_podcast, pdfs, theme)
     
@@ -138,9 +142,18 @@ def serve_audio(filename):
 def handle_disconnect():
     sid = request.sid
     if sid in session:
+        # Delete podcast file
         podcast_path = session[sid].get('podcast_path')
         if podcast_path and os.path.exists(podcast_path):
             os.remove(podcast_path)
+        
+        # Delete uploaded PDF files
+        uploaded_files = session[sid].get('uploaded_files', [])
+        for file_path in uploaded_files:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        
+        # Clear session data
         session.pop(sid, None)
 
 if __name__ == '__main__':
