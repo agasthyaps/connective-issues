@@ -40,25 +40,31 @@ def upload():
     uploaded_files = []
     theme = request.form.get('theme', '')
 
-    for i in range(4):  # Allow up to 4 PDFs
-        if f'pdf_{i}' in request.files:
-            file = request.files[f'pdf_{i}']
-            if file.filename != '':
-                filename = secure_filename(file.filename)
-                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                file.save(filepath)
-                pdfs.append({
-                    'pdf': filepath,
-                    'kind': request.form[f'kind_{i}']
-                })
-                uploaded_files.append(filepath)
-    
-    session[request.sid] = {'uploaded_files': uploaded_files}
+    try:
+        for i in range(4):  # Allow up to 4 PDFs
+            if f'pdf_{i}' in request.files:
+                file = request.files[f'pdf_{i}']
+                if file.filename != '':
+                    filename = secure_filename(file.filename)
+                    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    file.save(filepath)
+                    pdfs.append({
+                        'pdf': filepath,
+                        'kind': request.form[f'kind_{i}']
+                    })
+                    uploaded_files.append(filepath)
 
-    # Start the podcast creation process in a background task
-    socketio.start_background_task(create_podcast, pdfs, theme)
-    
-    return jsonify({'message': 'Podcast creation started'})
+        # Store uploaded files in session
+        session['uploaded_files'] = uploaded_files
+
+        # Start the podcast creation process in a background task
+        socketio.start_background_task(create_podcast, pdfs, theme)
+
+        return jsonify({'message': 'Podcast creation started'})
+    except Exception as e:
+        # Log the error (you may want to use a proper logging system)
+        print(f"Error in upload: {str(e)}")
+        return jsonify({'error': 'An error occurred during file upload'}), 500
 
 def create_podcast(pdfs, theme):
     if theme:
@@ -66,13 +72,13 @@ def create_podcast(pdfs, theme):
     else:
         addl_prompt = ""
     try:
-        socketio.emit('update', {'data': 'Starting podcast creation process'})
+        socketio.emit('update', {'data': 'Podcast production team started!'})
         
         # Extract text from PDFs
         texts = []
         truncated_texts = []
         for file in pdfs:
-            socketio.emit('update', {'data': f"Extracting text from {os.path.basename(file['pdf'])}"})
+            socketio.emit('update', {'data': f"📚 reading through {os.path.basename(file['pdf'])}"})
             text = extract_text_from_pdf(file['pdf'])
             text = addl_prompt + text
             truncated_text = text[:15000]
@@ -82,13 +88,13 @@ def create_podcast(pdfs, theme):
         # Summarize articles
         summaries = []
         for i, text in enumerate(texts):
-            socketio.emit('update', {'data': f"Summarizing article {i+1}"})
+            socketio.emit('update', {'data': f"🔬 research team is summarizing article {i+1}"})
             summary = conversation_engine(summarizer, text)
             summaries.append(summary)
         
         # Create multi-article summary if necessary
         if len(summaries) > 1:
-            socketio.emit('update', {'data': "Creating multi-article summary"})
+            socketio.emit('update', {'data': "🔗 research team is finding connections"})
             joined_summaries = f"{theme}\n" + "\n".join(summaries) if theme else "\n".join(summaries)
             final_summary = conversation_engine(multi_summarizer, joined_summaries)
         else:
@@ -98,32 +104,31 @@ def create_podcast(pdfs, theme):
         final_truncated_text = "\n".join(truncated_texts)
         
         # Create outline
-        socketio.emit('update', {'data': "Creating outline"})
+        socketio.emit('update', {'data': "✍️ writers creating outline"})
         outline = conversation_engine(outliner, f"{theme}\nARTICLE(s):\n {final_text}\nSUMMARY:\n {final_summary}")
         
         # Create first script
-        socketio.emit('update', {'data': "Creating first script"})
+        socketio.emit('update', {'data': "✍️ writers creating first script"})
         script = conversation_engine(scripter, f"ARTICLE(s) EXCERPT(s):\n {final_truncated_text}\nOUTLINE:\n {outline}")
         
         # Revise script
         for i in range(1):  # Adjust the number of revisions as needed
-            socketio.emit('update', {'data': f"Revising script (round {i+1})"})
+            socketio.emit('update', {'data': f"👓 editors revising script (round {i+1})"})
             feedback = conversation_engine(feedback_giver, f"{theme}\nSCRIPT:\n {script}")
             script = conversation_engine(scripter, f"You received feedback. Here is the feedback:\n {feedback}\n{theme}")
         
         # Create casual script
-        socketio.emit('update', {'data': "Editing for natural conversation flow"})
+        socketio.emit('update', {'data': "👨‍🏫 making script more human"})
         casual_script = conversation_engine(casual_editor, script)
         
         # Create audio (you'll need to implement this part based on your existing code)
-        socketio.emit('update', {'data': "Creating audio"})
+        socketio.emit('update', {'data': "🎙️ recording the pod"})
         audio_path = create_podcast_from_script(casual_script, TEMP_FOLDER, STATIC_FOLDER, app.root_path)
         
         # Get the filename from the full path
         audio_filename = os.path.basename(audio_path)
 
-        session[request.sid] = {'podcast_path': audio_path}
-
+        session['podcast_path'] = audio_path
 
         # Emit final results
         socketio.emit('complete', {
@@ -140,18 +145,26 @@ def serve_audio(filename):
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    sid = request.sid
-    if sid in session:
+    try:
         # Delete podcast file
-        podcast_path = session[sid].get('podcast_path')
+        podcast_path = session.get('podcast_path')
         if podcast_path and os.path.exists(podcast_path):
             os.remove(podcast_path)
-        
+            print(f"Deleted podcast file: {podcast_path}")
+
         # Delete uploaded PDF files
-        uploaded_files = session[sid].get('uploaded_files', [])
+        uploaded_files = session.get('uploaded_files', [])
         for file_path in uploaded_files:
             if os.path.exists(file_path):
                 os.remove(file_path)
-        
+                print(f"Deleted uploaded file: {file_path}")
+
         # Clear session data
-        session.pop(sid, None)
+        session.clear()
+        print("Cleared session data")
+
+    except Exception as e:
+        print(f"Error in handle_disconnect: {str(e)}")
+
+    finally:
+        disconnect()  # Ensure the client is disconnected
