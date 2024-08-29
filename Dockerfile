@@ -1,7 +1,6 @@
 FROM python:3.9-slim
 
-# Set the working directory to the root
-WORKDIR /
+WORKDIR /app
 
 # Copy requirements first for better cache utilization
 COPY requirements.txt .
@@ -13,7 +12,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p uploads temp
+RUN mkdir -p uploads temp static
+
+# Create a non-root user
+RUN useradd -m myuser
+RUN chown -R myuser:myuser /app
+USER myuser
 
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
