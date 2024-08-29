@@ -13,5 +13,5 @@ RUN mkdir -p uploads temp
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
 
-# Run app.py when the container launches
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 'app:app'
+# Run the application
+CMD exec python run.py
