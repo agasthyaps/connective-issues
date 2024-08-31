@@ -3,68 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connective Issues: AI-Generated Podcast</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/styles.css">
+    <title>connective issues.</title>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold mb-8 text-center text-indigo-700">Connective Issues</h1>
-        <h2 class="text-2xl mb-4 text-center text-gray-700">An AI-generated podcast about the things you want to learn</h2>
+<body>
+    <div class="container">
+        <h1 id="main-title">connective issues.</h1>
+        <h2 id="subtitle">an <strong>actually useful</strong>* ai-generated podcast about the <em>things you want to learn</em></h2>
 
-        <div class="bg-white shadow-md rounded-lg p-6 mb-8" id="preproductionZone">
-            <h3 class="text-xl font-semibold mb-4 text-indigo-600">Preproduction Zone: What's This Pod About?</h3>
-            <form id="uploadForm" class="space-y-4">
-                <div id="pdfInputs" class="space-y-4">
-                    <div class="pdf-input flex items-center space-x-4">
-                        <select class="flex-grow p-2 border rounded" name="kind_0">
-                            <option value="journal">Journal Article</option>
-                            <option value="news">News Article</option>
-                            <option value="book">Book Chapter</option>
+        <div id="preproductionZone">
+            <h2>Reading Material</h2>
+            <p><em>(add articles you want to learn about and whatever thoughts you might have floating around.)</em></p>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <div id="pdfInputs">
+                    <div class="pdf-input">
+                        <label for="pdf_0" class="file-label">choose file:</label>
+                        <input type="file" id="pdf_0" name="pdf_0" accept=".pdf" class="file-input">
+                        <select name="kind_0" class="styled-select">
+                            <option value="someone">(someone else's thoughts)</option>
+                            <option value="my">(my thoughts)</option>
                         </select>
-                        <input type="file" name="pdf_0" accept=".pdf" class="flex-grow p-2 border rounded">
+                        <button type="button" class="add-more-btn">add more stuff</button>
                     </div>
                 </div>
-                <button type="button" id="addMore" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition">Add Another Document</button>
-                
-                <div class="mt-6">
-                    <label for="theme" class="block text-lg font-medium text-gray-700 mb-2">Podcast Theme (optional)</label>
-                    <textarea id="theme" name="theme" rows="3" class="w-full p-3 border rounded-md" placeholder="Leave blank if you just want to hear about the papers. You can enter a sentence or two to guide the podcast's focus."></textarea>
+                <div class="theme-input">
+                    <input type="text" id="theme" name="theme" placeholder="the big question">
                 </div>
-                
-                <button type="submit" class="w-full bg-green-500 text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-green-600 transition">Create Podcast</button>
+                <button type="submit" id="createPodcast">create podcast</button>
             </form>
         </div>
 
-        <div id="loadingAnimation" class="my-8 hidden">
-            <div class="h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-                <div class="loading-bar h-full w-1/3 bg-indigo-600 rounded-full"></div>
+        <div id="loadingAnimation" class="hidden">
+            <div class="loading-bar-container">
+                <div class="loading-bar"></div>
             </div>
         </div>
 
-        <div id="messages" class="bg-white shadow-md rounded-lg p-6 mb-8 hidden">
-            <h3 class="text-2xl font-semibold mb-4 text-indigo-600">Podcast Progress</h3>
-            <p>Go make yourself some coffee - your podcast will be ready faster than your pourover ☕</p>
-            <p id="currentStatus" class="text-indigo-600 align-center"></p>
+        <div id="messages" class="hidden">
+            <h3>Podcast Progress</h3>
+            <h4>a good french press takes about four and a half minutes. this will be quicker than that. ☕</h4>
+            <p id="currentStatus"></p>
         </div>
 
-        <div id="result" class="bg-white shadow-md rounded-lg p-6 hidden">
-            <h3 class="text-2xl font-semibold mb-4 text-indigo-600">Podcast Created!</h3>
-            <div class="mb-6">
-                <h4 class="text-xl mb-2">Listen to Podcast:</h4>
-                <audio id="podcastAudio" controls class="w-full">
+        <div id="result" class="hidden">
+            <h3>Podcast Created!</h3>
+            <div class="audio-player">
+                <h4>Listen:</h4>
+                <audio id="podcastAudio" controls>
                     Your browser does not support the audio element.
                 </audio>
-                <button id="downloadPodcast" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Download Podcast</button>
+                <button id="downloadPodcast">Download Podcast</button>
             </div>
-            <div>
-                <h4 class="text-xl mb-2">Final Script:</h4>
-                <pre id="finalScript" class="bg-gray-100 p-4 rounded-md overflow-x-auto"></pre>
+            <div class="script-container">
+                <h4>Transcript:</h4>
+                <div id="finalScript"></div>
             </div>
         </div>
+        <p><em>*(well, useful to <a href="https://www.linkedin.com/in/agasthyaps" target="_blank" rel="noopener noreferrer">me</a>)</em></p>
     </div>
-
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <script src="/static/script.js"></script>
 </body>
 </html>

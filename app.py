@@ -113,18 +113,21 @@ def create_podcast(session_id, pdfs, theme):
         outline = conversation_engine(outliner, f"{theme}\nARTICLE(s):\n {final_text}\nSUMMARY:\n {final_summary}")
         
         # Create first script
-        socketio.emit('update', {'data': "✍️ writers creating first script",'session_id': session_id})
+        socketio.emit('update', {'data': "✍️ writers creating first draft script",'session_id': session_id})
         script = conversation_engine(scripter, f"ARTICLE(s) EXCERPT(s):\n {final_truncated_text}\nOUTLINE:\n {outline}")
         
         # Revise script
         for i in range(1):  # Adjust the number of revisions as needed
-            socketio.emit('update', {'data': f"👓 editors revising script (round {i+1})",'session_id': session_id})
+            socketio.emit('update', {'data': f"👓 editors revising draft",'session_id': session_id})
             feedback = conversation_engine(feedback_giver, f"{theme}\nSCRIPT:\n {script}")
             script = conversation_engine(scripter, f"You received feedback. Here is the feedback:\n {feedback}\n{theme}")
         
         # Create casual script
         socketio.emit('update', {'data': "👨‍🏫 making script more human",'session_id': session_id})
         casual_script = conversation_engine(casual_editor, script)
+
+        # Format the script
+        formatted_script = format_script(casual_script)
         
         # Create audio (you'll need to implement this part based on your existing code)
         socketio.emit('update', {'data': "🎙️ recording the pod",'session_id': session_id})
@@ -139,7 +142,7 @@ def create_podcast(session_id, pdfs, theme):
         # Emit final results
         socketio.emit('complete', {
             'audio_path': f'/audio/{audio_filename}',
-            'script': casual_script,
+            'script': formatted_script,
             'session_id': session_id
         })
 

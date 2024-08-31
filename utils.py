@@ -103,6 +103,11 @@ def process_transcript(text):
     results = [{'speaker':speaker, 'dialogue':dialogue} for speaker, dialogue in dialogues]
     return results
 
+def format_script(script):
+    # Replace <host> and <expert> tags with bold names
+    script = re.sub(r'<host>(.*?)</host>', r'**alex:** \1', script)
+    script = re.sub(r'<expert>(.*?)</expert>', r'**jamie:** \1', script)
+    return script
 
 
 def text_to_speech(message,filepath):

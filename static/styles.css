@@ -1,64 +1,251 @@
-/* Custom styles for Connective Issues */
+/* Custom styles for Synthesis */
+
+.eb-garamond-huge {
+  font-family: "EB Garamond", serif;
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+}
+
+/* Custom styles for connective issues. */
+
+/* Custom styles for connective issues. */
 
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'EB Garamond', serif;
+    background-color: #cdf0e4;
+    color: #000000;
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 10px 20px;
 }
 
 .container {
     max-width: 800px;
+    width: 100%;
+    text-align: center;
+}
+
+h1, h2, h3, h4 {
+    margin-bottom: 15px;
+}
+
+#main-title {
+    font-size: 7rem;
+    color: #000000;
+    margin-bottom: 5px;
+    font-weight: 800;
+}
+
+#subtitle {
+    font-size: 1.6rem;
+    color: #444444;
+    margin-bottom: 30px;
+    font-weight: 400;
 }
 
 #preproductionZone {
-    background-color: #f8f9fa;
-    border-left: 4px solid #4f46e5;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: max-height 0.5s ease-out, opacity 0.5s ease-out, margin-bottom 0.5s ease-out;
+    overflow: hidden;
 }
 
-#theme {
-    resize: vertical;
+#preproductionZone > h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
 }
 
-#messages {
-    max-height: 200px;
-    overflow-y: auto;
+#preproductionZone > p {
+    font-size: 1.2rem;
+    color: #444444;
+    margin-bottom: 20px;
 }
 
-#finalScript {
-    white-space: pre-wrap;
-    word-wrap: break-word;
+#pdfInputs {
+    margin-bottom: 15px;
 }
 
 .pdf-input {
-    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
 }
 
-.pdf-input:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.file-label {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.2rem;
+    color: #444444;
 }
 
-#addMore, #downloadPodcast {
-    transition: all 0.3s ease;
+.file-input {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.2rem;
+    color: #444444;
+    border: none;
+    border-bottom: 1px solid #dbbb56;
+    padding: 5px 0;
+    margin-right: 15px;
+    cursor: pointer;
 }
 
-#addMore:hover, #downloadPodcast:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.file-input::-webkit-file-upload-button {
+    visibility: hidden;
+    width: 0;
+}
+
+.file-input:hover {
+    color: #1ac0f1;
+}
+
+.styled-select {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.2rem;
+    color: #444444;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px 0;
+    margin-right: 15px;
+    transition: color 0.3s ease;
+}
+
+.styled-select:hover {
+    color: #1ac0f1;
+}
+
+.add-more-btn {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.2rem;
+    color: #444444;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px 0;
+    transition: color 0.3s ease;
+}
+
+.add-more-btn:hover {
+    color: #1ac0f1;
+    text-decoration: underline;
+}
+
+.theme-input input {
+    width: 100%;
+    padding: 10px 0;
+    margin-bottom: 15px;
+    border: none;
+    border-bottom: 1px solid #dbbb56;
+    font-family: 'EB Garamond', serif;
+    font-size: 1.4rem;
+    background-color: transparent;
+    color: #444444;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.theme-input input:focus {
+    outline: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#createPodcast {
+    background-color: transparent;
+    color: #1ac0f1;
+    border: none;
+    padding: 5px 0;
+    cursor: pointer;
+    font-family: 'EB Garamond', serif;
+    font-size: 1.4rem;
+    transition: color 0.3s ease;
+    text-transform: lowercase;
+}
+
+#createPodcast:hover {
+    color: #17acd9;
+    text-decoration: underline;
+}
+
+/* Rest of the CSS remains the same */
+
+#loadingAnimation, #messages, #result {
+    margin-top: 40px;
+}
+
+.loading-bar-container {
+    width: 100%;
+    height: 4px;
+    background-color: #e0e0e0;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.loading-bar {
+    width: 30%;
+    height: 100%;
+    background-color: #1ac0f1;
+    animation: loading 2s infinite ease-in-out;
 }
 
 @keyframes loading {
     0% { transform: translateX(-100%); }
-    100% { transform: translateX(200%); }
-}
-
-.loading-bar {
-    animation: loading 2s ease-in-out infinite;
-}
-
-@keyframes fadeInOut {
-    0%, 100% { opacity: 0; }
-    50% { opacity: 1; }
+    100% { transform: translateX(400%); }
 }
 
 #currentStatus {
-    animation: fadeInOut 4s ease-in-out infinite;
+    font-style: italic;
+    color: #444444;
+}
+
+.audio-player, .script-container {
+    margin-top: 20px;
+}
+
+#podcastAudio {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#downloadPodcast {
+    background-color: #bd5bcc;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'EB Garamond', serif;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease;
+}
+
+#downloadPodcast:hover {
+    background-color: #a951b7;
+}
+
+#finalScript {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    text-align: left;
+    font-size: 1.1rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+#finalScript .speaker {
+    font-weight: bold;
+    color: #323a44;
+}
+
+.hidden {
+    display: none;
 }

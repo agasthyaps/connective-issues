@@ -34,6 +34,7 @@ Jamie and Alex should admit when they don't know something, or correct each othe
 The host is meant to be a stand-in for the listener, asking questions and making comments that the listener might make, especially expressing skepticism or confusion.
 The expert journalist is meant to be knowledgeable and informative, but also engaging and relatable.
 The tone of the conversation should be casual and conversational, but also informative and engaging.
+Be sparing with your exclamation marks.
 The script should include all the points from the outline.
 
 IMPORTANT: Make sure the speakers are being very clear when they are speculating vs when they are reporting facts from the outline (eg, "this could result in..." rather than "this created..." if speculating on applications of new research).
@@ -93,6 +94,7 @@ this means:
 - contractions where appropriate
 - sentence fragments and incomplete or seemingly unrelated thoughts
 because the script will be read by AI voice actors, include exclamations, interjections, and other emotional cues to help the AI understand the tone of the conversation.
+however, be sparing of actual exclamation marks.
 keep in mind the script will be read verbatim, so do not include anything that should not be read aloud (eg, stage directions, notes to the speaker, etc.)
 you should not change the meaning of the script, only the tone. your final script should look closer to a transcript of a real conversation than a scripted dialogue.
 """
