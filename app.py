@@ -1,5 +1,5 @@
 import uuid
-from flask import Flask, render_template, request, jsonify, send_from_directory, session
+from flask import Flask, render_template, request, jsonify, send_from_directory, session, make_response
 from flask_socketio import SocketIO, emit, disconnect
 from werkzeug.utils import secure_filename
 import os
@@ -34,15 +34,31 @@ feedback_giver = initialize_chain('opus', feedback_system_prompt, history=True)
 casual_editor = initialize_chain('gpt', casual_system_prompt)
 multi_summarizer = initialize_chain('opus', multi_summary_system_prompt)
 
+def set_cookie_with_samesite(response, name, value, max_age):
+    response.set_cookie(name, value, max_age=max_age, samesite='Lax', secure=True, httponly=True)
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    podcasts_remaining = request.cookies.get('podcasts_remaining')
+    if podcasts_remaining is None:
+        podcasts_remaining = 3
+        response = make_response(render_template('index.html', podcasts_remaining=podcasts_remaining))
+        set_cookie_with_samesite(response, 'podcasts_remaining', str(podcasts_remaining), max_age=30*24*60*60)
+        return response
+    else:
+        podcasts_remaining = int(podcasts_remaining)
+    return render_template('index.html', podcasts_remaining=podcasts_remaining)
 
 @app.route('/upload', methods=['POST'])
 def upload():
     pdfs = []
     uploaded_files = []
     theme = request.form.get('theme', '')
+    podcasts_remaining = int(request.cookies.get('podcasts_remaining', 3))
+
+    if podcasts_remaining <= 0:
+        return jsonify({'error': 'You have reached the maximum number of podcast generations'}), 403
+
     
     session_id = str(uuid.uuid4())  # Generate a unique session ID
 
@@ -66,16 +82,20 @@ def upload():
         # Start the podcast creation process in a background task
         socketio.start_background_task(create_podcast, session_id, pdfs, theme)
 
-        return jsonify({'message': 'Podcast creation started', 'session_id': session_id})
+        response = jsonify({'message': 'Podcast creation started', 'session_id': session_id})
+    
+        podcasts_remaining -= 1
+        set_cookie_with_samesite(response, 'podcasts_remaining', str(podcasts_remaining), max_age=30*24*60*60)
+    
+        return response
     except Exception as e:
         print(f"Error in upload: {str(e)}")
         return jsonify({'error': 'An error occurred during file upload'}), 500
     
 def create_podcast(session_id, pdfs, theme):
+    addl_prompt = ""
     if theme:
         addl_prompt = f"As you read and think, keep in mind that the podcast episode MUST be about {theme}."
-    else:
-        addl_prompt = ""
     try:
         socketio.emit('update', {'data': 'Podcast production team started!','session_id': session_id})
         
@@ -85,6 +105,8 @@ def create_podcast(session_id, pdfs, theme):
         for file in pdfs:
             socketio.emit('update', {'data': f"📚 reading through {os.path.basename(file['pdf'])},'session_id': session_id"})
             text = extract_text_from_pdf(file['pdf'])
+            if file['kind'] =='me':
+                addl_prompt = addl_prompt + "This piece was submitted by a listener. It may be an article, notes, a brainstorm, or something else entirely. Treat their thoughts seriously and try to make sense of them, especially in the context of any theme you may be focusing on."
             text = addl_prompt + text
             truncated_text = text[:15000]
             texts.append(text)

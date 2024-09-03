@@ -174,7 +174,7 @@
   .loading-bar {
       width: 30%;
       height: 100%;
-      background-color: #db5c40;
+      background-color: #ebd89eff;
       animation: loading 2s infinite ease-in-out;
   }
   

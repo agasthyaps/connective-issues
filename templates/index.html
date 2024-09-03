@@ -21,6 +21,8 @@
         <div id="preproductionZone">
             <h2>Reading Material</h2>
             <p><em>(add articles you want to learn about and whatever thoughts you might have floating around.)</em></p>
+            <p id="podcastsRemaining">podcast generations remaining: {{ podcasts_remaining }}</p>
+            <hr>
             <form id="uploadForm" enctype="multipart/form-data">
                 <div id="pdfInputs">
                     <div class="pdf-input">
@@ -28,7 +30,7 @@
                         <input type="file" id="pdf_0" name="pdf_0" accept=".pdf" class="file-input">
                         <select name="kind_0" class="styled-select">
                             <option value="someone">(someone else's thoughts)</option>
-                            <option value="my">(my thoughts)</option>
+                            <option value="me">(my thoughts)</option>
                         </select>
                         <button type="button" class="add-more-btn">add more stuff</button>
                     </div>

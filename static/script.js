@@ -12,6 +12,27 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const podcastAudio = document.getElementById('podcastAudio');
     const downloadBtn = document.getElementById('downloadPodcast');
     const preproductionZone = document.getElementById('preproductionZone');
+    const createPodcastBtn = document.getElementById('createPodcastBtn');
+    const podcastsRemainingElement = document.getElementById('podcastsRemaining');
+    let podcastsRemaining = 3; // Default value
+
+    if (podcastsRemainingElement) {
+        const remainingText = podcastsRemainingElement.textContent.split(': ')[1];
+        podcastsRemaining = parseInt(remainingText) || 3; // Use 3 as fallback if parsing fails
+    }
+
+    function updatePodcastsRemaining() {
+        console.log('Updating podcasts remaining:', podcastsRemaining);
+        if (podcastsRemainingElement) {
+            podcastsRemainingElement.innerHTML = `<b>podcast generations remaining: ${podcastsRemaining}</b>`;
+        }
+        if (podcastsRemaining <= 0) {
+            createPodcastBtn.disabled = true;
+            createPodcastBtn.textContent = 'Maximum podcasts reached';
+        }
+    }
+
+    updatePodcastsRemaining();
 
 
     let pdfCount = 1;
@@ -46,8 +67,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 
     if (form) {
+        console.log('Adding submit event listener to form');
+
         form.addEventListener('submit', (e) => {
+            console.log('Form submitted');
+
             e.preventDefault();
+            if (podcastsRemaining <= 0) {
+                alert('You have reached the maximum number of podcast generations.');
+                return;
+            }
             const formData = new FormData(form);
             loadingAnimation.classList.remove('hidden');
             messages.classList.remove('hidden');
@@ -59,6 +88,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
             .then(data => {
                 console.log(data);
                 sessionId = data.session_id;
+                podcastsRemaining = Math.max(0, podcastsRemaining - 1);
+                updatePodcastsRemaining();
                 initializeSocket(sessionId);
             }).catch(error => {
                 console.error('Error:', error);
