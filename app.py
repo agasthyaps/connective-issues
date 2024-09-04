@@ -51,7 +51,7 @@ def set_cookie_with_samesite(response, name, value, max_age):
 def index():
     podcasts_remaining = request.cookies.get('podcasts_remaining')
     if podcasts_remaining is None:
-        podcasts_remaining = 3
+        podcasts_remaining = 5
         response = make_response(render_template('index.html', podcasts_remaining=podcasts_remaining))
         set_cookie_with_samesite(response, 'podcasts_remaining', str(podcasts_remaining), max_age=30*24*60*60)
         return response

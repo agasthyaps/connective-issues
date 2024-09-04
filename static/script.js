@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const preproductionZone = document.getElementById('preproductionZone');
     const createPodcastBtn = document.getElementById('createPodcastBtn');
     const podcastsRemainingElement = document.getElementById('podcastsRemaining');
-    let podcastsRemaining = 3; // Default value
+    let podcastsRemaining = 5; // Default value
 
     const helpMeTestBtn = document.getElementById('helpMeTest');
     const blogSection = document.getElementById('blogSection');
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     if (podcastsRemainingElement) {
         const remainingText = podcastsRemainingElement.textContent.split(': ')[1];
-        podcastsRemaining = parseInt(remainingText) || 3;
+        podcastsRemaining = parseInt(remainingText) || 5;
     }
 
     function updatePodcastsRemaining() {
