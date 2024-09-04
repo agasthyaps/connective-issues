@@ -41,7 +41,8 @@ def initialize_chain(model_shorthand,system_prompt, history=False):
     model_name = {
         'gpt':'gpt-4o-mini',
         'llama':'llama3-8b-8192',
-        'opus':'claude-3-5-sonnet-20240620'
+        'opus':'claude-3-5-sonnet-20240620',
+        '4o':'gpt-4o',
     }
 
     name = model_name[model_shorthand]
@@ -49,7 +50,8 @@ def initialize_chain(model_shorthand,system_prompt, history=False):
     model_farm = {
         'gpt':ChatOpenAI,
         'llama':ChatGroq,
-        'opus':ChatAnthropic
+        'opus':ChatAnthropic,
+        '4o':ChatOpenAI
     }
 
     model = model_farm[model_shorthand](model=name)

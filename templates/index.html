@@ -26,15 +26,24 @@
             <form id="uploadForm" enctype="multipart/form-data">
                 <div id="pdfInputs">
                     <div class="pdf-input">
+                      <div class="tooltip-container">
                         <label for="pdf_0" class="file-label">choose file:</label>
                         <input type="file" id="pdf_0" name="pdf_0" accept=".pdf" class="file-input">
+                        <span class="tooltip">upload something you're thinking about: an article, your notes, etc.</span>
+                      </div>
+                      <div class="tooltip-container">
                         <select name="kind_0" class="styled-select">
-                            <option value="someone">(someone else's thoughts)</option>
-                            <option value="me">(my thoughts)</option>
+                          <option value="someone">(someone else's thoughts)</option>
+                          <option value="my">(my thoughts)</option>
                         </select>
-                        <button type="button" class="add-more-btn">add more stuff</button>
+                        <span class="tooltip">let the ai team know where the ideas in this upload are from</span>
+                      </div>
+                      <div class="tooltip-container">
+                        <button type="button" class="add-more-btn">add more</button>
+                        <span class="tooltip">add more content for the pod</span>
+                      </div>
                     </div>
-                </div>
+                  </div>
                 <div class="theme-input">
                     <input type="text" id="theme" name="theme" placeholder="the big question (what do you want the hosts to talk about?)">
                 </div>
@@ -56,19 +65,52 @@
 
         <div id="result" class="hidden">
             <h3>Podcast Created!</h3>
+          
             <div class="audio-player">
-                <h4>Listen:</h4>
-                <audio id="podcastAudio" controls>
-                    Your browser does not support the audio element.
-                </audio>
-                <button id="downloadPodcast">Download Podcast</button>
+              <h4>Listen:</h4>
+              <audio id="podcastAudio" controls>
+                Your browser does not support the audio element.
+              </audio>
+              <button id="downloadPodcast">Download Podcast</button>
+              <div class="tooltip-container">
+                <button id="helpMeTest">Help Me Test</button>
+                <span class="tooltip">have a random frontier model generate a blog post and compare it with the podcast</span>
+              </div>
             </div>
-            <div class="script-container">
+          
+            <div class="content-comparison">
+              <div class="script-container">
                 <h4>Transcript:</h4>
                 <div id="finalScript"></div>
+              </div>
+          
+              <div class="blog-container hidden">
+                <h4>Blog Post:</h4>
+                <div id="blogLoadingAnimation" class="hidden">
+                  <div class="loading-bar-container">
+                    <div class="loading-bar"></div>
+                  </div>
+                  <p>Generating blog post...</p>
+                </div>
+                <div id="blogPost" class="hidden"></div>
+              </div>
             </div>
-        </div>
-    </div>
+          
+            <div id="comparisonSection" class="hidden">
+              <div class="comparison-options">
+                <div class="switch-field">
+                  <input type="radio" id="podcastMoreUseful" name="comparison" value="podcast">
+                  <label for="podcastMoreUseful">Podcast was more useful</label>
+                  <input type="radio" id="blogMoreUseful" name="comparison" value="blog">
+                  <label for="blogMoreUseful">Blog was more useful</label>
+                </div>
+              </div>
+              <div class="feedback-form hidden">
+                <textarea id="feedbackText" placeholder="Why?"></textarea>
+                <button id="submitFeedback">Submit</button>
+              </div>
+            </div>
+          </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </body>

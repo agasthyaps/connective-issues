@@ -16,9 +16,149 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const podcastsRemainingElement = document.getElementById('podcastsRemaining');
     let podcastsRemaining = 3; // Default value
 
+    const helpMeTestBtn = document.getElementById('helpMeTest');
+    const blogSection = document.getElementById('blogSection');
+    const blogContainer = document.querySelector('.blog-container');
+    const blogPost = document.getElementById('blogPost');
+    const comparisonSection = document.getElementById('comparisonSection');
+    const feedbackForm = document.querySelector('.feedback-form');
+    const podcastMoreUsefulBtn = document.getElementById('podcastMoreUseful');
+    const blogMoreUsefulBtn = document.getElementById('blogMoreUseful');
+    const feedbackText = document.getElementById('feedbackText');
+    const submitFeedbackBtn = document.getElementById('submitFeedback');
+    const blogLoadingAnimation = document.getElementById('blogLoadingAnimation');
+
+    let currentSessionId = null;
+    let pdfCount = 1;
+    let podcastCreated = false;
+
+    function scrollToBottom() {
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+
+    function setContentLayout(showBlog = false) {
+        const comparisonEl = document.querySelector('.content-comparison');
+        const scriptContainer = document.querySelector('.script-container');
+        
+        if (showBlog) {
+            comparisonEl.classList.add('show-blog');
+            scriptContainer.style.width = '48%';
+            showElement(blogContainer);
+        } else {
+            comparisonEl.classList.remove('show-blog');
+            scriptContainer.style.width = '100%';
+            hideElement(blogContainer);
+        }
+    }
+
+    helpMeTestBtn.addEventListener('click', function() {
+        generateBlog();
+        setContentLayout(true);
+    });
+
+    podcastMoreUsefulBtn.addEventListener('change', function(){
+        showFeedbackForm();
+        scrollToBottom();
+    });
+    blogMoreUsefulBtn.addEventListener('change', function(){
+        showFeedbackForm();
+        scrollToBottom();
+    });
+    submitFeedbackBtn.addEventListener('click', submitFeedback);
+
+    function showBlogPost(blogContent) {
+        hideElement(blogLoadingAnimation);
+        blogPost.innerHTML = blogContent;
+        showElement(blogPost);
+        showElement(document.querySelector('.blog-container'));
+        
+        // Ensure the content comparison maintains the correct layout
+        const contentComparison = document.querySelector('.content-comparison');
+        contentComparison.style.display = 'flex';
+        
+        // Force a reflow to ensure the layout is applied correctly
+        void contentComparison.offsetWidth;
+        
+        showElement(comparisonSection);
+        scrollToBottom();
+    }
+    
+    function generateBlog() {
+        if (!currentSessionId) {
+            console.error('No session ID available');
+            return;
+        }
+        showElement(document.querySelector('.blog-container'));
+        showElement(blogLoadingAnimation);
+        hideElement(blogPost);
+        hideElement(comparisonSection);
+    
+        // Reset layout
+        const contentComparison = document.querySelector('.content-comparison');
+        contentComparison.style.display = 'flex';
+    
+        fetch('/generate_blog', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: currentSessionId }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error generating blog:', data.error);
+                return;
+            }
+            showBlogPost(data.blog_post);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            hideElement(blogLoadingAnimation);
+        });
+    }
+    
+    // Helper functions
+    function showElement(element) {
+        if (element) element.classList.remove('hidden');
+    }
+    
+    function hideElement(element) {
+        if (element) element.classList.add('hidden');
+    }
+
+    function showFeedbackForm() {
+        showElement(feedbackForm);
+    }
+
+    function submitFeedback() {
+        const choice = document.querySelector('input[name="comparison"]:checked').value;
+        const feedback = feedbackText.value;
+
+        if (!currentSessionId) {
+            console.error('No session ID available');
+            return;
+        }
+
+        fetch('/submit_feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ choice: choice, feedback: feedback, session_id: currentSessionId }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Feedback submitted:', data);
+            hideElement(feedbackForm);
+            hideElement(comparisonSection);
+            feedbackText.value = '';
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
     if (podcastsRemainingElement) {
         const remainingText = podcastsRemainingElement.textContent.split(': ')[1];
-        podcastsRemaining = parseInt(remainingText) || 3; // Use 3 as fallback if parsing fails
+        podcastsRemaining = parseInt(remainingText) || 3;
     }
 
     function updatePodcastsRemaining() {
@@ -33,10 +173,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 
     updatePodcastsRemaining();
-
-
-    let pdfCount = 1;
-    let podcastCreated = false;
 
     if (addMoreBtn) {
         addMoreBtn.addEventListener('click', addMoreInputs);
@@ -58,7 +194,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
             pdfInputs.appendChild(newInput);
             pdfCount++;
 
-            // Update event listener for the new "add more" button
             newInput.querySelector('.add-more-btn').addEventListener('click', addMoreInputs);
         }
         if (pdfCount === 4) {
@@ -67,20 +202,24 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 
     if (form) {
-        console.log('Adding submit event listener to form');
-
         form.addEventListener('submit', (e) => {
-            console.log('Form submitted');
-
             e.preventDefault();
             if (podcastsRemaining <= 0) {
                 alert('You have reached the maximum number of podcast generations.');
                 return;
             }
             const formData = new FormData(form);
-            loadingAnimation.classList.remove('hidden');
-            messages.classList.remove('hidden');
+            showElement(loadingAnimation);
+            showElement(messages);
             currentStatus.textContent = 'Podcast creation started. Please wait...';
+            
+            setTimeout(() => {
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 100);
+
             fetch('/upload', {
                 method: 'POST',
                 body: formData
@@ -95,7 +234,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 console.error('Error:', error);
                 currentStatus.textContent = 'An error occurred. Please try again.';
                 currentStatus.classList.add('text-red-500');
-                messages.classList.remove('hidden');
+                showElement(messages);
             });
         });
     } else {
@@ -104,9 +243,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     function initializeSocket(sessionId) {
         socket = io({
-            query: {
-                session_id: sessionId
-            }
+            query: { session_id: sessionId }
         });
 
         socket.on('update', function(msg) {
@@ -117,20 +254,21 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
         socket.on('complete', function(data) {
             if (data.session_id === sessionId) {
-                loadingAnimation.classList.add('hidden');
-                messages.classList.add('hidden');
-                result.classList.remove('hidden');
+                currentSessionId = data.session_id;
+                hideElement(loadingAnimation);
+                hideElement(messages);
+                showElement(result);
+                setContentLayout(false);
+                hideElement(comparisonSection);
                 podcastAudio.src = data.audio_path;
 
                 const formattedScript = data.script.replace(/\*\*(alex|jamie):\*\*/g, '<span class="speaker">$1:</span>');
                 finalScript.innerHTML = formattedScript.replace(/\n/g, '<br>');
 
-                // Collapse the preproductionZone
                 preproductionZone.style.transition = 'max-height 0.5s ease-out, opacity 0.5s ease-out, margin-bottom 0.5s ease-out';
                 preproductionZone.style.maxHeight = preproductionZone.scrollHeight + 'px';
                 preproductionZone.style.opacity = '1';
                 
-                // Trigger reflow
                 preproductionZone.offsetHeight;
 
                 preproductionZone.style.maxHeight = '0';
@@ -139,18 +277,18 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 preproductionZone.style.overflow = 'hidden';
 
                 podcastAudio.addEventListener('timeupdate', function() {
-                const percent = (podcastAudio.currentTime / podcastAudio.duration) * 100;
-                const scrollPosition = (finalScript.scrollHeight - finalScript.clientHeight) * (percent / 100);
-                finalScript.scrollTop = scrollPosition;
-            });
+                    const percent = (podcastAudio.currentTime / podcastAudio.duration) * 100;
+                    const scrollPosition = (finalScript.scrollHeight - finalScript.clientHeight) * (percent / 100);
+                    finalScript.scrollTop = scrollPosition;
+                });
 
-            podcastCreated = true;
+                podcastCreated = true;
             }
         });
 
         socket.on('error', function(data) {
             if (data.session_id === sessionId) {
-                loadingAnimation.classList.add('hidden');
+                hideElement(loadingAnimation);
                 currentStatus.textContent = 'Error: ' + data.data;
                 currentStatus.classList.add('text-red-500');
             }
