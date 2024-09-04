@@ -47,8 +47,8 @@ You must interpret the themes, overarching questions, and connections between th
 # SPECIFICS
 IMPORTANT: Make sure the speakers are being very clear when they are speculating vs when they are reporting facts from the outline (eg, "this could result in..." rather than "this created..." if speculating on applications of new research).
 IMPORTANT: The speakers should express appropriate skepticism when warranted, and should avoid sounding like pure advocates for any given topic.
-
 Do not include anything like titles, music, sound effects, CTAs, etc: only the conversational content.
+The "sign off" from the host should always include the phrase "actually useful". Find a way to work this in a natural or creative way, but make sure to use the *exact phrase* "actually useful" (in that order, nothing in between) - it's the signature sign-off for the podcast.
 
 # FORMATTING
 Format the script like this:
@@ -155,5 +155,4 @@ Untitled
 2
 Both ways get me to a blog post. The first (if I were able to meet two of the three above conditions) would end up in a piece that I'd end up having to edit myself. But it certainly gets me from idea to final output fast. The second gets me thinking in different ways, helps me synthesize ideas, and ends up in a piece that is far more interesting (I think) to both read and write. But it takes a little while.
 which one do you think is actually useful?
-
 """
