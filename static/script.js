@@ -223,18 +223,33 @@ document.addEventListener('DOMContentLoaded', (event) => {
             fetch('/upload', {
                 method: 'POST',
                 body: formData
-            }).then(response => response.json())
+            }).then(response => {
+                if (!response.ok) {
+                    throw response;
+                }
+                return response.json();
+            })
             .then(data => {
                 console.log(data);
                 sessionId = data.session_id;
-                podcastsRemaining = Math.max(0, podcastsRemaining - 1);
+                podcastsRemaining = data.podcasts_remaining;
                 updatePodcastsRemaining();
                 initializeSocket(sessionId);
             }).catch(error => {
-                console.error('Error:', error);
-                currentStatus.textContent = 'An error occurred. Please try again.';
-                currentStatus.classList.add('text-red-500');
-                showElement(messages);
+                if (error instanceof Response) {
+                    error.json().then(errorData => {
+                        console.error('Error:', errorData.error);
+                        currentStatus.textContent = errorData.error;
+                        currentStatus.classList.add('text-red-500');
+                        showElement(messages);
+                    });
+                } else {
+                    console.error('Error:', error);
+                    currentStatus.textContent = 'An error occurred. Please try again.';
+                    currentStatus.classList.add('text-red-500');
+                    showElement(messages);
+                }
+                hideElement(loadingAnimation);
             });
         });
     } else {

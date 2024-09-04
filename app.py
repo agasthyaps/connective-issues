@@ -65,7 +65,7 @@ def upload():
     pdfs = []
     uploaded_files = []
     theme = request.form.get('theme', '')
-    podcasts_remaining = int(request.cookies.get('podcasts_remaining', 3))
+    podcasts_remaining = int(request.cookies.get('podcasts_remaining', 5))
 
     if podcasts_remaining <= 0:
         return jsonify({'error': 'You have reached the maximum number of podcast generations'}), 403
