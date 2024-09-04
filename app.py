@@ -24,7 +24,7 @@ STATIC_FOLDER = os.path.join(app.root_path, 'static')
 # global vars
 TESTING = False
 bucket_name = os.environ.get('GCS_BUCKET_NAME')
-storage_client = storage.Client.from_service_account_json(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
+storage_client = storage.Client()
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 

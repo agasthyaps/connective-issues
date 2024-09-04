@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-COPY connective_issues_bucket_key.json /app/service-account-key.json
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
