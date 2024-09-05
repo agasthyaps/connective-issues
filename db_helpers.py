@@ -30,12 +30,16 @@ def init_db():
     conn.commit()
     conn.close()
 
+# db_helpers.py
+
+# ... (previous imports and setup) ...
+
 def save_shared_podcast(share_id, audio_file_path, transcript):
     """Save a shared podcast to GCS and the database."""
     # Upload audio file to GCS
     audio_blob = bucket.blob(f'podcasts/{share_id}/audio.mp3')
     audio_blob.upload_from_filename(audio_file_path)
-    gcs_audio_path = audio_blob.public_url
+    gcs_audio_url = audio_blob.public_url
 
     # Save transcript and other data to GCS
     data_blob = bucket.blob(f'podcasts/{share_id}/data.json')
@@ -53,9 +57,13 @@ def save_shared_podcast(share_id, audio_file_path, transcript):
     c.execute('''
         INSERT INTO shared_podcasts (id, gcs_audio_path, gcs_data_path, expiration_date)
         VALUES (?, ?, ?, ?)
-    ''', (share_id, gcs_audio_path, gcs_data_path, expiration_date))
+    ''', (share_id, gcs_audio_url, gcs_data_path, expiration_date))
     conn.commit()
     conn.close()
+
+    return gcs_audio_url
+
+# ... (rest of the code) ...
 
 def get_shared_podcast(share_id):
     """Retrieve a shared podcast from the database and GCS."""

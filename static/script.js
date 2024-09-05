@@ -38,7 +38,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 
     function generateShareLink() {
-        const audioPath = podcastAudio.src;
+        const audioElement = document.getElementById('podcastAudio');
+        const audioSrc = audioElement.getAttribute('src');
+        const audioFilename = audioSrc.split('/').pop(); // Get just the filename
         const transcript = finalScript.innerHTML;
     
         fetch('/generate_share_link', {
@@ -47,27 +49,20 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                audio_path: audioPath,
+                audio_filename: audioFilename,
                 transcript: transcript
             }),
         })
-        .then(response => {
-            console.log('Response status:', response.status);
-            return response.text();  // Change this from response.json()
-        })
+        .then(response => response.json())
         .then(data => {
-            console.log('Raw response:', data);
-            try {
-                const jsonData = JSON.parse(data);
-                const shareUrl = window.location.origin + jsonData.share_url;
-                showShareModal(shareUrl);
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
-                alert('An error occurred while generating the share link. Please try again.');
+            if (data.error) {
+                throw new Error(data.error);
             }
+            const shareUrl = window.location.origin + data.share_url;
+            showShareModal(shareUrl);
         })
         .catch((error) => {
-            console.error('Fetch Error:', error);
+            console.error('Error:', error);
             alert('An error occurred while generating the share link. Please try again.');
         });
     }

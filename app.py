@@ -68,12 +68,19 @@ def generate_share_link():
         
         share_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
         
-        # Assuming the audio file is saved locally during podcast generation
-        local_audio_path = os.path.join(app.static_folder, data['audio_path'].lstrip('/'))
+        # Get the audio filename from the request
+        audio_filename = data['audio_filename']
         
-        db_helpers.save_shared_podcast(share_id, local_audio_path, data['transcript'])
+        # Construct the local path to the audio file
+        local_audio_path = os.path.join(app.static_folder, 'audio', audio_filename)
         
-        response_data = {'share_url': f'/shared/{share_id}'}
+        if not os.path.exists(local_audio_path):
+            raise FileNotFoundError(f"Audio file not found: {local_audio_path}")
+        
+        # Save to GCS and database
+        gcs_audio_url = db_helpers.save_shared_podcast(share_id, local_audio_path, data['transcript'])
+        
+        response_data = {'share_url': f'/shared/{share_id}', 'gcs_audio_url': gcs_audio_url}
         app.logger.debug(f"Sending response: {response_data}")
         
         return jsonify(response_data), 200
