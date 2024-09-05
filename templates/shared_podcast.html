@@ -10,7 +10,10 @@
     <div class="container">
         <h1>Shared Podcast</h1>
         <div class="audio-player">
-            <audio controls src="{{ url_for('static', filename=audio_path) }}"></audio>
+            <audio controls>
+                <source src="{{ audio_path }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
         </div>
         <div style="padding-bottom:25px;">
                 <h4>Transcript:</h4>

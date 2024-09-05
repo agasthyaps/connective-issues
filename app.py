@@ -1,5 +1,5 @@
 import uuid
-from flask import Flask, render_template, request, jsonify, send_from_directory, session, make_response
+from flask import Flask, render_template, request, jsonify, send_from_directory, session, make_response, url_for
 from flask_socketio import SocketIO, emit, disconnect
 from werkzeug.utils import secure_filename
 import os
@@ -72,8 +72,15 @@ def generate_share_link():
 def shared_podcast(share_id):
     podcast = db_helpers.get_shared_podcast(share_id)
     if podcast:
+        # Use the stored audio_path directly
+        audio_path = podcast['audio_path']
+        
+        # If the path doesn't start with 'http' or '/', prepend the appropriate URL
+        if not audio_path.startswith(('http', '/')):
+            audio_path = url_for('static', filename=audio_path, _external=True)
+        
         return render_template('shared_podcast.html', 
-                               audio_path=podcast['audio_path'], 
+                               audio_path=audio_path, 
                                transcript=podcast['transcript'])
     else:
         return "Podcast not found or has expired", 404
