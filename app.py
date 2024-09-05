@@ -33,12 +33,7 @@ UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
 TEMP_FOLDER = os.path.join(app.root_path, 'temp')
 STATIC_FOLDER = os.path.join(app.root_path, 'static')
 
-# testing flag
-TESTING = False
 
-if not TESTING:
-    bucket_name = os.environ.get('GCS_BUCKET_NAME')
-    storage_client = storage.Client()
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -72,15 +67,8 @@ def generate_share_link():
 def shared_podcast(share_id):
     podcast = db_helpers.get_shared_podcast(share_id)
     if podcast:
-        # Use the stored audio_path directly
-        audio_path = podcast['audio_path']
-        
-        # If the path doesn't start with 'http' or '/', prepend the appropriate URL
-        if not audio_path.startswith(('http', '/')):
-            audio_path = url_for('static', filename=audio_path, _external=True)
-        
         return render_template('shared_podcast.html', 
-                               audio_path=audio_path, 
+                               audio_path=podcast['audio_path'], 
                                transcript=podcast['transcript'])
     else:
         return "Podcast not found or has expired", 404
@@ -336,7 +324,7 @@ def submit_feedback():
         filename = f"feedback_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
         # Get the bucket
-        bucket = storage_client.bucket(bucket_name)
+        bucket = db_helpers.storage_client.bucket(db_helpers.bucket_name)
 
         # Create a new blob and upload the feedback
         blob = bucket.blob(f"feedback/{filename}")
