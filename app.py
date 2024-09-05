@@ -66,34 +66,16 @@ def serve_audio(filename):
 def generate_share_link():
     try:
         data = request.json
-        app.logger.debug(f"Received data: {data}")
+        session_id = data.get('session_id')
         
-        share_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
+        if session_id not in server_side_storage:
+            raise ValueError("Invalid session ID")
         
-        # Get the audio src from the request
-        audio_src = data['audio_src']
+        # The podcast is already saved in GCS, so we just need to generate the share URL
+        share_url = f'/shared/{session_id}'
         
-        # Extract the filename from the audio_src
-        audio_filename = os.path.basename(audio_src)
-        
-        # Construct the local path to the audio file
-        local_audio_path = os.path.join(STATIC_FOLDER, audio_filename)
-        
-        app.logger.debug(f"Constructed local audio path: {local_audio_path}")
-        
-        if not os.path.exists(local_audio_path):
-            app.logger.error(f"Audio file not found at: {local_audio_path}")
-            raise FileNotFoundError(f"Audio file not found: {local_audio_path}")
-        
-        # Save to GCS and database
-        db_helpers.save_shared_podcast(share_id, local_audio_path, data['transcript'])
-        
-        response_data = {'share_url': f'/shared/{share_id}'}
-        app.logger.debug(f"Sending response: {response_data}")
-        
-        return jsonify(response_data), 200
+        return jsonify({'share_url': share_url}), 200
     except Exception as e:
-        app.logger.error(f"Error in generate_share_link: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/shared/<share_id>')
@@ -264,16 +246,26 @@ def create_podcast(session_id, pdfs, theme):
             audio_path = create_podcast_from_script(casual_script, TEMP_FOLDER, STATIC_FOLDER, app.root_path)
             audio_filename = os.path.basename(audio_path)
 
-            # Store the podcast path in server-side storage
-            if session_id in server_side_storage:
-                server_side_storage[session_id]['podcast_path'] = audio_path
-
-            # Emit final results
+            local_audio_path = os.path.join(STATIC_FOLDER, audio_filename)
+    
+            # Immediately save to GCS and get the blob name
+            gcs_blob_name = db_helpers.save_shared_podcast(session_id, local_audio_path, formatted_script)
+            
+            # Update the server-side storage with the GCS blob name
+            server_side_storage[session_id]['gcs_blob_name'] = gcs_blob_name
+            
+            # Generate a signed URL for immediate playback
+            podcast_data = db_helpers.get_shared_podcast(session_id)
+            
+            # Emit the signed URL instead of the local path
             socketio.emit('complete', {
-                'audio_path': f'/audio/{audio_filename}',
+                'audio_path': podcast_data['audio_url'],
                 'script': formatted_script,
                 'session_id': session_id
             })
+
+            # Delete the local file
+            os.remove(local_audio_path)
 
         except Exception as e:
             socketio.emit('error', {'data': str(e), 'session_id': session_id})
