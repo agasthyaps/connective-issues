@@ -14,10 +14,14 @@ from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 import db_helpers
 import string
+import logging
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')  # Use environment variable in production
 socketio = SocketIO(app)
+logging.basicConfig(level=logging.DEBUG)
+
 
 # Initialize the database when the app starts
 with app.app_context():
@@ -58,10 +62,24 @@ def generate_share_id():
 
 @app.route('/generate_share_link', methods=['POST'])
 def generate_share_link():
-    data = request.json
-    share_id = generate_share_id()
-    db_helpers.save_shared_podcast(share_id, data['audio_path'], data['transcript'])
-    return jsonify({'share_url': f'/shared/{share_id}'})
+    try:
+        data = request.json
+        app.logger.debug(f"Received data: {data}")
+        
+        share_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
+        
+        # Assuming the audio file is saved locally during podcast generation
+        local_audio_path = os.path.join(app.static_folder, data['audio_path'].lstrip('/'))
+        
+        db_helpers.save_shared_podcast(share_id, local_audio_path, data['transcript'])
+        
+        response_data = {'share_url': f'/shared/{share_id}'}
+        app.logger.debug(f"Sending response: {response_data}")
+        
+        return jsonify(response_data), 200
+    except Exception as e:
+        app.logger.error(f"Error in generate_share_link: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/shared/<share_id>')
 def shared_podcast(share_id):

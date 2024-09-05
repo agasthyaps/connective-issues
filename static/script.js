@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     function generateShareLink() {
         const audioPath = podcastAudio.src;
         const transcript = finalScript.innerHTML;
-
+    
         fetch('/generate_share_link', {
             method: 'POST',
             headers: {
@@ -51,13 +51,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 transcript: transcript
             }),
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.text();  // Change this from response.json()
+        })
         .then(data => {
-            const shareUrl = window.location.origin + data.share_url;
-            showShareModal(shareUrl);
+            console.log('Raw response:', data);
+            try {
+                const jsonData = JSON.parse(data);
+                const shareUrl = window.location.origin + jsonData.share_url;
+                showShareModal(shareUrl);
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+                alert('An error occurred while generating the share link. Please try again.');
+            }
         })
         .catch((error) => {
-            console.error('Error:', error);
+            console.error('Fetch Error:', error);
             alert('An error occurred while generating the share link. Please try again.');
         });
     }
