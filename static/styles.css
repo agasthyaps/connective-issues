@@ -80,7 +80,6 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
-    overflow: auto;
 }
 
 .file-label, .file-input, .styled-select, .add-more-btn {
@@ -95,7 +94,7 @@
     padding: 5px 0;
     cursor: pointer;
     width: auto;
-    overflow: auto;
+    overflow:auto;
 }
 
 .file-input::-webkit-file-upload-button {
@@ -208,6 +207,10 @@
       font-family: 'EB Garamond', serif;
       font-size: 1rem; /* Reduced from 1.2rem */
       transition: background-color 0.3s ease;
+  }
+
+  #sharePodcast{
+    margin-left: 10px;
   }
   
   #downloadPodcast:hover {

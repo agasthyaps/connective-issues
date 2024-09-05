@@ -68,31 +68,20 @@ def generate_share_link():
         
         share_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
         
-        # Get the audio filename from the request
-        audio_filename = data['audio_filename']
+        # Get the audio src from the request
+        audio_src = data['audio_src']
         
-        # Log all relevant paths
-        app.logger.debug(f"app.root_path: {app.root_path}")
-        app.logger.debug(f"app.static_folder: {app.static_folder}")
-        app.logger.debug(f"os.getcwd(): {os.getcwd()}")
+        # Extract the filename from the audio_src
+        audio_filename = os.path.basename(audio_src)
         
-        # Construct and log possible audio file paths
-        possible_paths = [
-            os.path.join(app.static_folder, 'audio', audio_filename),
-            os.path.join(app.root_path, 'static', 'audio', audio_filename),
-            os.path.join(os.getcwd(), 'static', 'audio', audio_filename),
-            os.path.join('/app', 'static', 'audio', audio_filename)  # For Heroku-like environments
-        ]
+        # Construct the local path to the audio file
+        local_audio_path = os.path.join(STATIC_FOLDER, 'audio', audio_filename)
         
-        for path in possible_paths:
-            app.logger.debug(f"Checking path: {path}")
-            if os.path.exists(path):
-                app.logger.debug(f"File found at: {path}")
-                local_audio_path = path
-                break
-        else:
-            app.logger.error("Audio file not found in any of the checked paths")
-            raise FileNotFoundError(f"Audio file not found: {audio_filename}")
+        app.logger.debug(f"Constructed local audio path: {local_audio_path}")
+        
+        if not os.path.exists(local_audio_path):
+            app.logger.error(f"Audio file not found at: {local_audio_path}")
+            raise FileNotFoundError(f"Audio file not found: {local_audio_path}")
         
         # Save to GCS and database
         gcs_audio_url = db_helpers.save_shared_podcast(share_id, local_audio_path, data['transcript'])
@@ -292,7 +281,7 @@ def serve_audio(filename):
     global TESTING
     if TESTING:
         return send_from_directory(STATIC_FOLDER, 'podcast_179.mp3')
-    return send_from_directory(STATIC_FOLDER, filename)
+    return send_from_directory(STATIC_FOLDER, os.path.join('audio', filename))
 
 @app.route('/generate_blog', methods=['POST'])
 def generate_blog():

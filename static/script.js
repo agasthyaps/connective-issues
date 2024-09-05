@@ -40,11 +40,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     function generateShareLink() {
         const audioElement = document.getElementById('podcastAudio');
         const audioSrc = audioElement.getAttribute('src');
-        const audioFilename = audioSrc.split('/').pop(); // Get just the filename
         const transcript = finalScript.innerHTML;
     
         console.log('Audio src:', audioSrc);
-        console.log('Audio filename:', audioFilename);
     
         fetch('/generate_share_link', {
             method: 'POST',
@@ -52,7 +50,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                audio_filename: audioFilename,
                 audio_src: audioSrc,
                 transcript: transcript
             }),
