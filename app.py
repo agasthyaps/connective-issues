@@ -138,7 +138,7 @@ def create_podcast(session_id, pdfs, theme):
             texts = []
             truncated_texts = []
             for file in pdfs:
-                socketio.emit('update', {'data': f"📚 reading through {os.path.basename(file['pdf'])},'session_id': session_id"})
+                socketio.emit('update', {'data': f"📚 reading through {os.path.basename(file['pdf'])}",'session_id': session_id})
                 text = extract_text_from_pdf(file['pdf'])
                 if file['kind'] =='me':
                     addl_prompt = addl_prompt + "This piece was submitted by a listener. It may be an article, notes, a brainstorm, or something else entirely. Treat their thoughts seriously and try to make sense of them, especially in the context of any theme you may be focusing on."
@@ -160,7 +160,7 @@ def create_podcast(session_id, pdfs, theme):
             # Summarize articles
             summaries = []
             for i, text in enumerate(texts):
-                socketio.emit('update', {'data': f"🔬 research team is summarizing article {i+1},'session_id': session_id"})
+                socketio.emit('update', {'data': f"🔬 research team is summarizing article {i+1}",'session_id': session_id})
                 summary = conversation_engine(summarizer, text)
                 summaries.append(summary)
             
