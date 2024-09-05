@@ -112,13 +112,13 @@ def format_script(script):
     return script
 
 
-def text_to_speech(message,filepath):
+def text_to_speech(message,filepath,cast):
     # Calling the text_to_speech conversion API with detailed parameters
     global eleven_client
 
     voices = {
-        "host":"RPEIZnKMqlQiZyZd1Dae",
-        "expert":"P7x743VjyZEOihNNygQ9" 
+        "host":cast['host'],
+        "expert":cast['expert'] 
     }
     voice = voices[message["speaker"]]
     message = message["dialogue"]
@@ -185,6 +185,12 @@ def concatenate_audio(file_list, output_file, app_root):
     return output_file
 
 def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root):
+    voices = {
+        'host':["RPEIZnKMqlQiZyZd1Dae","H2gwnCCCGhjpKRQBynLT","t9IV45xnQb79w1JXFAIQ","WLKp2jV6nrS8aMkPPDRO"],
+        'expert':["P7x743VjyZEOihNNygQ9","L0Dsvb3SLTyegXwtm47J","r27TA7xKV7nfUjudCBpS","ByLF4fg3sDo1TGXkjPMA"]
+    }
+    cast = {"host":random.choice(voices['host']), "expert":random.choice(voices['expert'])}
+    print(cast)
     podcast_name = f"podcast_{random.randint(0,1000)}.mp3"
     print("Processing podcast script")
     processed_script = process_transcript(podcast_script)
@@ -194,7 +200,7 @@ def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root):
     print("synthesizing audio files")
     for i, turn in enumerate(processed_script):
         print(f"synthesizing turn {i}")
-        file = text_to_speech(turn, os.path.join(temp_dir, f"{turn['speaker']}_{i}.wav"))
+        file = text_to_speech(turn, os.path.join(temp_dir, f"{turn['speaker']}_{i}.wav"),cast)
         file_list.append(file)
 
     output_file = os.path.join(static_dir, podcast_name)
