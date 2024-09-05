@@ -11,10 +11,22 @@ import random
 from google.cloud import storage
 import json
 from datetime import datetime
+from apscheduler.schedulers.background import BackgroundScheduler
+import db_helpers
+import string
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')  # Use environment variable in production
 socketio = SocketIO(app)
+
+# Initialize the database when the app starts
+with app.app_context():
+    db_helpers.init_db()
+
+# Set up the scheduler for cleanup
+scheduler = BackgroundScheduler()
+scheduler.add_job(db_helpers.cleanup_expired_podcasts, 'interval', hours=24)
+scheduler.start()
 
 # Configure folders
 UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
@@ -43,6 +55,26 @@ scripter = initialize_chain('gpt', scripter_system_prompt, history=True)
 feedback_giver = initialize_chain('opus', feedback_system_prompt, history=True)
 casual_editor = initialize_chain('gpt', casual_system_prompt)
 multi_summarizer = initialize_chain('opus', multi_summary_system_prompt)
+
+def generate_share_id():
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
+
+@app.route('/generate_share_link', methods=['POST'])
+def generate_share_link():
+    data = request.json
+    share_id = generate_share_id()
+    db_helpers.save_shared_podcast(share_id, data['audio_path'], data['transcript'])
+    return jsonify({'share_url': f'/shared/{share_id}'})
+
+@app.route('/shared/<share_id>')
+def shared_podcast(share_id):
+    podcast = db_helpers.get_shared_podcast(share_id)
+    if podcast:
+        return render_template('shared_podcast.html', 
+                               audio_path=podcast['audio_path'], 
+                               transcript=podcast['transcript'])
+    else:
+        return "Podcast not found or has expired", 404
 
 def set_cookie_with_samesite(response, name, value, max_age):
     response.set_cookie(name, value, max_age=max_age, samesite='Lax', secure=True, httponly=True)

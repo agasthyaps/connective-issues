@@ -31,6 +31,68 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let currentSessionId = null;
     let pdfCount = 1;
     let podcastCreated = false;
+    const sharePodcastBtn = document.getElementById('sharePodcast');
+    
+    if (sharePodcastBtn) {
+        sharePodcastBtn.addEventListener('click', generateShareLink);
+    }
+
+    function generateShareLink() {
+        const audioPath = podcastAudio.src;
+        const transcript = finalScript.innerHTML;
+
+        fetch('/generate_share_link', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                audio_path: audioPath,
+                transcript: transcript
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            const shareUrl = window.location.origin + data.share_url;
+            showShareModal(shareUrl);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('An error occurred while generating the share link. Please try again.');
+        });
+    }
+
+    function showShareModal(shareUrl) {
+        const modal = document.createElement('div');
+        modal.className = 'share-modal';
+        modal.innerHTML = `
+            <div class="share-modal-content">
+                <h3>help make connections</h3>
+                <p>did the pod help you synthesize or spark some ideas? share it with someone else who might get just as excited as you are. (link valid for 3 days):</p>
+                <input type="text" value="${shareUrl}" readonly>
+                <button id="copyShareLink">Copy Link</button>
+                <button id="closeShareModal">Close</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        const copyBtn = modal.querySelector('#copyShareLink');
+        const closeBtn = modal.querySelector('#closeShareModal');
+        const input = modal.querySelector('input');
+
+        copyBtn.addEventListener('click', () => {
+            input.select();
+            document.execCommand('copy');
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                copyBtn.textContent = 'Copy Link';
+            }, 2000);
+        });
+
+        closeBtn.addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+    }
 
     function scrollToBottom() {
         window.scrollTo({
