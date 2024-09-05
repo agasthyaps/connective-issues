@@ -34,7 +34,7 @@ TEMP_FOLDER = os.path.join(app.root_path, 'temp')
 STATIC_FOLDER = os.path.join(app.root_path, 'static')
 
 # testing flag
-TESTING = False
+TESTING = True
 
 if not TESTING:
     bucket_name = os.environ.get('GCS_BUCKET_NAME')

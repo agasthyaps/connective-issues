@@ -196,7 +196,7 @@
       margin-bottom: 10px;
   }
   
-  #downloadPodcast, #sharePodcast, .downloadPodcast {
+  #downloadPodcast, #sharePodcast, #newPodcast, .downloadPodcast {
       background-color: #bd5bcc;
       color: white;
       border: none;
@@ -325,7 +325,7 @@
     margin-left: 10px; /* Add some space between the download and help me test buttons */
 }
 
-#helpMeTest:hover {
+#helpMeTest:hover{
     background-color: #a951b7;
 }
 
