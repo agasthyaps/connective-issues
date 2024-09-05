@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const preproductionZone = document.getElementById('preproductionZone');
     const createPodcastBtn = document.getElementById('createPodcastBtn');
     const podcastsRemainingElement = document.getElementById('podcastsRemaining');
-    let podcastsRemaining = 5; // Default value
+    let podcastsRemaining; // Default value
 
     const helpMeTestBtn = document.getElementById('helpMeTest');
     const blogSection = document.getElementById('blogSection');
@@ -39,13 +39,29 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
     }
 
+    function updatePodcastsRemaining() {
+        console.log('Updating podcasts remaining:', podcastsRemaining);
+        if (podcastsRemainingElement && podcastsRemaining !== undefined) {
+            podcastsRemainingElement.innerHTML = `<b>podcast generations remaining: ${podcastsRemaining}</b>`;
+        }
+        if (podcastsRemaining <= 0) {
+            createPodcastBtn.disabled = true;
+            createPodcastBtn.textContent = 'Maximum podcasts reached';
+        }
+    }
+
+    // Fetch the initial podcast count from the server
     fetch('/get_podcasts_remaining')
         .then(response => response.json())
         .then(data => {
             podcastsRemaining = data.podcasts_remaining;
             updatePodcastsRemaining();
         })
-        .catch(error => console.error('Error fetching podcast count:', error));
+        .catch(error => {
+            console.error('Error fetching podcast count:', error);
+            podcastsRemaining = 5; // Fallback to default value
+            updatePodcastsRemaining();
+        });
 
     function setContentLayout(showBlog = false) {
         const comparisonEl = document.querySelector('.content-comparison');
@@ -231,15 +247,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
             fetch('/upload', {
                 method: 'POST',
                 body: formData
-            }).then(response => {
-                if (!response.ok) {
-                    return response.json().then(errorData => {
-                        throw new Error(errorData.error);
-                    });
-                }
-                return response.json();
-            })
+            }).then(response => response.json())
             .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
                 console.log(data);
                 sessionId = data.session_id;
                 podcastsRemaining = data.podcasts_remaining;
@@ -250,6 +262,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 currentStatus.textContent = error.message;
                 currentStatus.classList.add('text-red-500');
                 showElement(messages);
+                if (error.podcasts_remaining !== undefined) {
+                    podcastsRemaining = error.podcasts_remaining;
+                    updatePodcastsRemaining();
+                }
                 hideElement(loadingAnimation);
             });
         });

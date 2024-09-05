@@ -68,12 +68,12 @@ def upload():
     podcasts_remaining = request.cookies.get('podcasts_remaining')
     
     if podcasts_remaining is None:
-        podcasts_remaining = 5  # Reset to max if cookie is not present
+        podcasts_remaining = 5
     else:
         podcasts_remaining = int(podcasts_remaining)
 
     if podcasts_remaining <= 0:
-        return jsonify({'error': 'You have reached the maximum number of podcast generations'}), 403
+        return jsonify({'error': 'You have reached the maximum number of podcast generations', 'podcasts_remaining': 0}), 403
 
     
     session_id = str(uuid.uuid4())  # Generate a unique session ID
@@ -104,11 +104,13 @@ def upload():
             # Start the podcast creation process in a background task
             socketio.start_background_task(create_podcast, session_id, pdfs, theme)
 
-            response = jsonify({'message': 'Podcast creation started', 'session_id': session_id})
-        
             podcasts_remaining -= 1
-            set_cookie_with_samesite(response, 'podcasts_remaining', str(podcasts_remaining), max_age=30*24*60*60)
-        
+            response = jsonify({
+                'message': 'Podcast creation started', 
+                'session_id': session_id, 
+                'podcasts_remaining': podcasts_remaining
+            })
+            set_cookie_with_samesite(response, 'podcasts_remaining', str(podcasts_remaining), max_age=15*60)
             return response
         except Exception as e:
             print(f"Error in upload: {str(e)}")
