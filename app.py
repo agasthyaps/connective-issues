@@ -71,11 +71,28 @@ def generate_share_link():
         # Get the audio filename from the request
         audio_filename = data['audio_filename']
         
-        # Construct the local path to the audio file
-        local_audio_path = os.path.join(app.static_folder, 'audio', audio_filename)
+        # Log all relevant paths
+        app.logger.debug(f"app.root_path: {app.root_path}")
+        app.logger.debug(f"app.static_folder: {app.static_folder}")
+        app.logger.debug(f"os.getcwd(): {os.getcwd()}")
         
-        if not os.path.exists(local_audio_path):
-            raise FileNotFoundError(f"Audio file not found: {local_audio_path}")
+        # Construct and log possible audio file paths
+        possible_paths = [
+            os.path.join(app.static_folder, 'audio', audio_filename),
+            os.path.join(app.root_path, 'static', 'audio', audio_filename),
+            os.path.join(os.getcwd(), 'static', 'audio', audio_filename),
+            os.path.join('/app', 'static', 'audio', audio_filename)  # For Heroku-like environments
+        ]
+        
+        for path in possible_paths:
+            app.logger.debug(f"Checking path: {path}")
+            if os.path.exists(path):
+                app.logger.debug(f"File found at: {path}")
+                local_audio_path = path
+                break
+        else:
+            app.logger.error("Audio file not found in any of the checked paths")
+            raise FileNotFoundError(f"Audio file not found: {audio_filename}")
         
         # Save to GCS and database
         gcs_audio_url = db_helpers.save_shared_podcast(share_id, local_audio_path, data['transcript'])

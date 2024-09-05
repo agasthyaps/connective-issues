@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
         const audioFilename = audioSrc.split('/').pop(); // Get just the filename
         const transcript = finalScript.innerHTML;
     
+        console.log('Audio src:', audioSrc);
+        console.log('Audio filename:', audioFilename);
+    
         fetch('/generate_share_link', {
             method: 'POST',
             headers: {
@@ -50,6 +53,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             },
             body: JSON.stringify({
                 audio_filename: audioFilename,
+                audio_src: audioSrc,
                 transcript: transcript
             }),
         })
@@ -58,6 +62,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             if (data.error) {
                 throw new Error(data.error);
             }
+            console.log('Server response:', data);
             const shareUrl = window.location.origin + data.share_url;
             showShareModal(shareUrl);
         })
