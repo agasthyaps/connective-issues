@@ -128,7 +128,7 @@ def text_to_speech(message,filepath,cast):
         optimize_streaming_latency="0",
         output_format="mp3_22050_32",
         text=message,
-        model_id="eleven_multilingual_v1",  # use the turbo model for low latency, for other languages use the `eleven_multilingual_v2`
+        model_id="eleven_turbo_v2_5",  # use the turbo model for low latency, for other languages use the `eleven_multilingual_v2`
         voice_settings=VoiceSettings(
             stability=0.5,
             similarity_boost=.75,
