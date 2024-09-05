@@ -86,9 +86,9 @@ def generate_share_link():
             raise FileNotFoundError(f"Audio file not found: {local_audio_path}")
         
         # Save to GCS and database
-        gcs_audio_url = db_helpers.save_shared_podcast(share_id, local_audio_path, data['transcript'])
+        db_helpers.save_shared_podcast(share_id, local_audio_path, data['transcript'])
         
-        response_data = {'share_url': f'/shared/{share_id}', 'gcs_audio_url': gcs_audio_url}
+        response_data = {'share_url': f'/shared/{share_id}'}
         app.logger.debug(f"Sending response: {response_data}")
         
         return jsonify(response_data), 200
@@ -101,7 +101,7 @@ def shared_podcast(share_id):
     podcast = db_helpers.get_shared_podcast(share_id)
     if podcast:
         return render_template('shared_podcast.html', 
-                               audio_path=podcast['audio_path'], 
+                               audio_url=podcast['audio_url'], 
                                transcript=podcast['transcript'])
     else:
         return "Podcast not found or has expired", 404

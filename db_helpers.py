@@ -22,7 +22,7 @@ def init_db():
     c.execute('''
         CREATE TABLE IF NOT EXISTS shared_podcasts (
             id TEXT PRIMARY KEY,
-            audio_path TEXT NOT NULL,
+            gcs_blob_name TEXT NOT NULL,
             transcript TEXT NOT NULL,
             expiration_date TEXT NOT NULL
         )
@@ -33,9 +33,9 @@ def init_db():
 def save_shared_podcast(share_id, local_audio_path, transcript):
     """Save a shared podcast to GCS and the database."""
     # Upload audio file to GCS
-    audio_blob = bucket.blob(f'podcasts/{share_id}/audio.mp3')
+    blob_name = f'podcasts/{share_id}/audio.mp3'
+    audio_blob = bucket.blob(blob_name)
     audio_blob.upload_from_filename(local_audio_path)
-    gcs_audio_url = audio_blob.public_url
 
     # Save transcript to GCS
     transcript_blob = bucket.blob(f'podcasts/{share_id}/transcript.txt')
@@ -46,16 +46,16 @@ def save_shared_podcast(share_id, local_audio_path, transcript):
     c = conn.cursor()
     expiration_date = (datetime.now() + timedelta(days=3)).isoformat()
     c.execute('''
-        INSERT INTO shared_podcasts (id, audio_path, transcript, expiration_date)
+        INSERT INTO shared_podcasts (id, gcs_blob_name, transcript, expiration_date)
         VALUES (?, ?, ?, ?)
-    ''', (share_id, gcs_audio_url, transcript, expiration_date))
+    ''', (share_id, blob_name, transcript, expiration_date))
     conn.commit()
     conn.close()
 
-    return gcs_audio_url
+    return blob_name
 
 def get_shared_podcast(share_id):
-    """Retrieve a shared podcast from the database."""
+    """Retrieve a shared podcast from the database and generate a signed URL."""
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute('SELECT * FROM shared_podcasts WHERE id = ?', (share_id,))
@@ -63,9 +63,15 @@ def get_shared_podcast(share_id):
     conn.close()
 
     if podcast:
+        blob = bucket.blob(podcast[1])  # gcs_blob_name
+        signed_url = blob.generate_signed_url(
+            version="v4",
+            expiration=timedelta(minutes=15),
+            method="GET"
+        )
         return {
             'id': podcast[0],
-            'audio_path': podcast[1],
+            'audio_url': signed_url,
             'transcript': podcast[2],
             'expiration_date': podcast[3]
         }
@@ -76,12 +82,12 @@ def cleanup_expired_podcasts():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     now = datetime.now().isoformat()
-    c.execute('SELECT id FROM shared_podcasts WHERE expiration_date < ?', (now,))
+    c.execute('SELECT id, gcs_blob_name FROM shared_podcasts WHERE expiration_date < ?', (now,))
     expired_podcasts = c.fetchall()
     
     for podcast in expired_podcasts:
         # Delete GCS objects
-        bucket.blob(f'podcasts/{podcast[0]}/audio.mp3').delete()
+        bucket.blob(podcast[1]).delete()  # Delete audio file
         bucket.blob(f'podcasts/{podcast[0]}/transcript.txt').delete()
         
         # Delete the database entry
