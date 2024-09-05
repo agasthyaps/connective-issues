@@ -37,6 +37,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
         sharePodcastBtn.addEventListener('click', generateShareLink);
     }
 
+    // Ensure this function is called when the podcast is created
+    function updateAudioPlayer(audioPath) {
+        const audioElement = document.getElementById('podcastAudio');
+        audioElement.src = audioPath;
+        
+        const downloadButton = document.getElementById('downloadPodcast');
+        if (downloadButton) {
+            downloadButton.href = audioPath;
+        }
+    }
+
     function generateShareLink() {
         const audioElement = document.getElementById('podcastAudio');
         const audioSrc = audioElement.getAttribute('src');
@@ -391,7 +402,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 showElement(result);
                 setContentLayout(false);
                 hideElement(comparisonSection);
-                podcastAudio.src = data.audio_path;
+                updateAudioPlayer(data.audio_path);
 
                 const formattedScript = data.script.replace(/\*\*(alex|jamie):\*\*/g, '<span class="speaker">$1:</span>');
                 finalScript.innerHTML = formattedScript.replace(/\n/g, '<br>');

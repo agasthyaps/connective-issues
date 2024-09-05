@@ -36,15 +36,13 @@ scheduler.start()
 UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
 TEMP_FOLDER = os.path.join(app.root_path, 'temp')
 STATIC_FOLDER = os.path.join(app.root_path, 'static')
-
-
-
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Ensure the necessary folders exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(TEMP_FOLDER, exist_ok=True)
 os.makedirs(STATIC_FOLDER, exist_ok=True)
+
 
 # Server-side storage
 server_side_storage = {}
@@ -59,6 +57,10 @@ multi_summarizer = initialize_chain('opus', multi_summary_system_prompt)
 
 def generate_share_id():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
+
+@app.route('/audio/<path:filename>')
+def serve_audio(filename):
+    return send_from_directory(STATIC_FOLDER, filename)
 
 @app.route('/generate_share_link', methods=['POST'])
 def generate_share_link():
@@ -75,7 +77,7 @@ def generate_share_link():
         audio_filename = os.path.basename(audio_src)
         
         # Construct the local path to the audio file
-        local_audio_path = os.path.join(STATIC_FOLDER, 'audio', audio_filename)
+        local_audio_path = os.path.join(STATIC_FOLDER, audio_filename)
         
         app.logger.debug(f"Constructed local audio path: {local_audio_path}")
         
@@ -275,13 +277,6 @@ def create_podcast(session_id, pdfs, theme):
 
         except Exception as e:
             socketio.emit('error', {'data': str(e), 'session_id': session_id})
-
-@app.route('/audio/<path:filename>')
-def serve_audio(filename):
-    global TESTING
-    if TESTING:
-        return send_from_directory(STATIC_FOLDER, 'podcast_179.mp3')
-    return send_from_directory(STATIC_FOLDER, os.path.join('audio', filename))
 
 @app.route('/generate_blog', methods=['POST'])
 def generate_blog():
