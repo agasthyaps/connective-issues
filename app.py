@@ -33,10 +33,12 @@ UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
 TEMP_FOLDER = os.path.join(app.root_path, 'temp')
 STATIC_FOLDER = os.path.join(app.root_path, 'static')
 
-# global vars
+# testing flag
 TESTING = False
-bucket_name = os.environ.get('GCS_BUCKET_NAME')
-storage_client = storage.Client()
+
+if not TESTING:
+    bucket_name = os.environ.get('GCS_BUCKET_NAME')
+    storage_client = storage.Client()
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -46,7 +48,7 @@ os.makedirs(TEMP_FOLDER, exist_ok=True)
 os.makedirs(STATIC_FOLDER, exist_ok=True)
 
 # Server-side storage
-storage = {}
+server_side_storage = {}
 
 # Initialize necessary components
 summarizer = initialize_chain('gpt', summarizer_system_prompt)
@@ -131,7 +133,7 @@ def upload():
                         uploaded_files.append(filepath)
 
             # Store uploaded files in server-side storage
-            storage[session_id] = {'uploaded_files': uploaded_files}
+            server_side_storage[session_id] = {'uploaded_files': uploaded_files}
 
             # Start the podcast creation process in a background task
             socketio.start_background_task(create_podcast, session_id, pdfs, theme)
@@ -155,7 +157,7 @@ def create_podcast(session_id, pdfs, theme):
         time.sleep(1)
         print("Testing mode: CREATE PODCAST")
         socketio.emit('complete', {
-            'audio_path': f'podcast_98.mp3',
+            'audio_path': f'podcast_179.mp3',
             'script': test_post,
             'session_id': session_id
         })
@@ -180,11 +182,11 @@ def create_podcast(session_id, pdfs, theme):
                 truncated_texts.append(truncated_text)
 
             # Store the processed texts and theme in the session storage
-            if session_id in storage:
-                storage[session_id]['processed_texts'] = texts
-                storage[session_id]['theme'] = theme
+            if session_id in server_side_storage:
+                server_side_storage[session_id]['processed_texts'] = texts
+                server_side_storage[session_id]['theme'] = theme
             else:
-                storage[session_id] = {
+                server_side_storage[session_id] = {
                     'processed_texts': texts,
                     'theme': theme
                 }
@@ -235,8 +237,8 @@ def create_podcast(session_id, pdfs, theme):
             audio_filename = os.path.basename(audio_path)
 
             # Store the podcast path in server-side storage
-            if session_id in storage:
-                storage[session_id]['podcast_path'] = audio_path
+            if session_id in server_side_storage:
+                server_side_storage[session_id]['podcast_path'] = audio_path
 
             # Emit final results
             socketio.emit('complete', {
@@ -250,6 +252,9 @@ def create_podcast(session_id, pdfs, theme):
 
 @app.route('/audio/<path:filename>')
 def serve_audio(filename):
+    global TESTING
+    if TESTING:
+        return send_from_directory(STATIC_FOLDER, 'podcast_179.mp3')
     return send_from_directory(STATIC_FOLDER, filename)
 
 @app.route('/generate_blog', methods=['POST'])
@@ -263,10 +268,10 @@ def generate_blog():
             data = request.json
             session_id = data.get('session_id')
             
-            if session_id not in storage:
+            if session_id not in server_side_storage:
                 return jsonify({'error': 'Invalid session ID'}), 400
             
-            session_data = storage[session_id]
+            session_data = server_side_storage[session_id]
             processed_texts = session_data.get('processed_texts', [])
             theme = session_data.get('theme', '')
             
@@ -284,8 +289,8 @@ def generate_blog():
                 combined_input
             )
 
-            if session_id in storage:
-                storage[session_id]['blogger_model'] = model
+            if session_id in server_side_storage:
+                server_side_storage[session_id]['blogger_model'] = model
             
             return jsonify({'blog_post': blog_post})
         except Exception as e:
@@ -307,7 +312,7 @@ def submit_feedback():
             choice = data.get('choice')
             feedback = data.get('feedback', '')        
             session_id = data.get('session_id')
-            model = storage[session_id].get('blogger_model', '')
+            model = server_side_storage[session_id].get('blogger_model', '')
 
             # Create a feedback entry
             feedback_entry = {
@@ -338,23 +343,23 @@ def submit_feedback():
 @socketio.on('disconnect')
 def handle_disconnect():
     session_id = request.args.get('session_id')
-    if session_id and session_id in storage:
+    if session_id and session_id in server_side_storage:
         try:
             # Delete podcast file
-            podcast_path = storage[session_id].get('podcast_path')
+            podcast_path = server_side_storage[session_id].get('podcast_path')
             if podcast_path and os.path.exists(podcast_path):
                 os.remove(podcast_path)
                 print(f"Deleted podcast file: {podcast_path}")
 
             # Delete uploaded PDF files
-            uploaded_files = storage[session_id].get('uploaded_files', [])
+            uploaded_files = server_side_storage[session_id].get('uploaded_files', [])
             for file_path in uploaded_files:
                 if os.path.exists(file_path):
                     os.remove(file_path)
                     print(f"Deleted uploaded file: {file_path}")
 
             # Clear storage data
-            del storage[session_id]
+            del server_side_storage[session_id]
             print(f"Cleared storage data for session {session_id}")
 
         except Exception as e:

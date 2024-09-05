@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Podcast</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Shared Podcast</h1>
+        <div class="audio-player">
+            <audio controls src="{{ url_for('static', filename=audio_path) }}"></audio>
+        </div>
+        <div style="padding-bottom:25px;">
+                <h4>Transcript:</h4>
+                <div id="finalScriptShare">{{ transcript|safe }}</div>
+    </div>
+    <a href="{{ audio_path }}" download class="downloadPodcast" style="padding-top:10px;">Download Podcast</a>
+</body>
+</html>

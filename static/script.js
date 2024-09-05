@@ -67,8 +67,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
         modal.className = 'share-modal';
         modal.innerHTML = `
             <div class="share-modal-content">
-                <h3>help make connections</h3>
-                <p>did the pod help you synthesize or spark some ideas? share it with someone else who might get just as excited as you are. (link valid for 3 days):</p>
+                <h2>share the synthesis</h2>
+                <p style='font-size:1.25em;'>the point of the pod is for it to be a tool to get <b>you</b> to <b>your</b> eventual output -- not for it to be <b><i>the</i> output</b>.</p>
+                <p>but: did it help you synthesize or spark some ideas? is there someone else who might get <b>just as excited as you are?</b> then share it.</p>
+                <p>(<i>link valid for 3 days</i>)</p>
                 <input type="text" value="${shareUrl}" readonly>
                 <button id="copyShareLink">Copy Link</button>
                 <button id="closeShareModal">Close</button>
