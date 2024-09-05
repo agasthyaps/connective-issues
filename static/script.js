@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     <option value="my">(my thoughts)</option>
                 </select>
                 <button type="button" class="add-more-btn">add more</button>
-                <span class="file-size-error hidden">File too large (max 5MB)</span>
+                <span class="file-size-error hidden">File too large (max 10MB)</span>
             `;
             pdfInputs.appendChild(newInput);
             
@@ -278,17 +278,21 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     function validateFileSize(event) {
         const file = event.target.files[0];
-        const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
-        const errorElement = event.target.parentElement.querySelector('.file-size-error');
+        const maxSizeInBytes = 10 * 1024 * 1024; // 10MB (as per the HTML)
+        const pdfInput = event.target.closest('.pdf-input');
+        const errorElement = pdfInput.querySelector('.file-size-error');
         
-        if (file && file.size > maxSizeInBytes) {
-            event.target.value = ''; // Clear the file input
-            errorElement.classList.remove('hidden');
+        if (errorElement) {
+            if (file && file.size > maxSizeInBytes) {
+                event.target.value = ''; // Clear the file input
+                errorElement.classList.remove('hidden');
+            } else {
+                errorElement.classList.add('hidden');
+            }
         } else {
-            errorElement.classList.add('hidden');
+            console.error('Error element not found');
         }
     }
-
     // Add event listener to the initial file input
     const initialFileInput = document.querySelector('#pdf_0');
     if (initialFileInput) {
@@ -308,7 +312,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             let isValid = true;
 
             fileInputs.forEach(input => {
-                if (input.files[0] && input.files[0].size > 5 * 1024 * 1024) {
+                if (input.files[0] && input.files[0].size > 10 * 1024 * 1024) {
                     isValid = false;
                     const errorElement = input.parentElement.querySelector('.file-size-error');
                     errorElement.classList.remove('hidden');
@@ -316,7 +320,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             });
 
             if (!isValid) {
-                alert('Please ensure all files are under 5MB before submitting.');
+                alert('Please ensure all files are under 10MB before submitting.');
                 return;
             }
 
