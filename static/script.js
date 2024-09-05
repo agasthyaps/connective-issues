@@ -180,24 +180,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         .catch(error => console.error('Error:', error));
     }
 
-    if (podcastsRemainingElement) {
-        const remainingText = podcastsRemainingElement.textContent.split(': ')[1];
-        podcastsRemaining = parseInt(remainingText) || 5;
-    }
-
-    function updatePodcastsRemaining() {
-        console.log('Updating podcasts remaining:', podcastsRemaining);
-        if (podcastsRemainingElement) {
-            podcastsRemainingElement.innerHTML = `<b>podcast generations remaining: ${podcastsRemaining}</b>`;
-        }
-        if (podcastsRemaining <= 0) {
-            createPodcastBtn.disabled = true;
-            createPodcastBtn.textContent = 'Maximum podcasts reached';
-        }
-    }
-
-    updatePodcastsRemaining();
-
     if (addMoreBtn) {
         addMoreBtn.addEventListener('click', addMoreInputs);
     }
@@ -315,6 +297,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 });
 
                 podcastCreated = true;
+                updatePodcastsRemaining();
             }
         });
 
