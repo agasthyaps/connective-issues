@@ -162,14 +162,27 @@ def concatenate_audio(file_list, output_file, app_root):
     intro_outro_path = os.path.join(app_root, 'static', 'introoutro.wav')
     intro_outro = AudioSegment.from_file(intro_outro_path)
 
+    middle_options = ['middle1.wav','middle2.wav','middle3.wav','middle4.wav']
+    middle_path = os.path.join(app_root, 'static', random.choice(middle_options))
+    middle = AudioSegment.from_file(middle_path)
+
+
     # Calculate fade duration (e.g., 3 seconds)
     fade_duration = 8000  # milliseconds
 
     # Prepare intro
     intro_outro = intro_outro.fade_out(duration=fade_duration)
 
+    # prepare middle
+    middle = middle.fade_in(duration=fade_duration)
+    middle = middle.fade_out(duration=fade_duration)
+
     # Overlay intro at the beginning
     combined = combined.overlay(intro_outro, position=0)
+
+    # Overlay middle
+    middle_position = len(combined)//2 - 15000
+    combined = combined.overlay(middle, position=middle_position)
 
     # Overlay outro at the end
     outro_position = len(combined) - len(intro_outro)
