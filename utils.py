@@ -15,7 +15,7 @@ import os
 import random
 
 # testing flag
-TESTING = True
+TESTING = False
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 eleven_client = ElevenLabs(
