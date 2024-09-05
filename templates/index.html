@@ -37,26 +37,27 @@
             <p id="podcastsRemaining">podcast generations remaining: {{ podcasts_remaining }}</p>
             <hr>
             <form id="uploadForm" enctype="multipart/form-data">
-                <div id="pdfInputs">
-                    <div class="pdf-input">
-                      <div class="tooltip-container">
+              <div id="pdfInputs">
+                <div class="pdf-input">
+                    <div class="tooltip-container">
                         <label for="pdf_0" class="file-label">choose file:</label>
                         <input type="file" id="pdf_0" name="pdf_0" accept=".pdf" class="file-input">
-                        <span class="tooltip">upload something you're thinking about: an article, your notes, etc.</span>
-                      </div>
-                      <div class="tooltip-container">
-                        <select name="kind_0" class="styled-select">
-                          <option value="someone">(someone else's thoughts)</option>
-                          <option value="my">(my thoughts)</option>
-                        </select>
-                        <span class="tooltip">let the ai team know where the ideas in this upload are from</span>
-                      </div>
-                      <div class="tooltip-container">
-                        <button type="button" class="add-more-btn">add more</button>
-                        <span class="tooltip">add more content for the pod</span>
-                      </div>
+                        <div class="tooltip">upload something you're thinking about: an article, your notes, etc.</div>
                     </div>
-                  </div>
+                    <div class="tooltip-container">
+                        <select name="kind_0" class="styled-select">
+                            <option value="someone">(someone else's thoughts)</option>
+                            <option value="my">(my thoughts)</option>
+                        </select>
+                        <div class="tooltip">let the ai team know where the ideas in this upload are from</div>
+                    </div>
+                    <div class="tooltip-container">
+                        <button type="button" class="add-more-btn">add more</button>
+                        <div class="tooltip">add more content for the pod</div>
+                    </div>
+                    <span class="file-size-error hidden">File too large (max 5MB)</span>
+                </div>
+            </div>
                 <div class="theme-input">
                     <input type="text" id="theme" name="theme" placeholder="the big question (what do you want the hosts to talk about?)">
                 </div>

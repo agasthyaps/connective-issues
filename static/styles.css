@@ -538,6 +538,9 @@
     margin-bottom: 10px;
 }
 
-/* ... rest of the CSS ... */
-
-/* ... rest of the CSS ... */
+.file-size-error {
+    color: #ff0000;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    display: block;
+}
