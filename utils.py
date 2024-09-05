@@ -162,13 +162,12 @@ def concatenate_audio(file_list, output_file, app_root):
     intro_outro_path = os.path.join(app_root, 'static', 'introoutro.wav')
     intro_outro = AudioSegment.from_file(intro_outro_path)
 
-    middle_options = ['middle1.wav','middle2.wav','middle4.wav']
+    middle_options = ['middle1.wav','middle3.wav','middle4.wav']
     middle_path = os.path.join(app_root, 'static', random.choice(middle_options))
     middle = AudioSegment.from_file(middle_path)
 
     # set volume of middle lower
-    middle = middle - 6
-
+    middle = middle - 12
 
     # Calculate fade duration (e.g., 3 seconds)
     fade_duration = 8000  # milliseconds
