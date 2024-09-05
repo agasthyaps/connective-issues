@@ -39,6 +39,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
     }
 
+    fetch('/get_podcasts_remaining')
+        .then(response => response.json())
+        .then(data => {
+            podcastsRemaining = data.podcasts_remaining;
+            updatePodcastsRemaining();
+        })
+        .catch(error => console.error('Error fetching podcast count:', error));
+
     function setContentLayout(showBlog = false) {
         const comparisonEl = document.querySelector('.content-comparison');
         const scriptContainer = document.querySelector('.script-container');
@@ -225,7 +233,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 body: formData
             }).then(response => {
                 if (!response.ok) {
-                    throw response;
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.error);
+                    });
                 }
                 return response.json();
             })
@@ -236,19 +246,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 updatePodcastsRemaining();
                 initializeSocket(sessionId);
             }).catch(error => {
-                if (error instanceof Response) {
-                    error.json().then(errorData => {
-                        console.error('Error:', errorData.error);
-                        currentStatus.textContent = errorData.error;
-                        currentStatus.classList.add('text-red-500');
-                        showElement(messages);
-                    });
-                } else {
-                    console.error('Error:', error);
-                    currentStatus.textContent = 'An error occurred. Please try again.';
-                    currentStatus.classList.add('text-red-500');
-                    showElement(messages);
-                }
+                console.error('Error:', error.message);
+                currentStatus.textContent = error.message;
+                currentStatus.classList.add('text-red-500');
+                showElement(messages);
                 hideElement(loadingAnimation);
             });
         });

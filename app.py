@@ -65,7 +65,12 @@ def upload():
     pdfs = []
     uploaded_files = []
     theme = request.form.get('theme', '')
-    podcasts_remaining = int(request.cookies.get('podcasts_remaining', 5))
+    podcasts_remaining = request.cookies.get('podcasts_remaining')
+    
+    if podcasts_remaining is None:
+        podcasts_remaining = 5  # Reset to max if cookie is not present
+    else:
+        podcasts_remaining = int(podcasts_remaining)
 
     if podcasts_remaining <= 0:
         return jsonify({'error': 'You have reached the maximum number of podcast generations'}), 403
@@ -322,4 +327,13 @@ def handle_disconnect():
             print(f"Error in handle_disconnect: {str(e)}")
 
     disconnect()  # Ensure the client is disconnected
+
+@app.route('/get_podcasts_remaining', methods=['GET'])
+def get_podcasts_remaining():
+    podcasts_remaining = request.cookies.get('podcasts_remaining')
+    if podcasts_remaining is None:
+        podcasts_remaining = 5
+    else:
+        podcasts_remaining = int(podcasts_remaining)
+    return jsonify({'podcasts_remaining': podcasts_remaining})
 
