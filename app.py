@@ -16,55 +16,58 @@ import db_helpers
 import string
 import logging
 import tempfile
+from threading import Thread
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')  # Use environment variable in production
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=20)  # Increase to 20 minutes
 socketio = SocketIO(app)
 logging.basicConfig(level=logging.DEBUG)
-
-@app.before_request
-def make_session_permanent():
-    session.permanent = True
-
-# Initialize the database when the app starts
-with app.app_context():
-    db_helpers.init_db()
-
-# Set up the scheduler for cleanup
-scheduler = BackgroundScheduler()
-scheduler.add_job(db_helpers.cleanup_expired_podcasts, 'interval', hours=24)
-scheduler.start()
+app_ready = False
 
 # Configure folders
 UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
-TEMP_FOLDER = os.path.join(app.root_path, 'temp')
 STATIC_FOLDER = os.path.join(app.root_path, 'static')
+TEMP_FOLDER = tempfile.mkdtemp()
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Ensure the necessary folders exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(TEMP_FOLDER, exist_ok=True)
 os.makedirs(STATIC_FOLDER, exist_ok=True)
-
 
 # Server-side storage
 server_side_storage = {}
 
 # Initialize necessary components
-summarizer = initialize_chain('gpt', summarizer_system_prompt)
-outliner = initialize_chain('opus', outliner_system_prompt)
-scripter = initialize_chain('gpt', scripter_system_prompt, history=True)
-feedback_giver = initialize_chain('opus', feedback_system_prompt, history=True)
-casual_editor = initialize_chain('gpt', casual_system_prompt)
-multi_summarizer = initialize_chain('opus', multi_summary_system_prompt)
+podteam = {}
+
+def initialize_app():
+    global app_ready, podteam
+    # Initialize the database
+    db_helpers.init_db()
+
+    # Set up the scheduler for cleanup
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(db_helpers.cleanup_expired_podcasts, 'interval', hours=24)
+    scheduler.start()
+
+    podteam = {
+        'summarizer': initialize_chain('gpt', summarizer_system_prompt),
+        'outliner': initialize_chain('opus', outliner_system_prompt),
+        'scripter': initialize_chain('gpt', scripter_system_prompt, history=True),
+        'feedback_giver': initialize_chain('opus', feedback_system_prompt, history=True),
+        'casual_editor': initialize_chain('gpt', casual_system_prompt),
+        'multi_summarizer': initialize_chain('opus', multi_summary_system_prompt)
+    }
+
+    app_ready = True
 
 def generate_share_id():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
 
-# @app.route('/audio/<path:filename>')
-# def serve_audio(filename):
-#     return send_from_directory(STATIC_FOLDER, filename)
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
 
 @app.route('/generate_share_link', methods=['POST'])
 def generate_share_link():
@@ -115,8 +118,23 @@ def shared_podcast(share_id):
 def set_cookie_with_samesite(response, name, value, max_age):
     response.set_cookie(name, value, max_age=max_age, samesite='Lax', secure=True, httponly=True)
 
+@app.before_first_request
+def before_first_request():
+    global app_ready
+    if not app_ready:
+        thread = Thread(target=initialize_app)
+        thread.start()
+
 @app.route('/')
-def index():
+def loading():
+    return render_template('loading.html')
+
+@app.route('/check-ready')
+def check_ready():
+    return jsonify({'ready': app_ready})
+
+@app.route('/main')
+def main():
     podcasts_remaining = request.cookies.get('podcasts_remaining')
     if podcasts_remaining is None:
         podcasts_remaining = 5
@@ -229,14 +247,14 @@ def create_podcast(session_id, pdfs, theme):
         summaries = []
         for i, text in enumerate(texts):
             socketio.emit('update', {'data': f"🔬 research team is summarizing article {i+1}",'session_id': session_id})
-            summary = conversation_engine(summarizer, text)
+            summary = conversation_engine(podteam['summarizer'], text)
             summaries.append(summary)
         
         # Create multi-article summary if necessary
         if len(summaries) > 1:
             socketio.emit('update', {'data': "🔗 research team is finding connections",'session_id': session_id})
             joined_summaries = f"{theme}\n" + "\n".join(summaries) if theme else "\n".join(summaries)
-            final_summary = conversation_engine(multi_summarizer, joined_summaries)
+            final_summary = conversation_engine(podteam['multi_summarizer'], joined_summaries)
         else:
             final_summary = summaries[0]
         
@@ -245,49 +263,48 @@ def create_podcast(session_id, pdfs, theme):
         
         # Create outline
         socketio.emit('update', {'data': "✍️ writers creating outline",'session_id': session_id})
-        outline = conversation_engine(outliner, f"{theme}\nARTICLE(s):\n {final_text}\nSUMMARY:\n {final_summary}")
+        outline = conversation_engine(podteam['outliner'], f"{theme}\nARTICLE(s):\n {final_text}\nSUMMARY:\n {final_summary}")
         
         # Create first script
         socketio.emit('update', {'data': "✍️ writers creating first draft script",'session_id': session_id})
-        script = conversation_engine(scripter, f"ARTICLE(s) EXCERPT(s):\n {final_truncated_text}\nOUTLINE:\n {outline}")
+        script = conversation_engine(podteam['scripter'], f"ARTICLE(s) EXCERPT(s):\n {final_truncated_text}\nOUTLINE:\n {outline}")
         
         # Revise script
         for i in range(1):  # Adjust the number of revisions as needed
             socketio.emit('update', {'data': f"👓 editors revising draft",'session_id': session_id})
-            feedback = conversation_engine(feedback_giver, f"{theme}\nSCRIPT:\n {script}")
-            script = conversation_engine(scripter, f"You received feedback. Here is the feedback:\n {feedback}\n{theme}")
+            feedback = conversation_engine(podteam['feedback_giver'], f"{theme}\nSCRIPT:\n {script}")
+            script = conversation_engine(podteam['scripter'], f"You received feedback. Here is the feedback:\n {feedback}\n{theme}")
         
         # Create casual script
         socketio.emit('update', {'data': "👨‍🏫 making script more human",'session_id': session_id})
-        casual_script = conversation_engine(casual_editor, script)
+        casual_script = conversation_engine(podteam['casual_editor'], script)
 
         # Format the script
         formatted_script = format_script(casual_script)
         
         # Create audio (you'll need to implement this part based on your existing code)
         socketio.emit('update', {'data': "🎙️ recording the pod",'session_id': session_id})
-        # When the podcast is created:
         audio_path = create_podcast_from_script(casual_script, TEMP_FOLDER, STATIC_FOLDER, app.root_path)
-        audio_filename = os.path.basename(audio_path)
+        
+        if not os.path.exists(audio_path):
+            raise FileNotFoundError(f"Final audio file not created: {audio_path}")
 
+        audio_filename = os.path.basename(audio_path)
         local_audio_path = os.path.join(STATIC_FOLDER, audio_filename)
     
         # Save to GCS and get the blob name
         blob_name = db_helpers.save_shared_podcast(session_id, local_audio_path, formatted_script)
-        
+
         # Emit the complete event with the share_id instead of a full URL
         socketio.emit('complete', {
-        'share_id': session_id,
-        'script': formatted_script,
-        'session_id': session_id,
-        'blob_name': blob_name
+            'share_id': session_id,
+            'script': formatted_script,
+            'session_id': session_id,
+            'blob_name': blob_name
         })
 
-        # Delete the local file if needed
-        os.remove(local_audio_path)
-
     except Exception as e:
-        logging.error(f"Error in create_podcast: {str(e)}")
+        print(f"Error in create_podcast: {str(e)}")
         socketio.emit('error', {'data': str(e), 'session_id': session_id})
 
 @app.route('/generate_blog', methods=['POST'])

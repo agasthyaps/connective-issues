@@ -14,6 +14,8 @@ from elevenlabs.client import ElevenLabs
 import os
 import random
 import logging
+import tempfile
+
 
 # testing flag
 TESTING = False
@@ -150,16 +152,21 @@ def text_to_speech(message,filepath,cast):
     return filepath
 
 def concatenate_audio(file_list, output_file, app_root):
-    logging.info(f"Starting audio concatenation. Files to process: {len(file_list)}")
-
-    # Initialize an empty AudioSegment
+    print(f"Starting audio concatenation. Files to process: {len(file_list)}")
+    
     combined = AudioSegment.empty()
 
     for file in file_list:
-        # Load the audio file
-        sound = AudioSegment.from_file(file)
-        # Append it to the combined AudioSegment
-        combined += sound
+        if not os.path.exists(file):
+            print(f"File not found: {file}")
+            continue
+        
+        try:
+            sound = AudioSegment.from_file(file, format="wav")
+            combined += sound
+        except Exception as e:
+            print(f"Error processing {file}: {str(e)}")
+            continue
 
     # Load the intro/outro file
     intro_outro_path = os.path.join(app_root, 'static', 'introoutro.wav')
@@ -178,20 +185,22 @@ def concatenate_audio(file_list, output_file, app_root):
     # Prepare intro
     intro_outro = intro_outro.fade_out(duration=fade_duration)
 
-    # prepare middle
-    middle = middle.fade_in(duration=fade_duration)
-    middle = middle.fade_out(duration=fade_duration)
 
     # Overlay intro at the beginning
     combined = combined.overlay(intro_outro, position=0)
 
-    # Overlay middle
-    middle_position = len(combined)//2 - 15000
-    combined = combined.overlay(middle, position=middle_position)
-
     # Overlay outro at the end
     outro_position = len(combined) - len(intro_outro)
     combined = combined.overlay(intro_outro, position=outro_position)
+
+    # Add middle if the podcast is longer than 4.5 minutes
+    if len(combined) > 4.5 * 60 * 1000:
+        # prepare middle
+        middle = middle.fade_in(duration=fade_duration)
+        middle = middle.fade_out(duration=fade_duration)
+         # Overlay middle
+        middle_position = len(combined)//2 - 15000
+        combined = combined.overlay(middle, position=middle_position)
 
     # Export the final combined audio file
     combined.export(output_file, format="mp3")
@@ -218,22 +227,21 @@ def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root):
     file_list = []
     print(f"Creating podcast with {len(processed_script)} turns.")
     print("synthesizing audio files")
-    for i, turn in enumerate(processed_script):
-        print(f"synthesizing turn {i}")
-        file = text_to_speech(turn, os.path.join(temp_dir, f"{turn['speaker']}_{i}.wav"),cast)
-        file_list.append(file)
+    
+    with tempfile.TemporaryDirectory() as temp_audio_dir:
+        for i, turn in enumerate(processed_script):
+            print(f"synthesizing turn {i}")
+            temp_file = os.path.join(temp_audio_dir, f"{turn['speaker']}_{i}.wav")
+            file = text_to_speech(turn, temp_file, cast)
+            file_list.append(file)
 
-    output_file = os.path.join(static_dir, podcast_name)
-    try:
-        final_pod = concatenate_audio(file_list, output_file, app_root)
-    finally:
-        # Clean up temporary files after concatenation
-        for file in file_list:
-            try:
-                if os.path.exists(file):
-                    os.remove(file)
-            except Exception as e:
-                logging.error(f"Error removing temporary file {file}: {str(e)}")
+        output_file = os.path.join(static_dir, podcast_name)
+        try:
+            final_pod = concatenate_audio(file_list, output_file, app_root)
+            print(f"Successfully created final podcast: {final_pod}")
+        except Exception as e:
+            print(f"Error during audio concatenation: {str(e)}")
+            raise
 
     return final_pod
 
