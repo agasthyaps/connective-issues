@@ -80,7 +80,7 @@ def generate_share_link():
 
 @app.route('/audio/<share_id>')
 def serve_audio(share_id):
-    podcast = db_helpers.get_shared_podcast(share_id)
+    podcast = get_shared_podcast(share_id)
     if podcast:
         storage_client = storage.Client()
         bucket = storage_client.bucket(os.environ.get('GCS_BUCKET_NAME'))
@@ -139,153 +139,153 @@ def upload():
     
     session_id = str(uuid.uuid4())  # Generate a unique session ID
 
-    if TESTING:
-        print("Testing mode: returning dummy data")
+    # if TESTING:
+    #     print("Testing mode: returning dummy data")
+    #     socketio.start_background_task(create_podcast, session_id, pdfs, theme)
+    #     return jsonify({'message': 'Podcast creation started', 'session_id': session_id})
+    # else:
+    print("we shouldn't be here")
+    try:
+        for i in range(4):  # Allow up to 4 PDFs
+            if f'pdf_{i}' in request.files:
+                file = request.files[f'pdf_{i}']
+                if file.filename != '':
+                    filename = secure_filename(file.filename)
+                    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    file.save(filepath)
+                    pdfs.append({
+                        'pdf': filepath,
+                        'kind': request.form[f'kind_{i}']
+                    })
+                    uploaded_files.append(filepath)
+
+        # Store uploaded files in server-side storage
+        server_side_storage[session_id] = {'uploaded_files': uploaded_files}
+
+        # Start the podcast creation process in a background task
         socketio.start_background_task(create_podcast, session_id, pdfs, theme)
-        return jsonify({'message': 'Podcast creation started', 'session_id': session_id})
-    else:
-        print("we shouldn't be here")
-        try:
-            for i in range(4):  # Allow up to 4 PDFs
-                if f'pdf_{i}' in request.files:
-                    file = request.files[f'pdf_{i}']
-                    if file.filename != '':
-                        filename = secure_filename(file.filename)
-                        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                        file.save(filepath)
-                        pdfs.append({
-                            'pdf': filepath,
-                            'kind': request.form[f'kind_{i}']
-                        })
-                        uploaded_files.append(filepath)
 
-            # Store uploaded files in server-side storage
-            server_side_storage[session_id] = {'uploaded_files': uploaded_files}
-
-            # Start the podcast creation process in a background task
-            socketio.start_background_task(create_podcast, session_id, pdfs, theme)
-
-            podcasts_remaining -= 1
-            response = jsonify({
-                'message': 'Podcast creation started', 
-                'session_id': session_id, 
-                'podcasts_remaining': podcasts_remaining
-            })
-            set_cookie_with_samesite(response, 'podcasts_remaining', str(podcasts_remaining), max_age=15*60)
-            return response
-        except Exception as e:
-            print(f"Error in upload: {str(e)}")
-            return jsonify({'error': 'An error occurred during file upload'}), 500
+        podcasts_remaining -= 1
+        response = jsonify({
+            'message': 'Podcast creation started', 
+            'session_id': session_id, 
+            'podcasts_remaining': podcasts_remaining
+        })
+        set_cookie_with_samesite(response, 'podcasts_remaining', str(podcasts_remaining), max_age=15*60)
+        return response
+    except Exception as e:
+        print(f"Error in upload: {str(e)}")
+        return jsonify({'error': 'An error occurred during file upload'}), 500
     
 def create_podcast(session_id, pdfs, theme):
     global TESTING
-    if TESTING:
-        print(f"Creating podcast for session ID: {session_id}")
-        time.sleep(1)
-        print("Testing mode: CREATE PODCAST")
+    # if TESTING:
+    #     print(f"Creating podcast for session ID: {session_id}")
+    #     time.sleep(1)
+    #     print("Testing mode: CREATE PODCAST")
+    #     socketio.emit('complete', {
+    #         'audio_path': f'podcast_179.mp3',
+    #         'script': test_post,
+    #         'session_id': session_id
+    #     })
+    # else:
+    addl_prompt = ""
+    if theme:
+        addl_prompt = f"As you read and think, keep in mind that the podcast episode MUST be about {theme}."
+    try:
+        socketio.emit('update', {'data': 'Podcast production team started!','session_id': session_id})
+        
+        # Extract text from PDFs
+        texts = []
+        truncated_texts = []
+        for file in pdfs:
+            socketio.emit('update', {'data': f"📚 reading through {os.path.basename(file['pdf'])}",'session_id': session_id})
+            text = extract_text_from_pdf(file['pdf'])
+            if file['kind'] =='me':
+                addl_prompt = addl_prompt + "This piece was submitted by a listener. It may be an article, notes, a brainstorm, or something else entirely. Treat their thoughts seriously and try to make sense of them, especially in the context of any theme you may be focusing on."
+            processed_text = addl_prompt + text
+            truncated_text = text[:15000]
+            texts.append(processed_text)
+            truncated_texts.append(truncated_text)
+
+        # Store the processed texts and theme in the session storage
+        if session_id in server_side_storage:
+            server_side_storage[session_id]['processed_texts'] = texts
+            server_side_storage[session_id]['theme'] = theme
+        else:
+            server_side_storage[session_id] = {
+                'processed_texts': texts,
+                'theme': theme
+            }
+        
+        # Summarize articles
+        summaries = []
+        for i, text in enumerate(texts):
+            socketio.emit('update', {'data': f"🔬 research team is summarizing article {i+1}",'session_id': session_id})
+            summary = conversation_engine(summarizer, text)
+            summaries.append(summary)
+        
+        # Create multi-article summary if necessary
+        if len(summaries) > 1:
+            socketio.emit('update', {'data': "🔗 research team is finding connections",'session_id': session_id})
+            joined_summaries = f"{theme}\n" + "\n".join(summaries) if theme else "\n".join(summaries)
+            final_summary = conversation_engine(multi_summarizer, joined_summaries)
+        else:
+            final_summary = summaries[0]
+        
+        final_text = "\n".join(texts)
+        final_truncated_text = "\n".join(truncated_texts)
+        
+        # Create outline
+        socketio.emit('update', {'data': "✍️ writers creating outline",'session_id': session_id})
+        outline = conversation_engine(outliner, f"{theme}\nARTICLE(s):\n {final_text}\nSUMMARY:\n {final_summary}")
+        
+        # Create first script
+        socketio.emit('update', {'data': "✍️ writers creating first draft script",'session_id': session_id})
+        script = conversation_engine(scripter, f"ARTICLE(s) EXCERPT(s):\n {final_truncated_text}\nOUTLINE:\n {outline}")
+        
+        # Revise script
+        for i in range(1):  # Adjust the number of revisions as needed
+            socketio.emit('update', {'data': f"👓 editors revising draft",'session_id': session_id})
+            feedback = conversation_engine(feedback_giver, f"{theme}\nSCRIPT:\n {script}")
+            script = conversation_engine(scripter, f"You received feedback. Here is the feedback:\n {feedback}\n{theme}")
+        
+        # Create casual script
+        socketio.emit('update', {'data': "👨‍🏫 making script more human",'session_id': session_id})
+        casual_script = conversation_engine(casual_editor, script)
+
+        # Format the script
+        formatted_script = format_script(casual_script)
+        
+        # Create audio (you'll need to implement this part based on your existing code)
+        socketio.emit('update', {'data': "🎙️ recording the pod",'session_id': session_id})
+        # When the podcast is created:
+        audio_path = create_podcast_from_script(casual_script, TEMP_FOLDER, STATIC_FOLDER, app.root_path)
+        audio_filename = os.path.basename(audio_path)
+
+        local_audio_path = os.path.join(STATIC_FOLDER, audio_filename)
+
+        # Immediately save to GCS and get the blob name
+        gcs_blob_name = db_helpers.save_shared_podcast(session_id, local_audio_path, formatted_script)
+        
+        # Update the server-side storage with the GCS blob name
+        server_side_storage[session_id]['gcs_blob_name'] = gcs_blob_name
+        
+        # Generate a signed URL for immediate playback
+        podcast_data = db_helpers.get_shared_podcast(session_id)
+        
+        # Emit the signed URL instead of the local path
         socketio.emit('complete', {
-            'audio_path': f'podcast_179.mp3',
-            'script': test_post,
+            'audio_path': podcast_data['audio_url'],
+            'script': formatted_script,
             'session_id': session_id
         })
-    else:
-        addl_prompt = ""
-        if theme:
-            addl_prompt = f"As you read and think, keep in mind that the podcast episode MUST be about {theme}."
-        try:
-            socketio.emit('update', {'data': 'Podcast production team started!','session_id': session_id})
-            
-            # Extract text from PDFs
-            texts = []
-            truncated_texts = []
-            for file in pdfs:
-                socketio.emit('update', {'data': f"📚 reading through {os.path.basename(file['pdf'])}",'session_id': session_id})
-                text = extract_text_from_pdf(file['pdf'])
-                if file['kind'] =='me':
-                    addl_prompt = addl_prompt + "This piece was submitted by a listener. It may be an article, notes, a brainstorm, or something else entirely. Treat their thoughts seriously and try to make sense of them, especially in the context of any theme you may be focusing on."
-                processed_text = addl_prompt + text
-                truncated_text = text[:15000]
-                texts.append(processed_text)
-                truncated_texts.append(truncated_text)
 
-            # Store the processed texts and theme in the session storage
-            if session_id in server_side_storage:
-                server_side_storage[session_id]['processed_texts'] = texts
-                server_side_storage[session_id]['theme'] = theme
-            else:
-                server_side_storage[session_id] = {
-                    'processed_texts': texts,
-                    'theme': theme
-                }
-            
-            # Summarize articles
-            summaries = []
-            for i, text in enumerate(texts):
-                socketio.emit('update', {'data': f"🔬 research team is summarizing article {i+1}",'session_id': session_id})
-                summary = conversation_engine(summarizer, text)
-                summaries.append(summary)
-            
-            # Create multi-article summary if necessary
-            if len(summaries) > 1:
-                socketio.emit('update', {'data': "🔗 research team is finding connections",'session_id': session_id})
-                joined_summaries = f"{theme}\n" + "\n".join(summaries) if theme else "\n".join(summaries)
-                final_summary = conversation_engine(multi_summarizer, joined_summaries)
-            else:
-                final_summary = summaries[0]
-            
-            final_text = "\n".join(texts)
-            final_truncated_text = "\n".join(truncated_texts)
-            
-            # Create outline
-            socketio.emit('update', {'data': "✍️ writers creating outline",'session_id': session_id})
-            outline = conversation_engine(outliner, f"{theme}\nARTICLE(s):\n {final_text}\nSUMMARY:\n {final_summary}")
-            
-            # Create first script
-            socketio.emit('update', {'data': "✍️ writers creating first draft script",'session_id': session_id})
-            script = conversation_engine(scripter, f"ARTICLE(s) EXCERPT(s):\n {final_truncated_text}\nOUTLINE:\n {outline}")
-            
-            # Revise script
-            for i in range(1):  # Adjust the number of revisions as needed
-                socketio.emit('update', {'data': f"👓 editors revising draft",'session_id': session_id})
-                feedback = conversation_engine(feedback_giver, f"{theme}\nSCRIPT:\n {script}")
-                script = conversation_engine(scripter, f"You received feedback. Here is the feedback:\n {feedback}\n{theme}")
-            
-            # Create casual script
-            socketio.emit('update', {'data': "👨‍🏫 making script more human",'session_id': session_id})
-            casual_script = conversation_engine(casual_editor, script)
+        # Delete the local file
+        os.remove(local_audio_path)
 
-            # Format the script
-            formatted_script = format_script(casual_script)
-            
-            # Create audio (you'll need to implement this part based on your existing code)
-            socketio.emit('update', {'data': "🎙️ recording the pod",'session_id': session_id})
-            # When the podcast is created:
-            audio_path = create_podcast_from_script(casual_script, TEMP_FOLDER, STATIC_FOLDER, app.root_path)
-            audio_filename = os.path.basename(audio_path)
-
-            local_audio_path = os.path.join(STATIC_FOLDER, audio_filename)
-    
-            # Immediately save to GCS and get the blob name
-            gcs_blob_name = db_helpers.save_shared_podcast(session_id, local_audio_path, formatted_script)
-            
-            # Update the server-side storage with the GCS blob name
-            server_side_storage[session_id]['gcs_blob_name'] = gcs_blob_name
-            
-            # Generate a signed URL for immediate playback
-            podcast_data = db_helpers.get_shared_podcast(session_id)
-            
-            # Emit the signed URL instead of the local path
-            socketio.emit('complete', {
-                'audio_path': podcast_data['audio_url'],
-                'script': formatted_script,
-                'session_id': session_id
-            })
-
-            # Delete the local file
-            os.remove(local_audio_path)
-
-        except Exception as e:
-            socketio.emit('error', {'data': str(e), 'session_id': session_id})
+    except Exception as e:
+        socketio.emit('error', {'data': str(e), 'session_id': session_id})
 
 @app.route('/generate_blog', methods=['POST'])
 def generate_blog():
