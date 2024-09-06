@@ -66,13 +66,16 @@ def generate_share_id():
 def generate_share_link():
     try:
         data = request.json
-        session_id = data.get('session_id')
+        share_id = data.get('share_id')
         
-        if session_id not in server_side_storage:
-            raise ValueError("Invalid session ID")
+        if not share_id:
+            raise ValueError("Invalid share ID")
         
-        # The podcast is already saved in GCS, so we just need to generate the share URL
-        share_url = f'/shared/{session_id}'
+        podcast = db_helpers.get_shared_podcast(share_id)
+        if not podcast:
+            raise ValueError("Podcast not found")
+        
+        share_url = f'/shared/{share_id}'
         
         return jsonify({'share_url': share_url}), 200
     except Exception as e:
@@ -270,9 +273,10 @@ def create_podcast(session_id, pdfs, theme):
         
         # Emit the complete event with the share_id instead of a full URL
         socketio.emit('complete', {
-            'share_id': session_id,
-            'script': formatted_script,
-            'session_id': session_id
+        'share_id': session_id,
+        'script': formatted_script,
+        'session_id': session_id,
+        'blob_name': blob_name
         })
 
         # Delete the local file if needed

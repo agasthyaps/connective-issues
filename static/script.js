@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const blogLoadingAnimation = document.getElementById('blogLoadingAnimation');
 
     let currentSessionId = null;
+    let currentShareId = null;
     let pdfCount = 1;
     let podcastCreated = false;
     const sharePodcastBtn = document.getElementById('sharePodcast');
@@ -53,10 +54,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 
     function generateShareLink() {
+        if (!currentShareId) {
+            console.error('No share ID available');
+            alert('Unable to generate share link. Please try again.');
+            return;
+        }
+    
         const audioElement = document.getElementById('podcastAudio');
-        const audioSrc = audioElement.getAttribute('src');
+        const audioSrc = audioElement.src;
         const transcript = finalScript.innerHTML;
     
+        console.log('Generating share link for:', currentShareId);
         console.log('Audio src:', audioSrc);
     
         fetch('/generate_share_link', {
@@ -65,6 +73,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                share_id: currentShareId,
                 audio_src: audioSrc,
                 transcript: transcript
             }),
@@ -401,6 +410,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         socket.on('complete', function(data) {
             if (data.session_id === sessionId) {
                 currentSessionId = data.session_id;
+                currentShareId = data.share_id;  // Store the share_id
                 hideElement(loadingAnimation);
                 hideElement(messages);
                 showElement(result);
