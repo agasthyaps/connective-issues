@@ -16,3 +16,4 @@ gevent-websocket
 langchain-community
 google-cloud-storage==2.9.0
 apscheduler
+PyMuPDF

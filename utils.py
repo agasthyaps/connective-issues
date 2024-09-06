@@ -8,13 +8,13 @@ from langchain_anthropic import ChatAnthropic
 from langchain_groq import ChatGroq
 from openai import OpenAI
 from pydub import AudioSegment
-import pdfplumber
 from elevenlabs import VoiceSettings
 from elevenlabs.client import ElevenLabs
 import os
 import random
 import logging
 import tempfile
+import fitz
 
 
 # testing flag
@@ -28,15 +28,15 @@ eleven_client = ElevenLabs(
 def extract_text_from_pdf(filepath):
     extracted_text = ""
 
-    # Extract text using pdfplumber
+    # Extract text using PyMuPDF
     try:
-        with pdfplumber.open(filepath) as pdf:
-            for page in pdf.pages:
-                text = page.extract_text()
+        with fitz.open(filepath) as doc:
+            for page in doc:
+                text = page.get_text()
                 if text:
                     extracted_text += text
     except Exception as e:
-        print(f"Error during text extraction with pdfplumber: {e}")
+        print(f"Error during text extraction with PyMuPDF: {e}")
 
     return extracted_text
 
