@@ -267,18 +267,15 @@ def create_podcast(session_id, pdfs, theme):
     
         # Save to GCS and get the blob name
         blob_name = db_helpers.save_shared_podcast(session_id, local_audio_path, formatted_script)
-    
-        # Generate a URL for the audio file
-        audio_url = url_for('serve_audio', share_id=session_id, _external=True)
         
-        # Emit the signed URL instead of the local path
+        # Emit the complete event with the share_id instead of a full URL
         socketio.emit('complete', {
-            'audio_path': audio_url,
+            'share_id': session_id,
             'script': formatted_script,
             'session_id': session_id
         })
 
-        # Delete the local file
+        # Delete the local file if needed
         os.remove(local_audio_path)
 
     except Exception as e:

@@ -40,11 +40,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // Ensure this function is called when the podcast is created
     function updateAudioPlayer(audioPath) {
         const audioElement = document.getElementById('podcastAudio');
-        audioElement.src = audioPath;
-        
-        const downloadButton = document.getElementById('downloadPodcast');
-        if (downloadButton) {
-            downloadButton.href = audioPath;
+        if (audioElement) {
+            audioElement.src = audioPath;
+            
+            const downloadButton = document.getElementById('downloadPodcast');
+            if (downloadButton) {
+                downloadButton.href = audioPath;
+            }
+        } else {
+            console.error('Audio element not found');
         }
     }
 
@@ -402,7 +406,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 showElement(result);
                 setContentLayout(false);
                 hideElement(comparisonSection);
-                updateAudioPlayer(data.audio_path);
+                
+                // Construct the audio URL
+                const audioPath = `/audio/${data.share_id}`;
+                console.log('Updating audio player with:', audioPath);
+                updateAudioPlayer(audioPath);
 
                 const formattedScript = data.script.replace(/\*\*(alex|jamie):\*\*/g, '<span class="speaker">$1:</span>');
                 finalScript.innerHTML = formattedScript.replace(/\n/g, '<br>');
