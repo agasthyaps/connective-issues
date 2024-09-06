@@ -22,10 +22,23 @@
             cursor: pointer;
             font-family: 'EB Garamond', serif;
             font-size: 1rem;
-            margin-left: 10px; /* Add some space between the download and help me test buttons */
+        }
+        #downloadPodcast {
+            background-color: #bd5bcc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'EB Garamond', serif;
+            font-size: 1rem;
         }
         .audio-player {
             margin: 25px 0;
+        }
+        #buttons {
+            justify-content: space-between;
+            display: flex;
         }
     </style>
 </head>
@@ -41,14 +54,21 @@
             </audio>
         </div>
         <div id="buttons">
-            <a href="{{ audio_url }}" download class="downloadPodcast" style="margin:25px;">Download Podcast</a>
-            <a href="https://connective-issues.io" id="newPodcast" style="font-weight:800;">Make Your Own</a>
+            <div>
+                <a href="{{ audio_url }}" download id="downloadPodcast" style="margin:25px;">Download Podcast</a>
+            </div>
+            <div>
+                <a href="https://connective-issues.io" id="newPodcast" style="font-weight:800;">Make Your Own</a>
+            </div>
         </div>
         <div style="padding-bottom:25px;">
                 <h4>Podcast Transcript:</h4>
                 <div id="finalScriptShare">{{ transcript|safe }}</div>
     </div>
-
-    <a href="https://actually-useful.xyz" target="_blank" style="color: rgb(142, 142, 142); font-weight:800;"> <strong><i>actually</i></strong> useful.</a>    
+    <footer>
+        <div style="text-align: right;">
+            <p style="opacity: 0.5;"><a href="https://linkedin.com/in/agasthyaps" target="_blank" style="color: rgb(142, 142, 142);"> <strong>agasthya shenoy </strong></a>is trying to be<a href="https://actually-useful.xyz" target="_blank" style="color: rgb(142, 142, 142);"> <strong><i> actually</i></strong> useful. </a></p>
+        </div>
+    </footer>
 </body>
 </html>
