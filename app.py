@@ -10,7 +10,7 @@ import csv
 import random
 from google.cloud import storage
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 import db_helpers
 import string
@@ -19,9 +19,13 @@ import tempfile
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')  # Use environment variable in production
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=20)  # Increase to 20 minutes
 socketio = SocketIO(app)
 logging.basicConfig(level=logging.DEBUG)
 
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
 
 # Initialize the database when the app starts
 with app.app_context():
@@ -283,6 +287,7 @@ def create_podcast(session_id, pdfs, theme):
         os.remove(local_audio_path)
 
     except Exception as e:
+        logging.error(f"Error in create_podcast: {str(e)}")
         socketio.emit('error', {'data': str(e), 'session_id': session_id})
 
 @app.route('/generate_blog', methods=['POST'])

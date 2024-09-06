@@ -13,6 +13,7 @@ from elevenlabs import VoiceSettings
 from elevenlabs.client import ElevenLabs
 import os
 import random
+import logging
 
 # testing flag
 TESTING = False
@@ -148,10 +149,9 @@ def text_to_speech(message,filepath,cast):
     # Return the path of the saved audio file
     return filepath
 
-from pydub import AudioSegment
-import os
-
 def concatenate_audio(file_list, output_file, app_root):
+    logging.info(f"Starting audio concatenation. Files to process: {len(file_list)}")
+
     # Initialize an empty AudioSegment
     combined = AudioSegment.empty()
 
@@ -200,6 +200,8 @@ def concatenate_audio(file_list, output_file, app_root):
     for file in file_list:
         os.remove(file)
 
+    logging.info(f"Audio concatenation completed.")
+
     return output_file
 
 def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root):
@@ -222,6 +224,16 @@ def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root):
         file_list.append(file)
 
     output_file = os.path.join(static_dir, podcast_name)
-    final_pod = concatenate_audio(file_list, output_file, app_root)
+    try:
+        final_pod = concatenate_audio(file_list, output_file, app_root)
+    finally:
+        # Clean up temporary files after concatenation
+        for file in file_list:
+            try:
+                if os.path.exists(file):
+                    os.remove(file)
+            except Exception as e:
+                logging.error(f"Error removing temporary file {file}: {str(e)}")
+
     return final_pod
 
