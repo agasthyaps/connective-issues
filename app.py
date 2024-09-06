@@ -80,7 +80,7 @@ def generate_share_link():
 
 @app.route('/audio/<share_id>')
 def serve_audio(share_id):
-    podcast = get_shared_podcast(share_id)
+    podcast = db_helpers.get_shared_podcast(share_id)
     if podcast:
         storage_client = storage.Client()
         bucket = storage_client.bucket(os.environ.get('GCS_BUCKET_NAME'))
