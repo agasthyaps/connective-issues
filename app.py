@@ -1,5 +1,5 @@
 import uuid
-from flask import Flask, render_template, request, jsonify, send_from_directory, session, make_response, url_for
+from flask import Flask, render_template, request, jsonify, send_from_directory, session, make_response, url_for, send_file
 from flask_socketio import SocketIO, emit, disconnect
 from werkzeug.utils import secure_filename
 import os
@@ -15,7 +15,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import db_helpers
 import string
 import logging
-
+import tempfile
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')  # Use environment variable in production
@@ -58,9 +58,9 @@ multi_summarizer = initialize_chain('opus', multi_summary_system_prompt)
 def generate_share_id():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
 
-@app.route('/audio/<path:filename>')
-def serve_audio(filename):
-    return send_from_directory(STATIC_FOLDER, filename)
+# @app.route('/audio/<path:filename>')
+# def serve_audio(filename):
+#     return send_from_directory(STATIC_FOLDER, filename)
 
 @app.route('/generate_share_link', methods=['POST'])
 def generate_share_link():
@@ -78,12 +78,29 @@ def generate_share_link():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/audio/<share_id>')
+def serve_audio(share_id):
+    podcast = db_helpers.get_shared_podcast(share_id)
+    if podcast:
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(os.environ.get('GCS_BUCKET_NAME'))
+        blob = bucket.blob(podcast['gcs_blob_name'])
+        
+        # Download the file to a temporary location
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        blob.download_to_filename(temp_file.name)
+        
+        return send_file(temp_file.name, mimetype='audio/mpeg', as_attachment=True, download_name=f"{share_id}.mp3")
+    else:
+        return "Podcast not found or has expired", 404
+
 @app.route('/shared/<share_id>')
 def shared_podcast(share_id):
     podcast = db_helpers.get_shared_podcast(share_id)
     if podcast:
+        audio_url = url_for('serve_audio', share_id=share_id, _external=True)
         return render_template('shared_podcast.html', 
-                               audio_url=podcast['audio_url'], 
+                               audio_url=audio_url, 
                                transcript=podcast['transcript'])
     else:
         return "Podcast not found or has expired", 404
