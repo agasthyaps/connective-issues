@@ -162,7 +162,7 @@ def concatenate_audio(file_list, output_file, app_root):
             continue
         
         try:
-            sound = AudioSegment.from_file(file, format="wav")
+            sound = AudioSegment.from_file(file)
             logging.info(f"Processed file: {file}, duration: {len(sound)}ms")
             combined += sound
         except Exception as e:
