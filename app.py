@@ -6,7 +6,6 @@ import os
 import time
 from prompts import *
 from utils import *
-import csv
 import random
 from google.cloud import storage
 import json
@@ -54,7 +53,7 @@ def initialize_app():
     podteam = {
         'summarizer': initialize_chain('gpt', summarizer_system_prompt),
         'outliner': initialize_chain('opus', outliner_system_prompt),
-        'scripter': initialize_chain('gpt', scripter_system_prompt, history=True),
+        'scripter': initialize_chain('4o', scripter_system_prompt, history=True),
         'feedback_giver': initialize_chain('opus', feedback_system_prompt, history=True),
         'casual_editor': initialize_chain('gpt', casual_system_prompt),
         'multi_summarizer': initialize_chain('opus', multi_summary_system_prompt)

@@ -55,6 +55,21 @@ Format the script like this:
 - each line of dialogue MUST be attributed to either the host or the expert.
 - the speaker of each line MUST be denoted by <host>TEXT</host> or <expert>TEXT</expert>.
 - the script should be in conversational English, with contractions, sentence fragments, and other conversational elements.
+- speakers should speak realistically, usually only expressing one idea or thought at a time.
+
+EXAMPLE:
+<host>Wow, so it seems like gravity is pretty important, huh?</host>
+<expert>Yes, it's fundamental.</expert>
+<host>And how does that relate to the speed of light?</host>
+<expert>It's actually quite interesting how it relates to the speed of light[...]</expert>
+
+NON-EXAMPLE:
+<host>Wow, so it seems like gravity is pretty important, huh? How does that relate to the speed of light?</host>
+<expert>Yes, gravity is a fundamental force in the universe. It's actually quite interesting how it relates to the speed of light[...]</expert>
+
+note how in the example, there is more of a back and forth. in the non-example, the host asks two questions in a row, which might happen, but the expert's response in reality wouldn't fully answer the first question before moving on to the second. It's more likely that the expert would interject with a short answer to the host's maybe-rhetorical question before allowing the host to move on to the second question.
+the general rule: it should read like a transcript of an actual conversation, not a script.
+
 
 # ADDITIONAL NOTES
 You should only output the script itself, not any additional information.
