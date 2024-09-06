@@ -264,19 +264,16 @@ def create_podcast(session_id, pdfs, theme):
         audio_filename = os.path.basename(audio_path)
 
         local_audio_path = os.path.join(STATIC_FOLDER, audio_filename)
-
-        # Immediately save to GCS and get the blob name
-        gcs_blob_name = db_helpers.save_shared_podcast(session_id, local_audio_path, formatted_script)
-        
-        # Update the server-side storage with the GCS blob name
-        server_side_storage[session_id]['gcs_blob_name'] = gcs_blob_name
-        
-        # Generate a signed URL for immediate playback
-        podcast_data = db_helpers.get_shared_podcast(session_id)
+    
+        # Save to GCS and get the blob name
+        blob_name = db_helpers.save_shared_podcast(session_id, local_audio_path, formatted_script)
+    
+        # Generate a URL for the audio file
+        audio_url = url_for('serve_audio', share_id=session_id, _external=True)
         
         # Emit the signed URL instead of the local path
         socketio.emit('complete', {
-            'audio_path': podcast_data['audio_url'],
+            'audio_path': audio_url,
             'script': formatted_script,
             'session_id': session_id
         })
