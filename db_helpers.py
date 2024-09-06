@@ -40,9 +40,6 @@ def save_shared_podcast(share_id, local_audio_path, transcript):
     blob_name = f'podcasts/{share_id}/audio.mp3'
     audio_blob = bucket.blob(blob_name)
     audio_blob.upload_from_filename(local_audio_path)
-    
-    # Make the blob publicly readable
-    audio_blob.make_public()
 
     # Save transcript to GCS
     transcript_blob = bucket.blob(f'podcasts/{share_id}/transcript.txt')
@@ -61,9 +58,8 @@ def save_shared_podcast(share_id, local_audio_path, transcript):
 
     return blob_name
 
-
 def get_shared_podcast(share_id):
-    """Retrieve a shared podcast from the database."""
+    """Retrieve a shared podcast from the database and generate a signed URL."""
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute('SELECT * FROM shared_podcasts WHERE id = ?', (share_id,))
@@ -72,9 +68,12 @@ def get_shared_podcast(share_id):
 
     if podcast:
         blob = bucket.blob(podcast[1])  # gcs_blob_name
+        expiration = datetime.utcnow() + timedelta(minutes=60)  # URL expires in 60 minutes
+        signed_url = blob.generate_signed_url(expiration=expiration, version="v4")
+        
         return {
             'id': podcast[0],
-            'audio_url': blob.public_url,
+            'audio_url': signed_url,
             'transcript': podcast[2],
             'expiration_date': podcast[3]
         }
