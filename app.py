@@ -65,58 +65,14 @@ def initialize_app():
 def generate_share_id():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
 
-@app.before_request
-def make_session_permanent():
-    session.permanent = True
-
-@app.route('/generate_share_link', methods=['POST'])
-def generate_share_link():
-    try:
-        data = request.json
-        share_id = data.get('share_id')
-        
-        if not share_id:
-            raise ValueError("Invalid share ID")
-        
-        podcast = db_helpers.get_shared_podcast(share_id)
-        if not podcast:
-            raise ValueError("Podcast not found")
-        
-        share_url = f'/shared/{share_id}'
-        
-        return jsonify({'share_url': share_url}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/audio/<share_id>')
-def serve_audio(share_id):
-    podcast = db_helpers.get_shared_podcast(share_id)
-    if podcast:
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(os.environ.get('GCS_BUCKET_NAME'))
-        blob = bucket.blob(podcast['gcs_blob_name'])
-        
-        # Download the file to a temporary location
-        temp_file = tempfile.NamedTemporaryFile(delete=False)
-        blob.download_to_filename(temp_file.name)
-        
-        return send_file(temp_file.name, mimetype='audio/mpeg', as_attachment=True, download_name=f"{share_id}.mp3")
+@app.route('/get_podcasts_remaining', methods=['GET'])
+def get_podcasts_remaining():
+    podcasts_remaining = request.cookies.get('podcasts_remaining')
+    if podcasts_remaining is None:
+        podcasts_remaining = 5
     else:
-        return "Podcast not found or has expired", 404
-
-@app.route('/shared/<share_id>')
-def shared_podcast(share_id):
-    podcast = db_helpers.get_shared_podcast(share_id)
-    if podcast:
-        audio_url = url_for('serve_audio', share_id=share_id, _external=True)
-        return render_template('shared_podcast.html', 
-                               audio_url=audio_url, 
-                               transcript=podcast['transcript'])
-    else:
-        return "Podcast not found or has expired", 404
-
-def set_cookie_with_samesite(response, name, value, max_age):
-    response.set_cookie(name, value, max_age=max_age, samesite='Lax', secure=True, httponly=True)
+        podcasts_remaining = int(podcasts_remaining)
+    return jsonify({'podcasts_remaining': podcasts_remaining})
 
 @app.before_first_request
 def before_first_request():
@@ -144,6 +100,10 @@ def main():
     else:
         podcasts_remaining = int(podcasts_remaining)
     return render_template('index.html', podcasts_remaining=podcasts_remaining)
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
 
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -389,6 +349,55 @@ def submit_feedback():
     except Exception as e:
         print(f"Error in submit_feedback: {str(e)}")
         return jsonify({'error': 'An error occurred while submitting feedback'}), 500
+    
+@app.route('/generate_share_link', methods=['POST'])
+def generate_share_link():
+    try:
+        data = request.json
+        share_id = data.get('share_id')
+        
+        if not share_id:
+            raise ValueError("Invalid share ID")
+        
+        podcast = db_helpers.get_shared_podcast(share_id)
+        if not podcast:
+            raise ValueError("Podcast not found")
+        
+        share_url = f'/shared/{share_id}'
+        
+        return jsonify({'share_url': share_url}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/audio/<share_id>')
+def serve_audio(share_id):
+    podcast = db_helpers.get_shared_podcast(share_id)
+    if podcast:
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(os.environ.get('GCS_BUCKET_NAME'))
+        blob = bucket.blob(podcast['gcs_blob_name'])
+        
+        # Download the file to a temporary location
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        blob.download_to_filename(temp_file.name)
+        
+        return send_file(temp_file.name, mimetype='audio/mpeg', as_attachment=True, download_name=f"{share_id}.mp3")
+    else:
+        return "Podcast not found or has expired", 404
+
+@app.route('/shared/<share_id>')
+def shared_podcast(share_id):
+    podcast = db_helpers.get_shared_podcast(share_id)
+    if podcast:
+        audio_url = url_for('serve_audio', share_id=share_id, _external=True)
+        return render_template('shared_podcast.html', 
+                               audio_url=audio_url, 
+                               transcript=podcast['transcript'])
+    else:
+        return "Podcast not found or has expired", 404
+
+def set_cookie_with_samesite(response, name, value, max_age):
+    response.set_cookie(name, value, max_age=max_age, samesite='Lax', secure=True, httponly=True)
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -417,12 +426,4 @@ def handle_disconnect():
 
     disconnect()  # Ensure the client is disconnected
 
-@app.route('/get_podcasts_remaining', methods=['GET'])
-def get_podcasts_remaining():
-    podcasts_remaining = request.cookies.get('podcasts_remaining')
-    if podcasts_remaining is None:
-        podcasts_remaining = 5
-    else:
-        podcasts_remaining = int(podcasts_remaining)
-    return jsonify({'podcasts_remaining': podcasts_remaining})
 

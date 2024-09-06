@@ -152,64 +152,79 @@ def text_to_speech(message,filepath,cast):
     return filepath
 
 def concatenate_audio(file_list, output_file, app_root):
-    print(f"Starting audio concatenation. Files to process: {len(file_list)}")
+    logging.info(f"Starting audio concatenation. Files to process: {len(file_list)}")
     
     combined = AudioSegment.empty()
 
     for file in file_list:
         if not os.path.exists(file):
-            print(f"File not found: {file}")
+            logging.warning(f"File not found: {file}")
             continue
         
         try:
             sound = AudioSegment.from_file(file, format="wav")
+            logging.info(f"Processed file: {file}, duration: {len(sound)}ms")
             combined += sound
         except Exception as e:
-            print(f"Error processing {file}: {str(e)}")
+            logging.error(f"Error processing {file}: {str(e)}")
             continue
+
+    logging.info(f"Combined audio duration: {len(combined)}ms")
 
     # Load the intro/outro file
     intro_outro_path = os.path.join(app_root, 'static', 'introoutro.wav')
-    intro_outro = AudioSegment.from_file(intro_outro_path)
+    try:
+        intro_outro = AudioSegment.from_file(intro_outro_path)
+        logging.info(f"Intro/outro duration: {len(intro_outro)}ms")
+    except Exception as e:
+        logging.error(f"Error loading intro/outro: {str(e)}")
+        intro_outro = AudioSegment.silent(duration=1000)  # 1 second of silence as fallback
 
     middle_options = ['middle1.wav','middle3.wav','middle4.wav']
     middle_path = os.path.join(app_root, 'static', random.choice(middle_options))
-    middle = AudioSegment.from_file(middle_path)
+    try:
+        middle = AudioSegment.from_file(middle_path)
+        logging.info(f"Middle audio duration: {len(middle)}ms")
+        middle = middle - 12  # Reduce volume
+    except Exception as e:
+        logging.error(f"Error loading middle audio: {str(e)}")
+        middle = AudioSegment.silent(duration=1000)  # 1 second of silence as fallback
 
-    # set volume of middle lower
-    middle = middle - 12
+    fade_duration = min(8000, len(intro_outro) // 2, len(middle) // 2)  # Ensure fade duration isn't longer than half the audio
+    logging.info(f"Fade duration: {fade_duration}ms")
 
-    # Calculate fade duration (e.g., 3 seconds)
-    fade_duration = 8000  # milliseconds
-
-    # Prepare intro
+    # Prepare intro/outro
     intro_outro = intro_outro.fade_out(duration=fade_duration)
-
 
     # Overlay intro at the beginning
     combined = combined.overlay(intro_outro, position=0)
 
     # Overlay outro at the end
-    outro_position = len(combined) - len(intro_outro)
+    outro_position = max(0, len(combined) - len(intro_outro))
     combined = combined.overlay(intro_outro, position=outro_position)
 
     # Add middle if the podcast is longer than 4.5 minutes
     if len(combined) > 4.5 * 60 * 1000:
-        # prepare middle
-        middle = middle.fade_in(duration=fade_duration)
-        middle = middle.fade_out(duration=fade_duration)
-         # Overlay middle
-        middle_position = len(combined)//2 - 15000
+        middle = middle.fade_in(duration=fade_duration).fade_out(duration=fade_duration)
+        middle_position = max(0, len(combined)//2 - 15000)
         combined = combined.overlay(middle, position=middle_position)
 
+    logging.info(f"Final audio duration: {len(combined)}ms")
+
     # Export the final combined audio file
-    combined.export(output_file, format="mp3")
+    try:
+        combined.export(output_file, format="mp3")
+        logging.info(f"Successfully exported to {output_file}")
+    except Exception as e:
+        logging.error(f"Error exporting audio: {str(e)}")
+        raise
 
     # Clean up temporary files
     for file in file_list:
-        os.remove(file)
-
-    logging.info(f"Audio concatenation completed.")
+        try:
+            os.remove(file)
+        except Exception as e:
+            logging.error(f"Error removing temporary file {file}: {str(e)}")
 
     return output_file
 
