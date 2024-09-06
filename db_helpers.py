@@ -4,6 +4,7 @@ import sqlite3
 from datetime import datetime, timedelta
 import os
 from google.cloud import storage
+from google.auth import default
 import json
 from utils import TESTING
 
@@ -12,7 +13,10 @@ DB_PATH = 'shared_podcasts.db'
 
 if not TESTING:
     bucket_name = os.environ.get('GCS_BUCKET_NAME')
-    storage_client = storage.Client()
+    credentials, project = default()
+    storage_client = storage.Client(credentials=credentials, project=project)
+
+
     bucket = storage_client.bucket(bucket_name)
 
 def init_db():
