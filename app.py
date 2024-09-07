@@ -16,6 +16,8 @@ import string
 import logging
 import tempfile
 from threading import Thread
+from migrate_db import migrate_expiration_dates
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')  # Use environment variable in production
@@ -44,6 +46,9 @@ def initialize_app():
     global app_ready, podteam
     # Initialize the database
     db_helpers.init_db()
+
+    if os.environ.get('RUN_MIGRATION', 'false').lower() == 'true':
+        migrate_expiration_dates()
 
     # Set up the scheduler for cleanup
     scheduler = BackgroundScheduler()

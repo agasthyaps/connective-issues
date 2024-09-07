@@ -49,7 +49,7 @@ def save_shared_podcast(share_id, local_audio_path, transcript):
     # Save reference to SQLite
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    expiration_date = (datetime.now() + timedelta(days=3)).isoformat()
+    expiration_date = (datetime.now() + timedelta(days=3)).timestamp()
     c.execute('''
         INSERT INTO shared_podcasts (id, gcs_blob_name, transcript, expiration_date)
         VALUES (?, ?, ?, ?)
@@ -73,7 +73,7 @@ def get_shared_podcast(share_id):
             'id': podcast[0],
             'gcs_blob_name': podcast[1],
             'transcript': podcast[2],
-            'expiration_date': podcast[3]
+            'expiration_date': float(podcast[3])  # Convert to float if stored as text
         }
     logging.error(f"Podcast with ID {share_id} not found.")
     return None
@@ -82,7 +82,7 @@ def cleanup_expired_podcasts():
     """Remove expired podcasts from the database and GCS."""
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    now = datetime.now().isoformat()
+    now = datetime.now().timestamp()
     c.execute('SELECT id, gcs_blob_name FROM shared_podcasts WHERE expiration_date < ?', (now,))
     expired_podcasts = c.fetchall()
     
