@@ -388,6 +388,7 @@ def serve_audio(share_id):
 def shared_podcast(share_id):
     podcast = db_helpers.get_shared_podcast(share_id)
     if podcast:
+        logging.info(f"Shared podcast found, app.py: {share_id}")
         audio_url = url_for('serve_audio', share_id=share_id, _external=True)
         return render_template('shared_podcast.html', 
                                audio_url=audio_url, 

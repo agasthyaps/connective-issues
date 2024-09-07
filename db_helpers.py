@@ -7,6 +7,7 @@ from google.cloud import storage
 from google.auth import default
 import json
 from utils import TESTING
+import logging
 
 # Database file path
 DB_PATH = 'shared_podcasts.db'
@@ -67,12 +68,14 @@ def get_shared_podcast(share_id):
     conn.close()
 
     if podcast:
+        logging.info(f"Retrieved podcast with ID: {share_id}")
         return {
             'id': podcast[0],
             'gcs_blob_name': podcast[1],
             'transcript': podcast[2],
             'expiration_date': podcast[3]
         }
+    logging.error(f"Podcast with ID {share_id} not found.")
     return None
 
 def cleanup_expired_podcasts():
