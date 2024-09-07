@@ -66,7 +66,7 @@ def get_shared_podcast(share_id):
     podcast = c.fetchone()
     conn.close()
 
-    if podcast and datetime.fromisoformat(podcast[3]) > datetime.now():
+    if podcast:
         return {
             'id': podcast[0],
             'gcs_blob_name': podcast[1],
