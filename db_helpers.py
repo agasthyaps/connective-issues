@@ -13,10 +13,10 @@ DB_PATH = '/tmp/shared_podcasts.db'
 DB_BUCKET = os.environ.get('DB_BUCKET_NAME')
 
 # pod bucket
-bucket = os.environ.get('GCS_BUCKET_NAME')
+POD_BUCKET = os.environ.get('GCS_BUCKET_NAME')
 
 credentials, project = default()
-storage_client = storage.Client(credentials=credentials, project=project)
+# storage_client = storage.Client(credentials=credentials, project=project)
 
 def create_empty_db():
     conn = sqlite3.connect(DB_PATH)
@@ -71,6 +71,8 @@ def init_db():
 def save_shared_podcast(share_id, local_audio_path, transcript):
     """Save a shared podcast to GCS and the database."""
     # Upload audio file to GCS
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(POD_BUCKET)
     blob_name = f'podcasts/{share_id}/audio.mp3'
     audio_blob = bucket.blob(blob_name)
     audio_blob.upload_from_filename(local_audio_path)
@@ -113,15 +115,16 @@ def get_shared_podcast(share_id):
     
     # If not found in the database, try to retrieve directly from GCS
     try:
-        bucket_for_pods = storage_client.bucket(bucket)
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(POD_BUCKET)
         
         # Check if the audio file exists
-        audio_blob = bucket_for_pods.blob(f'podcasts/{share_id}/audio.mp3')
+        audio_blob = bucket.blob(f'podcasts/{share_id}/audio.mp3')
         if not audio_blob.exists():
             raise FileNotFoundError
 
         # Retrieve the transcript
-        transcript_blob = bucket_for_pods.blob(f'podcasts/{share_id}/transcript.txt')
+        transcript_blob = bucket.blob(f'podcasts/{share_id}/transcript.txt')
         transcript = transcript_blob.download_as_text()
 
         # Set an expiration date (3 days from now) for consistency
@@ -141,6 +144,8 @@ def get_shared_podcast(share_id):
 
 def cleanup_expired_podcasts():
     """Remove expired podcasts from the database and GCS."""
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(POD_BUCKET)
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     now = datetime.now().timestamp()
