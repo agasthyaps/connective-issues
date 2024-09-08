@@ -32,46 +32,57 @@
         <h2 id="subtitle">an ai-generated conversation about the <em>things you want to think about.</em></h2>
     
 
-        <div id="pdfInputs">
-          <div class="pdf-input">
-            <div class="file-upload-container">
+        <div id="preproductionZone">
+          <h2>Reading Material</h2>
+          <p><i>Add articles you want to think more about and whatever thoughts you might have floating around.</i></p>
+          
+          <div id="pdfInputs">
+            <div class="pdf-input">
+              <div class="file-upload-container">
+                <div class="tooltip-container">
+                  <label for="pdf_0" class="file-label">Choose file:</label>
+                  <div class="tooltip">
+                    upload something you're thinking about: an article, your notes, etc.
+                  </div>
+                </div>
+                <input type="file" id="pdf_0" name="pdf_0" accept=".pdf" class="file-input">
+              </div>
+              
+              <div class="radio-container">
+                <span class="radio-label">*these are:</span>
+                <div class="tooltip-container">
+                  <div class="radio-group">
+                    <label>
+                      <input type="radio" name="kind_0" value="someone" checked>
+                      someone else's thoughts
+                    </label>
+                    <label>
+                      <input type="radio" name="kind_0" value="my">
+                      my thoughts
+                    </label>
+                  </div>
+                  <div class="tooltip">
+                    let the ai team know where the ideas in this upload are from
+                  </div>
+                </div>
+              </div>
+              
               <div class="tooltip-container">
-                <label for="pdf_0" class="file-label">Choose file:</label>
+                <button type="button" class="add-more-btn">add more</button>
                 <div class="tooltip">
-                  upload something you're thinking about: an article, your notes, etc.
+                  add more content for the convo
                 </div>
               </div>
-              <input type="file" id="pdf_0" name="pdf_0" accept=".pdf" class="file-input">
+              
+              <span class="file-size-error hidden">File too large (max 10MB)</span>
             </div>
-            
-            <div class="radio-container">
-              <span class="radio-label">*these are:</span>
-              <div class="tooltip-container">
-                <div class="radio-group">
-                  <label>
-                    <input type="radio" name="kind_0" value="someone" checked>
-                    someone else's thoughts
-                  </label>
-                  <label>
-                    <input type="radio" name="kind_0" value="my">
-                    my thoughts
-                  </label>
-                </div>
-                <div class="tooltip">
-                  let the ai team know where the ideas in this upload are from
-                </div>
-              </div>
-            </div>
-            
-            <div class="tooltip-container">
-              <button type="button" class="add-more-btn">add more</button>
-              <div class="tooltip">
-                add more content for the convo
-              </div>
-            </div>
-            
-            <span class="file-size-error hidden">File too large (max 10MB)</span>
           </div>
+        
+          <div class="theme-input">
+            <input type="text" id="theme" name="theme" placeholder="What's on your mind? (optional)">
+          </div>
+        
+          <button id="createPodcastBtn">create</button>
         </div>
 
         <div id="loadingAnimation" class="hidden">
