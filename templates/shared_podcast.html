@@ -11,34 +11,44 @@
             text-decoration: none;
         }
         #buttons {
-            justify-content: space-between;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
         }
-        #newPodcast {
-            background-color: #ebd89eff;
-            color: white;
-            border: none;
+
+        #buttons > div {
+            display: flex;
+            justify-content: center;
+        }
+
+        #downloadPodcast, #newPodcast {
+            display: inline-block;
             padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-family: 'EB Garamond', serif;
-            font-size: 1rem;
-        }
-        #downloadPodcast {
             background-color: #bd5bcc;
             color: white;
-            border: none;
-            padding: 10px 20px;
+            text-decoration: none;
             border-radius: 5px;
-            cursor: pointer;
             font-family: 'EB Garamond', serif;
             font-size: 1rem;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
         }
-        .audio-player {
-            margin: 25px 0;
+
+        #downloadPodcast:hover, #newPodcast:hover {
+            background-color: #a951b7;
         }
-        #buttons {
-            justify-content: space-between;
-            display: flex;
+
+        @media (max-width: 480px) {
+            #buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #downloadPodcast, #newPodcast {
+                width: 100%;
+                text-align: center;
+            }
         }
     </style>
     <script src="{{ url_for('static', filename='enhanced-podcast-player.js') }}"></script>
@@ -56,10 +66,10 @@
         </div>
         <div id="buttons">
             <div>
-                <a href="{{ audio_url }}" download id="downloadPodcast" style="margin:25px;">Download Conversation</a>
+                <a href="{{ audio_url }}" id="downloadPodcast" download>Download</a>
             </div>
             <div>
-                <a href="https://connective-issues.io" id="newPodcast" style="font-weight:800;">Make Your Own</a>
+                <a href="https://connective-issues.io" id="newPodcast">Make Your Own</a>
             </div>
         </div>
         <div style="padding-bottom:25px;">
