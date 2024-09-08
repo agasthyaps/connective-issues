@@ -285,37 +285,41 @@ document.addEventListener('DOMContentLoaded', (event) => {
             newInput.classList.add('pdf-input');
             newInput.innerHTML = `
                 <div class="tooltip-container">
-                    <label for="pdf_${pdfCount}" class="file-label">Choose file:</label>
-                    <input type="file" id="pdf_${pdfCount}" name="pdf_${pdfCount}" accept=".pdf" class="file-input">
-                    <div class="tooltip">
-                        upload something you're thinking about: an article, your notes, etc.
-                    </div>
+                  <label for="pdf_${pdfCount}" class="file-label">Choose file:</label>
+                  <div class="tooltip">
+                    upload something you're thinking about: an article, your notes, etc.
+                  </div>
                 </div>
+                <input type="file" id="pdf_${pdfCount}" name="pdf_${pdfCount}" accept=".pdf" class="file-input">
+              </div>
+              
+              <div class="radio-container">
+                <span class="radio-label">*these are:</span>
                 <div class="tooltip-container">
-                    <div class="radio-group">
-                        <p>(*<i>these are:</i>
-
-                        <label>
-                            <input type="radio" name="kind_${pdfCount}" value="someone" checked>
-                            Someone else's thoughts
-                        </label>
-                        <label>
-                            <input type="radio" name="kind_${pdfCount}" value="my">
-                            My thoughts
-                        </label>
-                        )</p>
-                    </div>
-                    <div class="tooltip">
-                        let the ai team know where the ideas in this upload are from
-                    </div>
+                  <div class="radio-group">
+                    <label>
+                      <input type="radio" name="kind_0" value="someone" checked>
+                      someone else's thoughts
+                    </label>
+                    <label>
+                      <input type="radio" name="kind_0" value="my">
+                      my thoughts
+                    </label>
+                  </div>
+                  <div class="tooltip">
+                    let the ai team know where the ideas in this upload are from
+                  </div>
                 </div>
-                <div class="tooltip-container">
-                    <button type="button" class="add-more-btn">add more</button>
-                    <div class="tooltip">
-                        add more content for the convo
-                    </div>
+              </div>
+              
+              <div class="tooltip-container">
+                <button type="button" class="add-more-btn">add more</button>
+                <div class="tooltip">
+                  add more content for the convo
                 </div>
-                <span class="file-size-error hidden">File too large (max 10MB)</span>
+              </div>
+              
+              <span class="file-size-error hidden">File too large (max 10MB)</span>
             `;
             pdfInputs.appendChild(newInput);
             
