@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
               </div>
               
               <div class="tooltip-container">
-                <button type="button" class="add-more-btn">add more</button>
+                <button type="button" class="add-more-btn" id="addmore_${pdfCount}">add more</button>
                 <div class="tooltip">
                   add more content for the convo
                 </div>
@@ -326,7 +326,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const fileInput = newInput.querySelector(`#pdf_${pdfCount}`);
             fileInput.addEventListener('change', validateFileSize);
             
-            newInput.querySelector('.add-more-btn').addEventListener('click', addMoreInputs);
+            newInput.querySelector(`#addmore_${pdfCount}`).addEventListener('click', addMoreInputs);
+            // hide old add more button
+            hideElement(document.querySelector(`#addmore_${pdfCount - 1}`));
             
             pdfCount++;
         }
