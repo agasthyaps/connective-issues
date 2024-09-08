@@ -284,13 +284,34 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const newInput = document.createElement('div');
             newInput.classList.add('pdf-input');
             newInput.innerHTML = `
-                <label for="pdf_${pdfCount}" class="file-label">choose file:</label>
+                <div class="tooltip-container">
+                    <label for="pdf_${pdfCount}" class="file-label">Choose file:</label>
+                    <div class="tooltip">
+                        upload something you're thinking about: an article, your notes, etc.
+                    </div>
+                </div>
                 <input type="file" id="pdf_${pdfCount}" name="pdf_${pdfCount}" accept=".pdf" class="file-input">
-                <select name="kind_${pdfCount}" class="styled-select">
-                    <option value="someone">(someone else's thoughts)</option>
-                    <option value="my">(my thoughts)</option>
-                </select>
-                <button type="button" class="add-more-btn">add more</button>
+                <div class="tooltip-container">
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="kind_${pdfCount}" value="someone" checked>
+                            Someone else's thoughts
+                        </label>
+                        <label>
+                            <input type="radio" name="kind_${pdfCount}" value="my">
+                            My thoughts
+                        </label>
+                    </div>
+                    <div class="tooltip">
+                        let the ai team know where the ideas in this upload are from
+                    </div>
+                </div>
+                <div class="tooltip-container">
+                    <button type="button" class="add-more-btn">Add more</button>
+                    <div class="tooltip">
+                        add more content for the convo
+                    </div>
+                </div>
                 <span class="file-size-error hidden">File too large (max 10MB)</span>
             `;
             pdfInputs.appendChild(newInput);
@@ -298,10 +319,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const fileInput = newInput.querySelector(`#pdf_${pdfCount}`);
             fileInput.addEventListener('change', validateFileSize);
             
-            pdfCount++;
-
             newInput.querySelector('.add-more-btn').addEventListener('click', addMoreInputs);
+            
+            pdfCount++;
         }
+        
         if (pdfCount === 4) {
             document.querySelectorAll('.add-more-btn').forEach(btn => btn.style.display = 'none');
         }
