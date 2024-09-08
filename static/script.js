@@ -286,13 +286,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
             newInput.innerHTML = `
                 <div class="tooltip-container">
                     <label for="pdf_${pdfCount}" class="file-label">Choose file:</label>
+                    <input type="file" id="pdf_${pdfCount}" name="pdf_${pdfCount}" accept=".pdf" class="file-input">
                     <div class="tooltip">
                         upload something you're thinking about: an article, your notes, etc.
                     </div>
                 </div>
-                <input type="file" id="pdf_${pdfCount}" name="pdf_${pdfCount}" accept=".pdf" class="file-input">
                 <div class="tooltip-container">
                     <div class="radio-group">
+                        <p>(*<i>these are:</i>
+
                         <label>
                             <input type="radio" name="kind_${pdfCount}" value="someone" checked>
                             Someone else's thoughts
@@ -301,13 +303,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
                             <input type="radio" name="kind_${pdfCount}" value="my">
                             My thoughts
                         </label>
+                        )</p>
                     </div>
                     <div class="tooltip">
                         let the ai team know where the ideas in this upload are from
                     </div>
                 </div>
                 <div class="tooltip-container">
-                    <button type="button" class="add-more-btn">Add more</button>
+                    <button type="button" class="add-more-btn">add more</button>
                     <div class="tooltip">
                         add more content for the convo
                     </div>
