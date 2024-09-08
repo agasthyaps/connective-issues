@@ -298,11 +298,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 <div class="tooltip-container">
                   <div class="radio-group">
                     <label>
-                      <input type="radio" name="kind_0" value="someone" checked>
+                      <input type="radio" name="kind_${pdfCount}" value="someone" checked>
                       someone else's thoughts
                     </label>
                     <label>
-                      <input type="radio" name="kind_0" value="my">
+                      <input type="radio" name="kind_${pdfCount}" value="my">
                       my thoughts
                     </label>
                   </div>
