@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         modal.innerHTML = `
             <div class="share-modal-content">
                 <h2>share the synthesis</h2>
-                <p style='font-size:1.25em;'>the point of the pod is for it to be a tool to get <b>you</b> to <b>your</b> eventual output -- not for it to be <b><i>the</i> output</b>.</p>
+                <p style='font-size:1.25em;'>the point of the convo is for it to be a tool to get <b>you</b> to <b>your</b> eventual output -- not for it to be <b><i>the</i> output</b>.</p>
                 <p>but: did it help you synthesize or spark some ideas? is there someone else who might get <b>just as excited as you are?</b> then share it.</p>
                 <p>(<i>link valid for 3 days</i>)</p>
                 <input type="text" value="${shareUrl}" readonly>
@@ -137,11 +137,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
     function updatePodcastsRemaining() {
         console.log('Updating podcasts remaining:', podcastsRemaining);
         if (podcastsRemainingElement && podcastsRemaining !== undefined) {
-            podcastsRemainingElement.innerHTML = `<b>podcast generations remaining: ${podcastsRemaining}</b>`;
+            podcastsRemainingElement.innerHTML = `<b>conversation generations remaining: ${podcastsRemaining}</b>`;
         }
         if (podcastsRemaining <= 0) {
             createPodcastBtn.disabled = true;
-            createPodcastBtn.textContent = 'Maximum podcasts reached';
+            createPodcastBtn.textContent = 'Maximum conversations reached';
         }
     }
 
@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (podcastsRemaining <= 0) {
-                alert('You have reached the maximum number of podcast generations.');
+                alert('You have reached the maximum number of conversation generations.');
                 return;
             }
 
@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const formData = new FormData(form);
             showElement(loadingAnimation);
             showElement(messages);
-            currentStatus.textContent = 'Podcast creation started. Please wait...';
+            currentStatus.textContent = 'Conversation creation started. Please wait...';
             
             setTimeout(() => {
                 window.scrollTo({
@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         if (podcastCreated) {
             event.preventDefault();
             event.returnValue = '';
-            return 'Your podcast will be lost if you close this page. Are you sure you want to leave?';
+            return 'Your conversation will be lost if you close this page. Are you sure you want to leave?';
         }
     });
 
@@ -469,7 +469,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const audioSrc = podcastAudio.src;
             const link = document.createElement('a');
             link.href = audioSrc;
-            link.download = 'connective_issues_podcast.mp3';
+            link.download = 'connective_issues_conversation.mp3';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

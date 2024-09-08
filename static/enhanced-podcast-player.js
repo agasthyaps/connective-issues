@@ -1,6 +1,8 @@
 // Function to convert Markdown-style bold to HTML bold
 function convertMarkdownBold(text) {
-    return text.replace(/\*\*\*(.*?)\*\*\*/g, '<strong>$1</strong>');
+    const span_text = text.replace(/\*\*(alex|jamie):\*\*/g, '<span class="speaker">$1:</span>');
+    const final_text = span_text.replace(/\n/g, '<br>');
+    return final_text;
 }
 
 // Function to synchronize transcript scrolling with audio playback

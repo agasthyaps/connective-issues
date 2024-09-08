@@ -29,12 +29,12 @@
             </a>
         </div>
         <h1 id="main-title">connective issues.</h1>
-        <h2 id="subtitle">an ai-generated podcast about the <em>things you want to think about.</em></h2>
+        <h2 id="subtitle">an ai-generated conversation about the <em>things you want to think about.</em></h2>
 
         <div id="preproductionZone">
             <h2>Reading Material</h2>
             <p><em>(add articles you want to think more about and whatever thoughts you might have floating around.)</em></p>
-            <p id="podcastsRemaining">podcast generations remaining: {{ podcasts_remaining }}</p>
+            <p id="podcastsRemaining">conversation generations remaining: {{ podcasts_remaining }}</p>
             <hr>
             <form id="uploadForm" enctype="multipart/form-data">
               <div id="pdfInputs">
@@ -53,7 +53,7 @@
                     </div>
                     <div class="tooltip-container">
                         <button type="button" class="add-more-btn">add more</button>
-                        <div class="tooltip">add more content for the pod</div>
+                        <div class="tooltip">add more content for the convo</div>
                     </div>
                     <span class="file-size-error hidden">File too large (max 10MB)</span>
                 </div>
@@ -61,7 +61,7 @@
                 <div class="theme-input">
                     <input type="text" id="theme" name="theme" placeholder="the big question (what do you want the hosts to talk about?)">
                 </div>
-                <button type="submit" id="createPodcast">create podcast</button>
+                <button type="submit" id="createPodcast" style="font-weight:800;">create</button>
             </form>
         </div>
 
@@ -72,24 +72,24 @@
         </div>
 
         <div id="messages" class="hidden">
-            <h3>Podcast Progress</h3>
+            <h3>Progress</h3>
             <h4>a good french press takes about four and a half minutes. this should be quicker than that. ☕</h4>
             <p id="currentStatus"></p>
         </div>
 
         <div id="result" class="hidden">
-            <h3>Podcast Created!</h3>
+            <h3>Conversation Created!</h3>
           
             <div class="audio-player">
               <h4>Listen:</h4>
               <audio id="podcastAudio" controls>
                 Your browser does not support the audio element.
               </audio>
-              <button id="downloadPodcast">Download Podcast</button>
-              <button id="sharePodcast">Share Podcast</button>
+              <button id="downloadPodcast">Download Conversation</button>
+              <button id="sharePodcast">Share Conversation</button>
               <div class="tooltip-container">
                 <button id="helpMeTest">Help Me Test</button>
-                <span class="tooltip">have a random frontier model generate a blog post and compare it with the podcast</span>
+                <span class="tooltip">have a random frontier model generate a blog post and compare it with the conversation</span>
               </div>
             </div>
           
@@ -115,13 +115,13 @@
               <div class="comparison-options">
                 <div class="switch-field">
                   <input type="radio" id="podcastMoreUseful" name="comparison" value="podcast">
-                  <label for="podcastMoreUseful">Podcast was more useful</label>
+                  <label for="podcastMoreUseful">Conversation was more useful</label>
                   <input type="radio" id="blogMoreUseful" name="comparison" value="blog">
                   <label for="blogMoreUseful">Blog was more useful</label>
                 </div>
               </div>
               <div class="feedback-form hidden">
-                <textarea id="feedbackText" placeholder="Why? Either be specific ('I liked the point about X in the blog that wasn't covered in the pod') or very vaguely descriptive ('warmer, buzzy'), but nothing in between."></textarea>
+                <textarea id="feedbackText" placeholder="Why? Either be specific ('I liked the point about X in the blog that wasn't covered in the convo') or very vaguely descriptive ('warmer, buzzy'), but nothing in between."></textarea>
                 <button id="submitFeedback">Submit</button>
               </div>
             </div>

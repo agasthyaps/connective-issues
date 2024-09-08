@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>connective issues: shared pod</title>
+    <title>connective issues: shared convo</title>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
@@ -45,8 +45,8 @@
 </head>
 <body>
     <div class="container">
-        <h1 style="font-weight:800;">connective issues: shared pod</h1>
-        <p>someone thought this podcast was <a href="https://actually-useful.xyz" target="_blank" style="color: rgb(142, 142, 142); font-weight:800;"> <strong><i>actually</i></strong> useful: </a>it helped them synthesize the ideas in their head or spark new ones.</p> 
+        <h1 style="font-weight:800;">connective issues: shared convo</h1>
+        <p>someone thought listening to this conversation was <a href="https://actually-useful.xyz" target="_blank" style="color: rgb(142, 142, 142); font-weight:800;"> <strong><i>actually</i></strong> useful: </a>it helped them synthesize the ideas in their head or spark new ones.</p> 
         <p>will it do the same for you?</p>
         <div class="audio-player">
             <audio controls>
@@ -56,14 +56,14 @@
         </div>
         <div id="buttons">
             <div>
-                <a href="{{ audio_url }}" download id="downloadPodcast" style="margin:25px;">Download Podcast</a>
+                <a href="{{ audio_url }}" download id="downloadPodcast" style="margin:25px;">Download Conversation</a>
             </div>
             <div>
                 <a href="https://connective-issues.io" id="newPodcast" style="font-weight:800;">Make Your Own</a>
             </div>
         </div>
         <div style="padding-bottom:25px;">
-                <h4>Podcast Transcript:</h4>
+                <h4>Conversation Transcript:</h4>
                 <div id="finalScriptShare">{{ transcript|safe }}</div>
     </div>
     <footer>
