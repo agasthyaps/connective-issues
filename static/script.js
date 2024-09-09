@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const preproductionZone = document.getElementById('preproductionZone');
     const createPodcastBtn = document.getElementById('createPodcastBtn');
     const podcastsRemainingElement = document.getElementById('podcastsRemaining');
+    const conversationTitle = document.getElementById('conversationTitle');
     let podcastsRemaining; // Default value
 
     const helpMeTestBtn = document.getElementById('helpMeTest');
@@ -456,6 +457,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
                 const formattedScript = data.script.replace(/\*\*(alex|jamie):\*\*/g, '<span class="speaker">$1:</span>');
                 finalScript.innerHTML = formattedScript.replace(/\n/g, '<br>');
+                conversationTitle.textContent = data.title;
 
                 preproductionZone.style.transition = 'max-height 0.5s ease-out, opacity 0.5s ease-out, margin-bottom 0.5s ease-out';
                 preproductionZone.style.maxHeight = preproductionZone.scrollHeight + 'px';

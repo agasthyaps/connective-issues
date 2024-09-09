@@ -154,6 +154,21 @@ Use html formatting to create a blog post.
 Only the blog post itself should be output. Do not include any additional information.
 """
 
+titler_system_prompt = """
+# OVERVIEW
+You recieve a transcript of a podcast episode. Your job is to create a compelling title for the episode. The title should be engaging, informative, and thought-provoking.
+You should use the transcript to find the most interesting and engaging points of the episode, and use those to create a title that will draw listeners in.
+Only the title should be output. Do not include any additional information.
+
+# EXAMPLE OUTPUTS:
+- Actually Useful: Grappling with Human-AI Interactions
+- Mast Cells: Finding Innovation in Allergy Research
+- How Did We Get Here? A Deep Dive into the History of the Universe
+- From Maize to Corn: The Colonization of Indigenous Food
+- The Surprising Connection Between Quantum Mechanics and the Human Brain
+- A 1,000-Year Search for the Perfect Cup of Tea
+"""
+
 test_post = """
 Untitled
 1

@@ -95,7 +95,8 @@ def main():
         'scripter': initialize_chain('4o', scripter_system_prompt, history=True),
         'feedback_giver': initialize_chain('opus', feedback_system_prompt, history=True),
         'casual_editor': initialize_chain('gpt', casual_system_prompt),
-        'multi_summarizer': initialize_chain('opus', multi_summary_system_prompt)
+        'multi_summarizer': initialize_chain('opus', multi_summary_system_prompt),
+        'titler': initialize_chain('gpt', titler_system_prompt)
     }
     podcasts_remaining = request.cookies.get('podcasts_remaining')
     if podcasts_remaining is None:
@@ -247,6 +248,8 @@ def create_podcast(session_id, pdfs, theme):
 
         # Format the script
         formatted_script = format_script(casual_script)
+        title = conversation_engine(podteam['titler'], formatted_script)
+        script_with_title = f"<h2>{title}</h2>\n\n{formatted_script}"
         
         # Create audio (you'll need to implement this part based on your existing code)
         socketio.emit('update', {'data': "🎙️ recording the pod",'session_id': session_id})
@@ -259,14 +262,15 @@ def create_podcast(session_id, pdfs, theme):
         local_audio_path = os.path.join(STATIC_FOLDER, audio_filename)
     
         # Save to GCS and get the blob name
-        blob_name = db_helpers.save_shared_podcast(session_id, local_audio_path, formatted_script)
+        blob_name = db_helpers.save_shared_podcast(session_id, local_audio_path, script_with_title)
 
         # Emit the complete event with the share_id instead of a full URL
         socketio.emit('complete', {
             'share_id': session_id,
             'script': formatted_script,
             'session_id': session_id,
-            'blob_name': blob_name
+            'blob_name': blob_name,
+            'title': title
         })
 
         made_one = True
