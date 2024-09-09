@@ -113,8 +113,8 @@ def process_transcript(text):
 
 def format_script(script):
     # Replace <host> and <expert> tags with bold names
-    script = re.sub(r'<host>(.*?)</host>', r'**alex:** \1', script)
-    script = re.sub(r'<expert>(.*?)</expert>', r'**jamie:** \1', script)
+    script = re.sub(r'<host>(.*?)</host>', r'**cam:** \1', script)
+    script = re.sub(r'<expert>(.*?)</expert>', r'**sage:** \1', script)
     return script
 
 

@@ -91,6 +91,7 @@ def main():
     # re-initialize the podteam every time the main page is loaded
     podteam = {
         'summarizer': initialize_chain('gpt', summarizer_system_prompt),
+        'type_classifier': initialize_chain('gpt', convo_type_system_prompt),
         'outliner': initialize_chain('opus', outliner_system_prompt),
         'scripter': initialize_chain('4o', scripter_system_prompt, history=True),
         'feedback_giver': initialize_chain('opus', feedback_system_prompt, history=True),
@@ -227,6 +228,10 @@ def create_podcast(session_id, pdfs, theme):
         
         final_text = "\n".join(texts)
         final_truncated_text = "\n".join(truncated_texts)
+
+        # TEST: classify the conversation type
+        conversation_type = conversation_engine(podteam['type_classifier'], final_summary)
+        logging.info(f"Conversation type: {conversation_type}")
         
         # Create outline
         socketio.emit('update', {'data': "✍️ writers creating outline",'session_id': session_id})
