@@ -108,6 +108,7 @@
 .radio-container {
     align-items: center;
     flex-wrap: wrap;
+    font-style: italic;
   }
 
   .radio-label {

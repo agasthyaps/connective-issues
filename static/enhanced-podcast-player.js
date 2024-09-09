@@ -1,7 +1,6 @@
 // Function to convert Markdown-style bold to HTML bold
 function convertMarkdownBold(text) {
-    const span_text = text.replace(/\*\*(alex|jamie):\*\*/g, '<span class="speaker">$1:</span>');
-    const final_text = span_text.replace(/\n/g, '<br>');
+    const final_text = text.replace(/\*\*(alex|jamie):\*\*/g, '<span class="speaker" style="font-weight:600;">$1:</span>');
     return final_text;
 }
 
