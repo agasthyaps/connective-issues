@@ -180,7 +180,7 @@ def concatenate_audio(file_list, output_file, app_root):
         logging.error(f"Error loading intro/outro: {str(e)}")
         intro_outro = AudioSegment.silent(duration=1000)  # 1 second of silence as fallback
 
-    middle_options = ['middle1.wav','middle3.wav','middle4.wav']
+    middle_options = ['middle1.wav','middle4.wav']
     middle_path = os.path.join(app_root, 'static', random.choice(middle_options))
     try:
         middle = AudioSegment.from_file(middle_path)
@@ -230,7 +230,7 @@ def concatenate_audio(file_list, output_file, app_root):
 
 def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root):
     voices = {
-        'host':["RPEIZnKMqlQiZyZd1Dae","H2gwnCCCGhjpKRQBynLT","WLKp2jV6nrS8aMkPPDRO","t7jjqLOG6kzCY6SckkfL"],
+        'host':["RPEIZnKMqlQiZyZd1Dae","H2gwnCCCGhjpKRQBynLT","WLKp2jV6nrS8aMkPPDRO"],
         'expert':["P7x743VjyZEOihNNygQ9","r27TA7xKV7nfUjudCBpS","ByLF4fg3sDo1TGXkjPMA", "t9IV45xnQb79w1JXFAIQ"]
     }
     cast = {"host":random.choice(voices['host']), "expert":random.choice(voices['expert'])}

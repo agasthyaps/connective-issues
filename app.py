@@ -41,9 +41,10 @@ server_side_storage = {}
 
 # Initialize necessary components
 podteam = {}
+made_one = False
 
 def initialize_app():
-    global app_ready, podteam
+    global app_ready
     # Initialize the database
     db_helpers.init_db()
 
@@ -54,15 +55,6 @@ def initialize_app():
     scheduler = BackgroundScheduler()
     scheduler.add_job(db_helpers.cleanup_expired_podcasts, 'interval', hours=24)
     scheduler.start()
-
-    podteam = {
-        'summarizer': initialize_chain('gpt', summarizer_system_prompt),
-        'outliner': initialize_chain('opus', outliner_system_prompt),
-        'scripter': initialize_chain('4o', scripter_system_prompt, history=True),
-        'feedback_giver': initialize_chain('opus', feedback_system_prompt, history=True),
-        'casual_editor': initialize_chain('gpt', casual_system_prompt),
-        'multi_summarizer': initialize_chain('opus', multi_summary_system_prompt)
-    }
 
     app_ready = True
 
@@ -95,6 +87,16 @@ def check_ready():
 
 @app.route('/main')
 def main():
+    global podteam
+    # re-initialize the podteam every time the main page is loaded
+    podteam = {
+        'summarizer': initialize_chain('gpt', summarizer_system_prompt),
+        'outliner': initialize_chain('opus', outliner_system_prompt),
+        'scripter': initialize_chain('4o', scripter_system_prompt, history=True),
+        'feedback_giver': initialize_chain('opus', feedback_system_prompt, history=True),
+        'casual_editor': initialize_chain('gpt', casual_system_prompt),
+        'multi_summarizer': initialize_chain('opus', multi_summary_system_prompt)
+    }
     podcasts_remaining = request.cookies.get('podcasts_remaining')
     if podcasts_remaining is None:
         podcasts_remaining = 5
@@ -167,7 +169,7 @@ def upload():
         return jsonify({'error': 'An error occurred during file upload'}), 500
     
 def create_podcast(session_id, pdfs, theme):
-    global TESTING
+    global TESTING, made_one
     # if TESTING:
     #     print(f"Creating podcast for session ID: {session_id}")
     #     time.sleep(1)
@@ -266,6 +268,8 @@ def create_podcast(session_id, pdfs, theme):
             'session_id': session_id,
             'blob_name': blob_name
         })
+
+        made_one = True
 
     except Exception as e:
         print(f"Error in create_podcast: {str(e)}")
