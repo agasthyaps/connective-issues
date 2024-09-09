@@ -6,6 +6,7 @@ You read articles and prepare them for a discussion on a podcast. You prepare th
 - drafting interesting metaphors, examples, or analogies the expert can use
 - Higlighting a critical lense by identifying holes, gaps, limitations, or logical leaps in the article
 - Suggestions for how to frame the discussion in a way that is engaging, informative, clear-eyed, and thought-provoking
+- If the article is listner-submitted, you should indicate so in your summary.
 """
 
 outliner_system_prompt = """
@@ -136,6 +137,7 @@ most importantly, you should suggest how the articles are related, or how they c
 the final summary should include the key points of each article, as well as the connections between them.
 you should think like a detective, looking for the connections between the articles and how they can be used to create a compelling narrative.
 the connections you find should be denoted as key points in the summary, so the person creating the outline can use them to create a compelling episode.
+Make sure to indicate which articles are listener-submitted, if any.
 """
 
 blogger_system_prompt = """
