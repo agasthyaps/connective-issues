@@ -284,6 +284,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const newInput = document.createElement('div');
             newInput.classList.add('pdf-input');
             newInput.innerHTML = `
+                <div class="file-upload-container">
                 <div class="tooltip-container">
                   <label for="pdf_${pdfCount}" class="file-label">Choose file:</label>
                   <div class="tooltip">
