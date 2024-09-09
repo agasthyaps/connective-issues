@@ -230,7 +230,7 @@ def concatenate_audio(file_list, output_file, app_root):
 
 def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root):
     voices = {
-        'host':["RPEIZnKMqlQiZyZd1Dae","H2gwnCCCGhjpKRQBynLT","WLKp2jV6nrS8aMkPPDRO"],
+        'host':["H2gwnCCCGhjpKRQBynLT","WLKp2jV6nrS8aMkPPDRO"],
         'expert':["P7x743VjyZEOihNNygQ9","r27TA7xKV7nfUjudCBpS","ByLF4fg3sDo1TGXkjPMA", "t9IV45xnQb79w1JXFAIQ"]
     }
     cast = {"host":random.choice(voices['host']), "expert":random.choice(voices['expert'])}
