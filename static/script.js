@@ -455,7 +455,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 console.log('Updating audio player with:', audioPath);
                 updateAudioPlayer(audioPath);
 
-                const formattedScript = data.script.replace(/\*\*(alex|jamie):\*\*/g, '<span class="speaker">$1:</span>');
+                const formattedScript = data.script.replace(/\*\*(cam|sage):\*\*/g, '<span class="speaker">$1:</span>');
                 finalScript.innerHTML = formattedScript.replace(/\n/g, '<br>');
                 conversationTitle.textContent = data.title;
 

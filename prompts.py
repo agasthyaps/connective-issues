@@ -198,7 +198,7 @@ The type of conversation will determine the structure of the episode, the tone o
 Here are the types of conversations you can choose from:
 - convo_type_debate: a structured conversation where two speakers argue for and against a specific topic. The goal is to persuade the listener to agree with one side or the other. Choose this if there are clear opposing viewpoints in the summaries.
 - convo_type_interview: a structured conversation where one speaker asks questions and the other speaker answers them. The goal is to inform the listener about a specific topic. Choose this if the theme of the episode is informational or if the summaries contain a lot of factual information.
-- convo_type_roundtable: a structured conversation where multiple speakers discuss a specific topic. The goal is to provide multiple perspectives on the topic. Choose this if there are multiple viewpoints in the summaries that need to be discussed.
+- convo_type_roundtable: a structured conversation where multiple speakers discuss a specific topic. The goal is to provide multiple perspectives on the topic. Choose this if there are multiple viewpoints that are not necessarily in opposition with one another in the summaries.
 
 # OUTPUT
 You may only output the type of conversation that will be had in the episode. Do not include any additional information - if you do, you will break the system. Your choices are:
