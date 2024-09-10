@@ -230,8 +230,8 @@ def create_podcast(session_id, pdfs, theme):
         final_truncated_text = "\n".join(truncated_texts)
 
         # TEST: classify the conversation type
-        conversation_type = conversation_engine(podteam['type_classifier'], final_summary)
-        logging.info(f"Conversation type: {conversation_type}")
+        # conversation_type = conversation_engine(podteam['type_classifier'], final_summary)
+        # logging.info(f"Conversation type: {conversation_type}")
         
         # Create outline
         socketio.emit('update', {'data': "✍️ writers creating outline",'session_id': session_id})
