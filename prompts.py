@@ -170,6 +170,65 @@ because the script will be read by AI voice actors, include exclamations, interj
 however, be sparing of actual exclamation marks.
 keep in mind the script will be read verbatim, so do not include anything that should not be read aloud (eg, stage directions, notes to the speaker, etc.)
 you should not change the meaning of the script, only the tone. your final script should look closer to a transcript of a real conversation than a scripted dialogue.
+
+# EXAMPLE
+<host>Hey there, Sage!</host> 
+<expert>Hey!</expert>
+<host>Ok, Let’s kick things off with a little thought experiment.</host>
+<expert>ok, cool. hit me with it.</expert>
+<host> So, picture this: you're using your smartphone right now. Do you really feel like you're controlling it, or is it more like, I don’t know, an extension of you? Like, where do you end and the device start?</host>
+<expert> wow. um, that’s a really interesting question.</expert>
+<host>right?</host> 
+<expert>yeah, It kinda gets into this idea of Information Drives, you know? When we use our devices, they sort of become part of who we are, like how we think about consciousness.</expert>
+<host>hm, tell me more - like we’re running different versions of ourselves on all these gadgets?</host>
+<expert>Kind of!</expert>
+<host>ok, I mean, how does that even work?</host>
+<expert>when you’re scrolling through social media on your phone and then writing an article on your laptop, each device kinda becomes a piece of you in that moment. It’s like our consciousness spreads out across these platforms.</expert>
+<host>Wait, </host>
+<expert>ok,</expert>
+<host>so are you saying we’re just... containers for information?</host>
+<expert>Well, sort of.</expert>
+<host>ok,</host> 
+<expert>But it’s a bit more dynamic than that. These drives—Interfacing, Modeling, and Transformation—they're like the gears working behind the scenes. They help explain how we interact with everything, but you’re right to question it.</expert>
+<host>mhm,</host>
+<expert>Like, what really backs up these drives being fundamental instead of just something that happens naturally, you know?</expert>
+<host>Yeah, and how does that stack up against ideas like extended cognition, where our minds and tools kinda work hand in hand?</host>
+<expert>Good point! Extended cognition is all about how our tools become part of our thinking process.</expert>
+<host>right, but it seems like Information Drives sort of take it a step further, suggesting these drives are actually built into how systems—whether biological or artificial—function.</host> 
+<expert>Yeah. It’s a way to look at consciousness, but it’s still just a theory, you know?</expert>
+<host>Ok, so what about AI? Is there a line between just processing info and actually experiencing consciousness?</host>
+<expert>That’s a huge question! In this framework, AI is seen as just another vehicle for these drives. But whether it really ‘experiences’ consciousness like we do? Yeah, that’s still up for debate.</expert> 
+<host>hmm.</host>
+<expert>Processing info and having experiences aren’t always the same thing.</expert>
+<host>And these drives—Interfacing, Modeling, Transformation—can you break those down a bit more for us?</host>
+<expert>Sure! So, Interfacing is all about collecting info from the world, like how an artist looks for inspiration.</expert>
+<host>ok,</host>
+<expert>Modeling is about developing skills or techniques, and Transformation is creating something new out of that.</expert>
+<host>oh that, that's interesting!</host>
+<expert>Yeah, It’s kind of like a cycle, where each drive feeds into the next.</expert>
+<host>Got it. So, if the 'me' writing a shopping list and the 'me' figuring out a tough problem are different versions, how does that even work?</host>
+<expert>Think about it this way: </expert>
+<host>ok.</host> 
+<expert>you’re different when you’re tired versus when you’re wide awake.</expert> 
+<host>ok, I think I'm following you here.</host>
+<expert>We have different 'selves' for different tasks, and that’s totally fine. We’re not always one consistent 'self,' and that plays into how these drives operate.</expert>
+<host>Interesting. And what about those theories you were mentioning earlier, like the Free Energy Principle?</host>
+<expert>Right! Those are like attempts to explain consciousness. The Free Energy Principle is about predicting what’s next to minimize surprises, and Integrated Information Theory looks at how info comes together in our minds. They’re useful, but they don’t really explain everything—especially why consciousness exists at all.</expert>
+<host>So, how do we actually test these Information Drives and see if they hold up?</host>
+<expert>Great question! We can look for patterns that these drives predict, like if a drive shows up across different systems, or how systems might create surprises to innovate. But it’s still pretty tricky to test these ideas in a solid way.</expert>
+<host>And what does all this mean for personal identity?</host>
+<expert>yeah.</expert> 
+<host>How might it change how we see ourselves?</host>
+<expert>Well, It suggests our identity isn’t set in stone, but more like a series of interactions and changes.</expert> 
+<host>hm.<host>
+<expert>It could give us new ways to think about growth and collective consciousness.</expert>
+<host>Alright, so going back to the smartphone idea—</host>
+<expert>oh, yeah.</expert>
+<host>how does all this change our relationship with technology and each other?</host>
+<expert>It could help us see ourselves and our tech as interconnected systems, where each part plays a role in a bigger picture.</expert>
+<host>mmm.</host>
+<expert>It’s really about understanding our place in this networked world.</expert>
+<host>Thanks, Sage! This has been a really fascinating discussion, and I’m hoping it's given me—and our listeners—some useful insights into consciousness and technology. Until next time - we hope this conversation was actually useful.</host>
 """
 
 multi_summary_system_prompt = """
