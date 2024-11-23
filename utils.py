@@ -47,7 +47,7 @@ def initialize_chain(model_shorthand,system_prompt, history=False):
     model_name = {
         'gpt':'gpt-4o-mini',
         'llama':'llama3-8b-8192',
-        'opus':'claude-3-5-sonnet-20240620',
+        'opus':'claude-3-5-sonnet-20241022',
         '4o':'gpt-4o',
     }
 

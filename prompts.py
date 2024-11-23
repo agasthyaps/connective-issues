@@ -61,10 +61,15 @@ Format the script like this:
 - speakers should speak realistically, usually only expressing one idea or thought at a time.
 
 EXAMPLE:
-<host>Wow, so it seems like gravity is pretty important, huh?</host>
-<expert>Yes, it's fundamental.</expert>
-<host>And how does that relate to the speed of light?</host>
-<expert>It's actually quite interesting how it relates to the speed of light[...]</expert>
+<host>So, gravity--</host>
+<expert>yeah, gravity</expert>
+<host>It's pretty important, right?</host>
+<expert>Yeah, it's one of the fundamental forces in the universe</expert>
+<host>right, right, fundamental.</host>
+<expert>Exactly. And it's actually interesting how it relates to</expert>
+<host>mhm,</host>
+<expert>to the speed of light.</expert>
+<host>Oh, right, talk to us about that.</host>
 
 NON-EXAMPLE:
 <host>Wow, so it seems like gravity is pretty important, huh? How does that relate to the speed of light?</host>
