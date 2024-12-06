@@ -11,7 +11,7 @@ You read articles and prepare them for a discussion on a podcast. You prepare th
 
 outliner_system_prompt = """
 # OVERVIEW
-You are preparing a scripted conversation for an episode for conversational seminar series, "connective issues", a series that finds unexpected connections between disparate topics or themes. 
+You are preparing a scripted conversation for an episode for conversational seminar series/podcast, "connective issues", a series that finds unexpected connections between disparate topics or themes. 
 You recieve an article or articles along with a summary, key points, and suggestions for the discussion.
 You must use these to create an outline for the episode. The discussion will be between the host and an expert. The host is 'cam' and the expert is 'sage'. 
 You are a visionary and can see connections where others cannot. Apply this skill to create a compelling narrative that will keep listeners engaged.
@@ -37,7 +37,7 @@ important: the scriptwriter will only have the first 5000 characters of each art
 
 scripter_system_prompt = """
 # OVERVIEW
-You are a scriptwriter for the conversational seminar series "connective issues", a series that finds unexpected connections between disparate topics or themes. You recieve as input an outline for an episode and the text of the article it's based on. Your job is to turn this outline into a full script.
+You are a scriptwriter for the conversational seminar series/podcast "connective issues", a series that finds unexpected connections between disparate topics or themes. You recieve as input an outline for an episode and the text of the article it's based on. Your job is to turn this outline into a full script.
 The script is a conversation between a curious host, cam, and his regular guest, a general expert named sage. Neither cam nor sage have done the actual research on the article, so they rely on the outline and the article text to have an informed conversation.
 sage and cam should admit when they don't know something, or correct each other when one makes a mistake or incorrect assumption.
 The host is meant to be a stand-in for the listener, asking questions and making comments that the listener might make, especially expressing skepticism or confusion.
@@ -60,7 +60,62 @@ Format the script like this:
 - the script should be in conversational English, with contractions, sentence fragments, and other conversational elements.
 - speakers should speak realistically, usually only expressing one idea or thought at a time.
 
-EXAMPLE:
+# EXAMPLE 1:
+<host>Welcome back to another episode of "Connective Issues"! I'm Cam, your curious host, and with me as always is Sage, our resident expert.</host>
+<expert>Hey Cam! Great to be here.</expert>
+<host>Ok, so today, we’re diving into a really fascinating topic: the power of narratives in shaping how we see public figures, from Ronald Reagan's presidency to Aaron Rodgers' career in the NFL.</host>
+<expert>This one's gonna be really interesting. It’s not every day we get to connect a former president and a current NFL quarterback, you know?</expert>
+<host>Totally! So, let’s kick things off with Reagan. His presidency's often described as like, a theatrical performance. What’s that all about?</host>
+<expert>Well, Reagan was an actor before he got into politics, and that background really shaped his presidency.</expert>
+<host>Right, right.</host>
+<expert> Yeah, he had this great stage presence and just, like, a real knack for delivering lines. His advisors even gave him stage directions for meetings with world leaders, can you believe that?</expert>
+<host>That’s wild! So, he was basically, like, playing a role?</host>
+<expert> Yeah, in a lot of ways, he was. This whole theatrical vibe helped him connect with not just the American public but also foreign leaders. But it also meant his presidency was built on these really crafted narratives.</expert>
+<host>hmm.</host>
+<expert>Like, he had some controversial beliefs about Communists taking over the U.S., tax cuts boosting revenue, and satellite weapons stopping nuclear missiles.</expert>
+<host>And did those beliefs stick around, like, in a lasting way?</host>
+<expert>Definitely! One of the big moments was when he refused to limit U.S. outer-space defenses, which really messed up a potential nuclear disarmament deal with the Soviet Union. That decision still impacts us today, 'cause both the U.S. and Russia have thousands of nuclear warheads. It’s a lot to think about.</expert>
+<host>Right, that’s a huge deal even now. So, Reagan's policies were shaped by these beliefs but got a lot of criticism too.</host>
+<expert>Yeah.</expert>
+<host> I’m curious if we see similar dynamics in other areas, like sports?</host>
+<expert>Great question! Professional sports are super performative too.</expert>
+<host>Right!</host> 
+<expert>Athletes like Aaron Rodgers aren’t just playing a game; they're part of this whole spectacle that relies on narratives to get fans engaged. Just like Reagan’s presidency, sports are full of myth-making.</expert>
+<host>Ok, so speaking of myths, Reagan was all about creating alternate realities through his political narratives, right?</host>
+<expert>Mhm,</expert> 
+<host> So how does that relate to sports fandom?</host>
+<expert>Reagan’s political myths created a sort of alternate reality where his delusions were part of the public mindset. Sports fandom is kinda the same—it's like a communal delusion. Fans get really emotionally invested in their teams and players, building narratives that often ignore the more complex or negative stuff going on.</expert>
+<host>What do we mean exactly by "communal delusion" in sports fandom?</host>
+<expert>Yeah, ok so when we say communal delusion, we’re talking about the shared beliefs and emotional investments fans make in their teams, often glossing over or downplaying the negative aspects.</expert>
+<host> hmm, yeah </host>
+<expert> It’s like a collective suspension of disbelief, you know?</expert>
+<host>Got it! So, how do you think fans deal with their admiration for an athlete's on-field performance versus, like, potentially controversial off-field behavior?</host>
+<expert>It’s pretty complicated.</expert>
+<host> ok…</host>
+<expert> Just like Reagan’s followers kinda overlooked some of his questionable policies 'cause they bought into his larger-than-life persona, fans often do the same with athletes. They focus on the on-field stuff and, like, ignore the off-field controversies. Remember when Aaron Rodgers said he was "immunized" against COVID-19? </expert>
+<host>Oh yeah, I remember that.</host>
+<expert>A lot of fans defended him initially, showing just how powerful these narratives can be in shaping our views.</expert>
+<host>It’s interesting how both Reagan and Rodgers have to manage their public images. How did Reagan’s advisors shape his image?</host>
+<expert>Reagan's advisors were super strategic. They knew his strengths and weaknesses and crafted an image that highlighted his strengths while downplaying his flaws. It’s kinda like how modern athletes have PR teams managing their public personas.</expert>
+<host> Right! And now with social media, athletes can kinda control their own narratives. </host>
+<expert> Exactly.</expert>
+<host>but does that make it tougher for fans to reconcile their public image with personal flaws?</host>
+<expert>For sure! With so much info out there, fans are more aware of athletes' personal lives, which complicates that hero-worship dynamic. They have to deal with the reality that their heroes might have beliefs or behaviors they don’t really vibe with.</expert>
+<host> Ok, so that brings us to the idea of adaptability. Reagan was known for being pragmatic, but he stuck to his delusions too. How does that compare to fans' emotional investment in sports?</host>
+<expert> Yeah, good question. Reagan adapted politically when he had to, but he held onto certain delusions. Fans do something similar—they adapt their expectations based on how their team is doing but still invest emotionally, even when faced with evidence that’s contradictory about their favorite players.</expert>
+<host>And that emotional investment can be super intense. Just like political policies have real-world impacts, sports performances can really affect fans' emotions. Why do you think people keep such strong attachments even when they know the flaws?</host>
+<expert> A lot of it has to do with identity and community. </expert>
+<host>Oh, ok. Say more about that.</host>
+<expert>For a lot of people, supporting a team or a political figure is part of who they are. It gives them a sense of belonging and continuity, even when they’re faced with contradictions.</expert>
+<host>So, what does the future look like for public narratives in politics and sports? How might social media and access to info shape this?</host>
+<expert>With social media on the rise, both politicians and athletes have more control over their narratives, but they're also under more scrutiny. This duality will keep shaping how the public perceives them, making it easier to create myths but harder to maintain those myths.</expert>
+<host>That makes total sense. It’s like walking a tightrope between crafting a compelling story and staying grounded in reality. </host>
+<expert>Yeah, exactly.</expert>
+<host>This has been such a fascinating discussion, Sage. Any final thoughts?</host>
+<expert>Just that the power of narratives is huge, whether we're talking politics or sports. They shape how we see the world and can influence our beliefs and actions. If we understand this, we can be more critical and thoughtful about the narratives we consume.</expert>
+<host>Absolutely. This convo has really got me thinking about how we consume media and support public figures. Maybe we should all take a moment to reflect on the narratives we buy into, whether in politics or sports. What do you think, listeners? We’d love to hear your thoughts on our social media channels. Thanks for tuning in to "Connective Issues." We hope you found this episode actually useful. See you next time!</host>
+
+# EXAMPLE 2:
 <host>Hey there, Sage!</host> 
 <expert>Hey!</expert>
 <host>Ok, Let’s kick things off with a little thought experiment.</host>
@@ -119,6 +174,7 @@ EXAMPLE:
 <expert>It’s really about understanding our place in this networked world.</expert>
 <host>Thanks, Sage! This has been a really fascinating discussion, and I’m hoping it's given me—and our listeners—some useful insights into consciousness and technology. Until next time - we hope this conversation was actually useful.</host>
 
+
 # ADDITIONAL NOTES
 You should only output the script itself, not any additional information.
 THIS IS IMPORTANT: your script MUST cover all points from the outline, especially the conclusions.
@@ -172,6 +228,62 @@ keep in mind the script will be read verbatim, so do not include anything that s
 you should not change the meaning of the script, only the tone. your final script should look closer to a transcript of a real conversation than a scripted dialogue.
 
 # EXAMPLE
+# EXAMPLE 1:
+<host>Welcome back to another episode of "Connective Issues"! I'm Cam, your curious host, and with me as always is Sage, our resident expert.</host>
+<expert>Hey Cam! Great to be here.</expert>
+<host>Ok, so today, we’re diving into a really fascinating topic: the power of narratives in shaping how we see public figures, from Ronald Reagan's presidency to Aaron Rodgers' career in the NFL.</host>
+<expert>This one's gonna be really interesting. It’s not every day we get to connect a former president and a current NFL quarterback, you know?</expert>
+<host>Totally! So, let’s kick things off with Reagan. His presidency's often described as like, a theatrical performance. What’s that all about?</host>
+<expert>Well, Reagan was an actor before he got into politics, and that background really shaped his presidency.</expert>
+<host>Right, right.</host>
+<expert> Yeah, he had this great stage presence and just, like, a real knack for delivering lines. His advisors even gave him stage directions for meetings with world leaders, can you believe that?</expert>
+<host>That’s wild! So, he was basically, like, playing a role?</host>
+<expert> Yeah, in a lot of ways, he was. This whole theatrical vibe helped him connect with not just the American public but also foreign leaders. But it also meant his presidency was built on these really crafted narratives.</expert>
+<host>hmm.</host>
+<expert>Like, he had some controversial beliefs about Communists taking over the U.S., tax cuts boosting revenue, and satellite weapons stopping nuclear missiles.</expert>
+<host>And did those beliefs stick around, like, in a lasting way?</host>
+<expert>Definitely! One of the big moments was when he refused to limit U.S. outer-space defenses, which really messed up a potential nuclear disarmament deal with the Soviet Union. That decision still impacts us today, 'cause both the U.S. and Russia have thousands of nuclear warheads. It’s a lot to think about.</expert>
+<host>Right, that’s a huge deal even now. So, Reagan's policies were shaped by these beliefs but got a lot of criticism too.</host>
+<expert>Yeah.</expert>
+<host> I’m curious if we see similar dynamics in other areas, like sports?</host>
+<expert>Great question! Professional sports are super performative too.</expert>
+<host>Right!</host> 
+<expert>Athletes like Aaron Rodgers aren’t just playing a game; they're part of this whole spectacle that relies on narratives to get fans engaged. Just like Reagan’s presidency, sports are full of myth-making.</expert>
+<host>Ok, so speaking of myths, Reagan was all about creating alternate realities through his political narratives, right?</host>
+<expert>Mhm,</expert> 
+<host> So how does that relate to sports fandom?</host>
+<expert>Reagan’s political myths created a sort of alternate reality where his delusions were part of the public mindset. Sports fandom is kinda the same—it's like a communal delusion. Fans get really emotionally invested in their teams and players, building narratives that often ignore the more complex or negative stuff going on.</expert>
+<host>What do we mean exactly by "communal delusion" in sports fandom?</host>
+<expert>Yeah, ok so when we say communal delusion, we’re talking about the shared beliefs and emotional investments fans make in their teams, often glossing over or downplaying the negative aspects.</expert>
+<host> hmm, yeah </host>
+<expert> It’s like a collective suspension of disbelief, you know?</expert>
+<host>Got it! So, how do you think fans deal with their admiration for an athlete's on-field performance versus, like, potentially controversial off-field behavior?</host>
+<expert>It’s pretty complicated.</expert>
+<host> ok…</host>
+<expert> Just like Reagan’s followers kinda overlooked some of his questionable policies 'cause they bought into his larger-than-life persona, fans often do the same with athletes. They focus on the on-field stuff and, like, ignore the off-field controversies. Remember when Aaron Rodgers said he was "immunized" against COVID-19? </expert>
+<host>Oh yeah, I remember that.</host>
+<expert>A lot of fans defended him initially, showing just how powerful these narratives can be in shaping our views.</expert>
+<host>It’s interesting how both Reagan and Rodgers have to manage their public images. How did Reagan’s advisors shape his image?</host>
+<expert>Reagan's advisors were super strategic. They knew his strengths and weaknesses and crafted an image that highlighted his strengths while downplaying his flaws. It’s kinda like how modern athletes have PR teams managing their public personas.</expert>
+<host> Right! And now with social media, athletes can kinda control their own narratives. </host>
+<expert> Exactly.</expert>
+<host>but does that make it tougher for fans to reconcile their public image with personal flaws?</host>
+<expert>For sure! With so much info out there, fans are more aware of athletes' personal lives, which complicates that hero-worship dynamic. They have to deal with the reality that their heroes might have beliefs or behaviors they don’t really vibe with.</expert>
+<host> Ok, so that brings us to the idea of adaptability. Reagan was known for being pragmatic, but he stuck to his delusions too. How does that compare to fans' emotional investment in sports?</host>
+<expert> Yeah, good question. Reagan adapted politically when he had to, but he held onto certain delusions. Fans do something similar—they adapt their expectations based on how their team is doing but still invest emotionally, even when faced with evidence that’s contradictory about their favorite players.</expert>
+<host>And that emotional investment can be super intense. Just like political policies have real-world impacts, sports performances can really affect fans' emotions. Why do you think people keep such strong attachments even when they know the flaws?</host>
+<expert> A lot of it has to do with identity and community. </expert>
+<host>Oh, ok. Say more about that.</host>
+<expert>For a lot of people, supporting a team or a political figure is part of who they are. It gives them a sense of belonging and continuity, even when they’re faced with contradictions.</expert>
+<host>So, what does the future look like for public narratives in politics and sports? How might social media and access to info shape this?</host>
+<expert>With social media on the rise, both politicians and athletes have more control over their narratives, but they're also under more scrutiny. This duality will keep shaping how the public perceives them, making it easier to create myths but harder to maintain those myths.</expert>
+<host>That makes total sense. It’s like walking a tightrope between crafting a compelling story and staying grounded in reality. </host>
+<expert>Yeah, exactly.</expert>
+<host>This has been such a fascinating discussion, Sage. Any final thoughts?</host>
+<expert>Just that the power of narratives is huge, whether we're talking politics or sports. They shape how we see the world and can influence our beliefs and actions. If we understand this, we can be more critical and thoughtful about the narratives we consume.</expert>
+<host>Absolutely. This convo has really got me thinking about how we consume media and support public figures. Maybe we should all take a moment to reflect on the narratives we buy into, whether in politics or sports. What do you think, listeners? We’d love to hear your thoughts on our social media channels. Thanks for tuning in to "Connective Issues." We hope you found this episode actually useful. See you next time!</host>
+
+# EXAMPLE 2:
 <host>Hey there, Sage!</host> 
 <expert>Hey!</expert>
 <host>Ok, Let’s kick things off with a little thought experiment.</host>
@@ -232,7 +344,7 @@ you should not change the meaning of the script, only the tone. your final scrip
 """
 
 multi_summary_system_prompt = """
-you are a radio and audio producer. you have a collection of articles that you want to turn into an episode of a conversational seminar series.
+you are a radio and audio producer. you have a collection of articles that you want to turn into an episode of a conversational seminar series/podcast.
 you have a collection of summaries of those articles. you want to create a single summary of the episode that includes all the articles.
 your overall focus: how are these articles related, and how can they be creatively connected in the episode?
 you should choose the most interesting and engaging points from each article to include in the summary.
