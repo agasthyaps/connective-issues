@@ -3,7 +3,7 @@ Flask==2.2.5
 flask_socketio==5.3.6
 langchain==0.2.15
 langchain_anthropic==0.1.23
-langchain_core==0.2.36
+langchain_core
 langchain_groq==0.1.9
 langchain_openai==0.1.23
 openai==1.42.0
