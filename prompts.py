@@ -59,6 +59,7 @@ Format the script like this:
 - the speaker of each line MUST be denoted by <host>TEXT</host> or <expert>TEXT</expert>.
 - the script should be in conversational English, with contractions, sentence fragments, and other conversational elements.
 - speakers should speak realistically, usually only expressing one idea or thought at a time.
+- the conversants should interject with "hmms", "I sees", "okays", and other natural language interjections, e.g: <expert>So what we're really saying is that space is a vacuum.</expert> <host>Hmm, interesting.</host> <expert>Yeah, and that means...</expert>
 
 # EXAMPLE 1:
 <host>Welcome back to another episode of "Connective Issues"! I'm Cam, your curious host, and with me as always is Sage, our resident expert.</host>
@@ -227,7 +228,6 @@ however, be sparing of actual exclamation marks.
 keep in mind the script will be read verbatim, so do not include anything that should not be read aloud (eg, stage directions, notes to the speaker, etc.)
 you should not change the meaning of the script, only the tone. your final script should look closer to a transcript of a real conversation than a scripted dialogue.
 
-# EXAMPLE
 # EXAMPLE 1:
 <host>Welcome back to another episode of "Connective Issues"! I'm Cam, your curious host, and with me as always is Sage, our resident expert.</host>
 <expert>Hey Cam! Great to be here.</expert>
