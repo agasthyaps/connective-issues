@@ -45,10 +45,10 @@ def initialize_chain(model_shorthand,system_prompt, history=False):
     output_parser = StrOutputParser()
     
     model_name = {
-        'gpt':'gpt-4o-mini',
+        'gpt':'gpt-4o-mini-2024-07-18',
         'llama':'llama3-8b-8192',
         'opus':'claude-3-5-sonnet-20241022',
-        '4o':'gpt-4o',
+        '4o':'gpt-4o-2024-08-06',
     }
 
     name = model_name[model_shorthand]
