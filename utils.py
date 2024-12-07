@@ -49,6 +49,7 @@ def initialize_chain(model_shorthand,system_prompt, history=False):
         'llama':'llama3-8b-8192',
         'opus':'claude-3-5-sonnet-20241022',
         '4o':'gpt-4o-2024-08-06',
+        'omni':'o1-preview-2024-09-12'
     }
 
     name = model_name[model_shorthand]
@@ -57,7 +58,8 @@ def initialize_chain(model_shorthand,system_prompt, history=False):
         'gpt':ChatOpenAI,
         'llama':ChatGroq,
         'opus':ChatAnthropic,
-        '4o':ChatOpenAI
+        '4o':ChatOpenAI,
+        'omni':ChatOpenAI
     }
 
     model = model_farm[model_shorthand](model=name)

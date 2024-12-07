@@ -90,13 +90,13 @@ def main():
     global podteam
     # re-initialize the podteam every time the main page is loaded
     podteam = {
-        'summarizer': initialize_chain('gpt', summarizer_system_prompt),
+        'summarizer': initialize_chain('omni', summarizer_system_prompt),
         'type_classifier': initialize_chain('gpt', convo_type_system_prompt),
-        'outliner': initialize_chain('opus', outliner_system_prompt),
-        'scripter': initialize_chain('4o', scripter_system_prompt, history=True),
+        'outliner': initialize_chain('omni', outliner_system_prompt),
+        'scripter': initialize_chain('omni', scripter_system_prompt, history=True),
         'feedback_giver': initialize_chain('opus', feedback_system_prompt, history=True),
-        'casual_editor': initialize_chain('gpt', casual_system_prompt),
-        'multi_summarizer': initialize_chain('opus', multi_summary_system_prompt),
+        'casual_editor': initialize_chain('4o', casual_system_prompt),
+        'multi_summarizer': initialize_chain('omni', multi_summary_system_prompt),
         'titler': initialize_chain('gpt', titler_system_prompt)
     }
     podcasts_remaining = request.cookies.get('podcasts_remaining')
