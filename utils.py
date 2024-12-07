@@ -40,41 +40,79 @@ def extract_text_from_pdf(filepath):
 
     return extracted_text
 
-def initialize_chain(model_shorthand,system_prompt, history=False):
-
+def initialize_chain(model_shorthand, system_prompt, history=False):
     output_parser = StrOutputParser()
     
     model_name = {
-        'gpt':'gpt-4o-mini-2024-07-18',
-        'llama':'llama3-8b-8192',
-        'opus':'claude-3-5-sonnet-20241022',
-        '4o':'gpt-4o-2024-08-06',
-        'omni':'o1-preview-2024-09-12'
+        'gpt': 'gpt-4o-mini-2024-07-18',
+        'llama': 'llama3-8b-8192',
+        'opus': 'claude-3-5-sonnet-20241022',
+        '4o': 'gpt-4o-2024-08-06',
+        'omni': 'o1-preview-2024-09-12'
     }
 
     name = model_name[model_shorthand]
 
     model_farm = {
-        'gpt':ChatOpenAI,
-        'llama':ChatGroq,
-        'opus':ChatAnthropic,
-        '4o':ChatOpenAI,
-        'omni':ChatOpenAI
+        'gpt': ChatOpenAI,
+        'llama': ChatGroq,
+        'opus': ChatAnthropic,
+        '4o': ChatOpenAI,
+        'omni': ChatOpenAI
     }
 
     model = model_farm[model_shorthand](model=name)
 
+    # Adjust prompt for Omni model
+    if model_shorthand == 'omni':
+        # Incorporate system_prompt into human role message for Omni
+        if history:
+            prompt = ChatPromptTemplate.from_messages(
+                [
+                    (
+                        "human",
+                        f"{system_prompt} [User Input: {{input}}]"
+                    ),
+                    MessagesPlaceholder(variable_name="chat_history"),
+                ]
+            )
+        else:
+            prompt = ChatPromptTemplate.from_messages(
+                [
+                    (
+                        "human",
+                        f"{system_prompt} [User Input: {{input}}]"
+                    )
+                ]
+            )
+    else:
+        # Standard prompt structure for non-Omni models
+        if history:
+            prompt = ChatPromptTemplate.from_messages(
+                [
+                    (
+                        "system",
+                        system_prompt,
+                    ),
+                    MessagesPlaceholder(variable_name="chat_history"),
+                    ("human", "{input}"),
+                ]
+            )
+        else:
+            prompt = ChatPromptTemplate.from_messages(
+                [
+                    (
+                        "system",
+                        system_prompt,
+                    ),
+                    (
+                        "human",
+                        "{input}",
+                    )
+                ]
+            )
+
     if history:
-        prompt = ChatPromptTemplate.from_messages(
-            [
-                (
-                    "system",
-                    system_prompt,
-                ),
-                MessagesPlaceholder(variable_name="chat_history"),
-                ("human","{input}"),
-            ]
-        )
         base_chain = prompt | model | output_parser
         message_history = ChatMessageHistory()
         chain = RunnableWithMessageHistory(
@@ -83,23 +121,11 @@ def initialize_chain(model_shorthand,system_prompt, history=False):
             input_messages_key="input",
             history_messages_key="chat_history",
         )
-
     else:
-        prompt = ChatPromptTemplate.from_messages(
-            [
-                (
-                    "system",
-                    system_prompt
-                ),
-                (
-                    "human",
-                    "{input}"
-                )
-            ]
-        )
         chain = prompt | model | output_parser
 
     return chain
+
 
 # runs one turn of a conversation
 def conversation_engine(chain, input):
