@@ -461,16 +461,11 @@ def api_create_podcast():
         bucket = storage_client.bucket(os.environ.get('GCS_BUCKET_NAME'))
         blob = bucket.blob(blob_name)
         
-        # Generate signed URL for temporary access
-        url = blob.generate_signed_url(
-            version="v4",
-            expiration=timedelta(minutes=15),
-            method="GET"
-        )
+        audio_url = url_for('serve_audio', share_id=session_id, _external=True)
         
         return jsonify({
             'success': True,
-            'audio_url': url,
+            'audio_url': audio_url,
             'script': casual_script,
             'session_id': session_id
         })
