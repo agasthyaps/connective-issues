@@ -417,6 +417,78 @@ def shared_podcast(share_id):
 def set_cookie_with_samesite(response, name, value, max_age):
     response.set_cookie(name, value, max_age=max_age, samesite='Lax', secure=True, httponly=True)
 
+@app.route('/api/create_podcast', methods=['POST'])
+def api_create_podcast():
+    try:
+        # Validate request
+        if not request.is_json:
+            return jsonify({'error': 'Content-Type must be application/json'}), 415
+        
+        data = request.json
+        notes = data.get('notes')
+        if not notes:
+            return jsonify({'error': 'Outline is required'}), 400
+            
+        # Generate session ID
+        session_id = str(uuid.uuid4())
+        
+        # Initialize API-specific podteam
+        api_podteam = {
+            'scripter': initialize_chain('omni', wander_scripter_system_prompt, history=True),
+            'casual_editor': initialize_chain('4o', wander_casual_system_prompt),
+        }
+        
+        # Create first script
+        script = conversation_engine(api_podteam['scripter'], f"NOTES:\n{notes}")
+        
+        # Create casual script
+        casual_script = conversation_engine(api_podteam['casual_editor'], script)
+        
+        # Create audio
+        audio_path = create_podcast_from_script(casual_script, TEMP_FOLDER, STATIC_FOLDER, app.root_path)
+        
+        if not os.path.exists(audio_path):
+            raise FileNotFoundError(f"Final audio file not created: {audio_path}")
+
+        audio_filename = os.path.basename(audio_path)
+        local_audio_path = os.path.join(STATIC_FOLDER, audio_filename)
+        
+        # Save to GCS and get the blob name
+        blob_name = db_helpers.save_shared_podcast(session_id, local_audio_path, casual_script)
+        
+        # Get the audio URL
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(os.environ.get('GCS_BUCKET_NAME'))
+        blob = bucket.blob(blob_name)
+        
+        # Generate signed URL for temporary access
+        url = blob.generate_signed_url(
+            version="v4",
+            expiration=timedelta(minutes=15),
+            method="GET"
+        )
+        
+        return jsonify({
+            'success': True,
+            'audio_url': url,
+            'script': casual_script,
+            'session_id': session_id
+        })
+        
+    except Exception as e:
+        print(f"Error in api_create_podcast: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+        
+    finally:
+        # Clean up temporary files
+        try:
+            if 'audio_path' in locals() and os.path.exists(audio_path):
+                os.remove(audio_path)
+            if 'local_audio_path' in locals() and os.path.exists(local_audio_path):
+                os.remove(local_audio_path)
+        except Exception as e:
+            print(f"Error cleaning up files: {str(e)}")
+
 @socketio.on('disconnect')
 def handle_disconnect():
     session_id = request.args.get('session_id')
