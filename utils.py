@@ -157,7 +157,7 @@ def text_to_speech(message,filepath,cast, wander=False):
     # Calling the text_to_speech conversion API with detailed parameters
     global eleven_client
 
-    model_id = "eleven_flash_v2_5" if wander else "eleven_multilingual_v2"
+    model_id = "eleven_turbo_v2_5" if wander else "eleven_multilingual_v2"
     voices = {
             "host":cast['host'],
             "expert":cast['expert'] 
@@ -226,6 +226,8 @@ def concatenate_audio(file_list, output_file, app_root, wander=False):
         except Exception as e:
             logging.error(f"Error loading middle audio: {str(e)}")
             middle = AudioSegment.silent(duration=1000)  # 1 second of silence as fallback
+    else:
+        middle = AudioSegment.silent(duration=10000)  # 10 second of silence so fade calculation doesn't break
 
     fade_duration = min(8000, len(intro_outro) // 2, len(middle) // 2)  # Ensure fade duration isn't longer than half the audio
     logging.info(f"Fade duration: {fade_duration}ms")
