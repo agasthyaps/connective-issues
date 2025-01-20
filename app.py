@@ -445,7 +445,7 @@ def api_create_podcast():
         casual_script = conversation_engine(api_podteam['casual_editor'], script)
         
         # Create audio
-        audio_path = create_podcast_from_script(casual_script, TEMP_FOLDER, STATIC_FOLDER, app.root_path)
+        audio_path = create_podcast_from_script(casual_script, TEMP_FOLDER, STATIC_FOLDER, app.root_path, wander=True)
         
         if not os.path.exists(audio_path):
             raise FileNotFoundError(f"Final audio file not created: {audio_path}")

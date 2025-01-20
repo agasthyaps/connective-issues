@@ -153,23 +153,24 @@ def format_script(script):
     return script
 
 
-def text_to_speech(message,filepath,cast):
+def text_to_speech(message,filepath,cast, wander=False):
     # Calling the text_to_speech conversion API with detailed parameters
     global eleven_client
 
+    model_id = "eleven_flash_v2_5" if wander else "eleven_multilingual_v2"
     voices = {
-        "host":cast['host'],
-        "expert":cast['expert'] 
+            "host":cast['host'],
+            "expert":cast['expert'] 
     }
     voice = voices[message["speaker"]]
     message = message["dialogue"]
 
     response = eleven_client.text_to_speech.convert(
-        voice_id=voice,  # Adam pre-made voice
+        voice_id=voice, 
         optimize_streaming_latency="0",
         output_format="mp3_22050_32",
         text=message,
-        model_id="eleven_flash_v2_5",  # use the turbo model for low latency, for other languages use the `eleven_multilingual_v2`
+        model_id=model_id,
         voice_settings=VoiceSettings(
             stability=0.5,
             similarity_boost=.5,
@@ -186,7 +187,7 @@ def text_to_speech(message,filepath,cast):
     # Return the path of the saved audio file
     return filepath
 
-def concatenate_audio(file_list, output_file, app_root):
+def concatenate_audio(file_list, output_file, app_root, wander=False):
     logging.info(f"Starting audio concatenation. Files to process: {len(file_list)}")
     
     combined = AudioSegment.empty()
@@ -207,7 +208,7 @@ def concatenate_audio(file_list, output_file, app_root):
     logging.info(f"Combined audio duration: {len(combined)}ms")
 
     # Load the intro/outro file
-    intro_outro_path = os.path.join(app_root, 'static', 'introoutro.wav')
+    intro_outro_path = os.path.join(app_root, 'static', 'introoutro.wav') if not wander else os.path.join(app_root, 'static', 'wander_introoutro.wav')
     try:
         intro_outro = AudioSegment.from_file(intro_outro_path)
         logging.info(f"Intro/outro duration: {len(intro_outro)}ms")
@@ -215,15 +216,16 @@ def concatenate_audio(file_list, output_file, app_root):
         logging.error(f"Error loading intro/outro: {str(e)}")
         intro_outro = AudioSegment.silent(duration=1000)  # 1 second of silence as fallback
 
-    middle_options = ['middle1.wav','middle4.wav']
-    middle_path = os.path.join(app_root, 'static', random.choice(middle_options))
-    try:
-        middle = AudioSegment.from_file(middle_path)
-        logging.info(f"Middle audio duration: {len(middle)}ms")
-        middle = middle - 12  # Reduce volume
-    except Exception as e:
-        logging.error(f"Error loading middle audio: {str(e)}")
-        middle = AudioSegment.silent(duration=1000)  # 1 second of silence as fallback
+    if not wander:
+        middle_options = ['middle1.wav','middle4.wav']
+        middle_path = os.path.join(app_root, 'static', random.choice(middle_options))
+        try:
+            middle = AudioSegment.from_file(middle_path)
+            logging.info(f"Middle audio duration: {len(middle)}ms")
+            middle = middle - 12  # Reduce volume
+        except Exception as e:
+            logging.error(f"Error loading middle audio: {str(e)}")
+            middle = AudioSegment.silent(duration=1000)  # 1 second of silence as fallback
 
     fade_duration = min(8000, len(intro_outro) // 2, len(middle) // 2)  # Ensure fade duration isn't longer than half the audio
     logging.info(f"Fade duration: {fade_duration}ms")
@@ -238,11 +240,12 @@ def concatenate_audio(file_list, output_file, app_root):
     outro_position = max(0, len(combined) - len(intro_outro))
     combined = combined.overlay(intro_outro, position=outro_position)
 
-    # Add middle if the podcast is longer than 4.5 minutes
-    if len(combined) > 4.5 * 60 * 1000:
-        middle = middle.fade_in(duration=fade_duration).fade_out(duration=fade_duration)
-        middle_position = max(0, len(combined)//2 - 15000)
-        combined = combined.overlay(middle, position=middle_position)
+    if not wander:
+        # Add middle if the podcast is longer than 4.5 minutes
+        if len(combined) > 4.5 * 60 * 1000:
+            middle = middle.fade_in(duration=fade_duration).fade_out(duration=fade_duration)
+            middle_position = max(0, len(combined)//2 - 15000)
+            combined = combined.overlay(middle, position=middle_position)
 
     logging.info(f"Final audio duration: {len(combined)}ms")
 
@@ -263,12 +266,18 @@ def concatenate_audio(file_list, output_file, app_root):
 
     return output_file
 
-def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root):
+def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root, wander=False):
     voices = {
         'host':["RPEIZnKMqlQiZyZd1Dae","H2gwnCCCGhjpKRQBynLT","WLKp2jV6nrS8aMkPPDRO"],
         'expert':["P7x743VjyZEOihNNygQ9","r27TA7xKV7nfUjudCBpS","ByLF4fg3sDo1TGXkjPMA", "t9IV45xnQb79w1JXFAIQ"]
     }
-    cast = {"host":random.choice(voices['host']), "expert":random.choice(voices['expert'])}
+    if wander:
+        cast = {
+        "host":"RMpVjlVhBy1jzPAMMsse",
+        "expert":"s0XGIcqmceN2l7kjsqoZ"
+        }
+    else:
+        cast = {"host":random.choice(voices['host']), "expert":random.choice(voices['expert'])}
     print(cast)
     podcast_name = f"podcast_{random.randint(0,1000)}.mp3"
     print("Processing podcast script")
@@ -282,12 +291,12 @@ def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root):
         for i, turn in enumerate(processed_script):
             print(f"synthesizing turn {i}")
             temp_file = os.path.join(temp_audio_dir, f"{turn['speaker']}_{i}.wav")
-            file = text_to_speech(turn, temp_file, cast)
+            file = text_to_speech(turn, temp_file, cast, wander)
             file_list.append(file)
 
         output_file = os.path.join(static_dir, podcast_name)
         try:
-            final_pod = concatenate_audio(file_list, output_file, app_root)
+            final_pod = concatenate_audio(file_list, output_file, app_root, wander)
             print(f"Successfully created final podcast: {final_pod}")
         except Exception as e:
             print(f"Error during audio concatenation: {str(e)}")
