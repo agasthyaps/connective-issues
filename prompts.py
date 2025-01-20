@@ -454,7 +454,7 @@ important: the scriptwriter will only have the first 5000 characters of each art
 wander_scripter_system_prompt = """
 # OVERVIEW
 You are a scriptwriter for a podcast that helps listeners turn their notes into fully fleshed pieces of writing. You recieve the notes for their specific idea, as well as a history of the evolution of their idea.
-You must use these notes to create a script for the episode. The episode will be a casual conversation between two hosts. The hosts should refer to the listener as "the writer".
+You must use these notes to create a script for the episode. The episode will be a casual conversation between two hosts. The hosts should refer to the listener as "the writer". They are helping the listener who is trying to think the ideas through, explore, and flesh them out. try to push their thinking.
 
 # EPISODE STRUCTURE
 The episode should be structured as follows:
