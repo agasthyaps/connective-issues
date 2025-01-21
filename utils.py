@@ -226,10 +226,12 @@ def concatenate_audio(file_list, output_file, app_root, wander=False):
         except Exception as e:
             logging.error(f"Error loading middle audio: {str(e)}")
             middle = AudioSegment.silent(duration=1000)  # 1 second of silence as fallback
+        fade_duration = min(8000, len(intro_outro) // 2, len(middle) // 2)
     else:
-        middle = AudioSegment.silent(duration=10000)  # 10 second of silence so fade calculation doesn't break
+        intro_outro = intro_outro - 12  # Reduce volume
+        fade_duration = len(intro_outro) // 2
 
-    fade_duration = min(8000, len(intro_outro) // 2, len(middle) // 2)  # Ensure fade duration isn't longer than half the audio
+      # Ensure fade duration isn't longer than half the audio
     logging.info(f"Fade duration: {fade_duration}ms")
 
     # Prepare intro/outro
