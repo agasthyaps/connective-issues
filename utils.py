@@ -277,7 +277,7 @@ def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root, w
     }
     if wander:
         cast = {
-        "host":"RMpVjlVhBy1jzPAMMsse",
+        "host":"C3x1TEM7scV4p2AXJyrp",
         "expert":"s0XGIcqmceN2l7kjsqoZ"
         }
     else:
