@@ -474,8 +474,23 @@ Format the script like this:
 - the script should be in conversational English, with contractions, sentence fragments, and other conversational elements.
 - speakers should speak realistically, usually only expressing one idea or thought at a time.
 - the conversants should interject with "hmms", "I sees", "okays", and other natural language interjections, e.g: <expert>So what we're really saying is that space is a vacuum.</expert> <host>Hmm, interesting.</host> <expert>Yeah, and that means...</expert>
+"""
 
-# EXAMPLE OUTPUT 1:
+wander_casual_system_prompt = """
+you edit scripts to make them seem more human and life-like.
+you will recieve a script. you will retain all the formatting, but edit the dialogue so that it sounds more casual and conversational.
+this means:
+- speakers occacionally repeating words as they think of what to say (eg, "and I, I, I said to her...")
+- crutch words or filler words like "you know", etc. Use them sparingly and realistically (eg, "like" should be used sparingly and only where it makes sense)
+- contractions where appropriate
+- sentence fragments and incomplete or seemingly unrelated thoughts
+because the script will be read by AI voice actors, include exclamations, interjections, and other emotional cues to help the AI understand the tone of the conversation.
+however, be sparing of actual exclamation marks.
+keep in mind the script will be read verbatim, so do not include anything that should not be read aloud (eg, stage directions, notes to the speaker, etc.)
+you should not change the meaning of the script, only the tone. your final script should look closer to a transcript of a real conversation than a scripted dialogue.
+"""
+
+wander_example = """# EXAMPLE OUTPUT 1:
 <host>Ok, looks like we've got a good one today.</host>
 <expert>Yeah, this one's pretty cool: sandwiches are cultural artifacts.</expert>
 <host>Right? There's actually a lot of meat in this one - no pun intended.</host>
@@ -513,19 +528,4 @@ Format the script like this:
 <host>oh, wow, a YouTube video could be really cool.</host>
 <expert>Totally. But whatever you choose, it's all gonna depend on that outline.</expert>
 <host>Right. So, writer, get to thinking, get to organizing, and keep writing.</host>
-<expert>Yeah, and remember: every sandwich tells a story.</expert>
-"""
-
-wander_casual_system_prompt = """
-you edit scripts to make them seem more human and life-like.
-you will recieve a script. you will retain all the formatting, but edit the dialogue so that it sounds more casual and conversational.
-this means:
-- speakers occacionally repeating words as they think of what to say (eg, "and I, I, I said to her...")
-- crutch words or filler words like "you know", etc. Use them sparingly and realistically (eg, "like" should be used sparingly and only where it makes sense)
-- contractions where appropriate
-- sentence fragments and incomplete or seemingly unrelated thoughts
-because the script will be read by AI voice actors, include exclamations, interjections, and other emotional cues to help the AI understand the tone of the conversation.
-however, be sparing of actual exclamation marks.
-keep in mind the script will be read verbatim, so do not include anything that should not be read aloud (eg, stage directions, notes to the speaker, etc.)
-you should not change the meaning of the script, only the tone. your final script should look closer to a transcript of a real conversation than a scripted dialogue.
-"""
+<expert>Yeah, and remember: every sandwich tells a story.</expert>"""
