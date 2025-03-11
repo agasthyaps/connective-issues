@@ -69,7 +69,7 @@ def initialize_chain(model_shorthand, system_prompt, history=False):
         model = model_farm[model_shorthand](model=name, temperature=1)
     else:
         # Default temperature for other models
-        model = model_farm[model_shorthand](model=name, temperature=0.7)
+        model = model_farm[model_shorthand](model=name, temperature=0.7, max_tokens=8192)
 
     # Adjust prompt for Omni model
     if model_shorthand == 'omni':
