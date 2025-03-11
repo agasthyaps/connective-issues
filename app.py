@@ -90,13 +90,13 @@ def main():
     global podteam
     # re-initialize the podteam every time the main page is loaded
     podteam = {
-        'summarizer': initialize_chain('omni', summarizer_system_prompt),
+        'summarizer': initialize_chain('opus', summarizer_system_prompt),
         'type_classifier': initialize_chain('gpt', convo_type_system_prompt),
         'outliner': initialize_chain('omni', outliner_system_prompt),
-        'scripter': initialize_chain('omni', scripter_system_prompt, history=True),
+        'scripter': initialize_chain('opus', scripter_system_prompt, history=True),
         'feedback_giver': initialize_chain('opus', feedback_system_prompt, history=True),
-        'casual_editor': initialize_chain('4o', casual_system_prompt),
-        'multi_summarizer': initialize_chain('omni', multi_summary_system_prompt),
+        'casual_editor': initialize_chain('haiku', NEW_CASUAL_PROMPT),
+        'multi_summarizer': initialize_chain('opus', multi_summary_system_prompt),
         'titler': initialize_chain('gpt', titler_system_prompt)
     }
     podcasts_remaining = request.cookies.get('podcasts_remaining')
@@ -249,7 +249,7 @@ def create_podcast(session_id, pdfs, theme):
         
         # Create casual script
         socketio.emit('update', {'data': "👨‍🏫 making script more human",'session_id': session_id})
-        casual_script = conversation_engine(podteam['casual_editor'], script)
+        casual_script = process_casual_dialogue(script, podteam['casual_editor'])
 
         # Format the script
         formatted_script = format_script(casual_script)
@@ -435,14 +435,14 @@ def api_create_podcast():
         # Initialize API-specific podteam
         api_podteam = {
             'scripter': initialize_chain('omni', wander_scripter_system_prompt, history=True),
-            'casual_editor': initialize_chain('4o', wander_casual_system_prompt),
+            'casual_editor': initialize_chain('4o', NEW_CASUAL_PROMPT),
         }
         
         # Create first script
         script = conversation_engine(api_podteam['scripter'], f"NOTES:\n{notes}")
         
         # Create casual script
-        casual_script = conversation_engine(api_podteam['casual_editor'], script)
+        casual_script = process_casual_dialogue(script, api_podteam['casual_editor'])
         
         # Create audio
         audio_path = create_podcast_from_script(casual_script, TEMP_FOLDER, STATIC_FOLDER, app.root_path, wander=True)

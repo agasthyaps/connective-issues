@@ -46,9 +46,10 @@ def initialize_chain(model_shorthand, system_prompt, history=False):
     model_name = {
         'gpt': 'gpt-4o-mini-2024-07-18',
         'llama': 'llama3-8b-8192',
-        'opus': 'claude-3-5-sonnet-20241022',
+        'opus': 'claude-3-7-sonnet-20250219',
+        'haiku': 'claude-3-5-haiku-20241022',
         '4o': 'gpt-4o-2024-08-06',
-        'omni': 'o1-preview-2024-09-12'
+        'omni': 'o3-mini-2025-01-31'
     }
 
     name = model_name[model_shorthand]
@@ -58,7 +59,8 @@ def initialize_chain(model_shorthand, system_prompt, history=False):
         'llama': ChatGroq,
         'opus': ChatAnthropic,
         '4o': ChatOpenAI,
-        'omni': ChatOpenAI
+        'omni': ChatOpenAI,
+        'haiku': ChatAnthropic
     }
 
     # Adjust model parameters for Omni
@@ -145,6 +147,27 @@ def process_transcript(text):
     dialogues = re.findall(r'<(.*?)>(.*?)</\1>', text, flags=re.DOTALL)
     results = [{'speaker':speaker, 'dialogue':dialogue} for speaker, dialogue in dialogues]
     return results
+
+def process_casual_dialogue(script, casual_editor):
+    # Process each line of dialogue to make it more casual
+    dialogues = process_transcript(script)
+    casual_dialogues = []
+    
+    for turn in dialogues:
+        # Format the dialogue for the casual editor
+        input_dialogue = f"<ORIGINAL_DIALOGUE>{turn['dialogue']}</ORIGINAL_DIALOGUE>"
+        casual_response = conversation_engine(casual_editor, input_dialogue)
+        
+        # Extract the revised dialogue from between <REVISION> tags
+        revised = re.search(r'<REVISION>(.*?)</REVISION>', casual_response, flags=re.DOTALL)
+        if revised:
+            casual_dialogues.append(f"<{turn['speaker']}>{revised.group(1)}</{turn['speaker']}>")
+        else:
+            # Fallback to original if no revision found
+            casual_dialogues.append(f"<{turn['speaker']}>{turn['dialogue']}</{turn['speaker']}>")
+    
+    # Join all dialogues back together
+    return "\n".join(casual_dialogues)
 
 def format_script(script):
     # Replace <host> and <expert> tags with bold names
@@ -272,8 +295,8 @@ def concatenate_audio(file_list, output_file, app_root, wander=False):
 
 def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root, wander=False):
     voices = {
-        'host':["RPEIZnKMqlQiZyZd1Dae","H2gwnCCCGhjpKRQBynLT","WLKp2jV6nrS8aMkPPDRO"],
-        'expert':["P7x743VjyZEOihNNygQ9","r27TA7xKV7nfUjudCBpS","ByLF4fg3sDo1TGXkjPMA", "t9IV45xnQb79w1JXFAIQ"]
+        'host':["s0XGIcqmceN2l7kjsqoZ","DTKMou8ccj1ZaWGBiotd","C3x1TEM7scV4p2AXJyrp"],
+        'expert':["HDA9tsk27wYi3uq0fPcK", "OYTbf65OHHFELVut7v2H","pBZVCk298iJlHAcHQwLr"]
     }
     if wander:
         cast = {

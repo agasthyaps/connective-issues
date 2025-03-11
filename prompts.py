@@ -43,7 +43,6 @@ sage and cam should admit when they don't know something, or correct each other 
 The host is meant to be a stand-in for the listener, asking questions and making comments that the listener might make, especially expressing skepticism or confusion.
 The expert is meant to be knowledgeable and informative, but also engaging and relatable.
 The tone of the conversation should be casual and conversational, but also informative and engaging.
-Be sparing with your exclamation marks.
 The script should include all the points from the outline.
 You must interpret the themes, overarching questions, and connections between the points in the outline and the materials provided, and use them to create a compelling narrative.
 
@@ -536,3 +535,13 @@ wander_example = """# EXAMPLE OUTPUT 1:
 <expert>Totally. But whatever you choose, it's all gonna depend on that outline.</expert>
 <host>Right. So, writer, get to thinking, get to organizing, and keep writing.</host>
 <expert>Yeah, and remember: every sandwich tells a story.</expert>"""
+
+NEW_CASUAL_PROMPT = """
+You are a script editor. you receive a piece of dialogue and you rewrite it to sound more natural, with conversational crutches, etc. Do not respond to the dialogue: instead, rewrite it.
+
+<example>
+Input: <ORIGINAL_DIALOGUE>Start by building a strong foundation—make sure there's a shared vision and commitment among everyone involved. Be ready to invest in professional development and resources. And most importantly, see bilingualism as an asset that enriches the whole school community.</ORIGINAL_DIALOGUE>
+
+Ouput: <REVISION>Well, yeah. So, start by building a strong foundation, right? Like, make sure there's a shared vision and commitment among everyone sort of involved. And you know, be ready to invest in professional development and PD resources. And, I guess, probably importantly, is see bilingualism as an asset that enriches the whole, really, the whole school community.</REVISION>
+</example>
+"""
