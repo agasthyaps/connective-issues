@@ -181,7 +181,41 @@ def text_to_speech(message,filepath,cast, wander=False):
     # Calling the text_to_speech conversion API with detailed parameters
     global eleven_client
 
-    model_id = "eleven_turbo_v2_5" if wander else "eleven_multilingual_v2"
+    # best settings for each voice
+    settings = {
+        "cy8APH2iOLWD2g1zeaZn":{
+            "model_id":"eleven_turbo_v2_5",
+            "stability":0.41,
+            "similarity_boost":0.05,
+        },
+        "pBZVCk298iJlHAcHQwLr":{
+            "model_id":"eleven_multilingual_v2",
+            "stability":0.5,
+            "similarity_boost":0.5,
+        },
+        "C3x1TEM7scV4p2AXJyrp":{
+            "model_id":"eleven_turbo_v2_5",
+            "stability":0.41,
+            "similarity_boost":0.75,
+        },
+        "s0XGIcqmceN2l7kjsqoZ":{
+            "model_id":"eleven_multilingual_v2",
+            "stability":0.41,
+            "similarity_boost":0.77,
+            "style":0.5,
+            "use_speaker_boost":False,
+        },
+        "8sZxD42zKDvoEXNxBTdX":{
+            "model_id":"eleven_turbo_v2_5",
+            "stability":0.5,
+            "similarity_boost":0.75,
+        },
+        "P7x743VjyZEOihNNygQ9":{
+            "model_id":"eleven_turbo_v2_5",
+            "stability":0.45,
+            "similarity_boost":0.05,
+        }
+    }
     voices = {
             "host":cast['host'],
             "expert":cast['expert'], 
@@ -190,6 +224,12 @@ def text_to_speech(message,filepath,cast, wander=False):
     voice = voices[message["speaker"]]
     message = message["dialogue"]
 
+    model_id = settings[voice]["model_id"] if voice in settings else "eleven_multilingual_v2"
+    stability = settings[voice]["stability"] if voice in settings else 0.5
+    similarity_boost = settings[voice]["similarity_boost"] if voice in settings else 0.5
+    style = settings[voice]["style"] if voice in settings else 0.0
+    use_speaker_boost = settings[voice]["use_speaker_boost"] if voice in settings else False
+
     response = eleven_client.text_to_speech.convert(
         voice_id=voice, 
         optimize_streaming_latency="0",
@@ -197,10 +237,10 @@ def text_to_speech(message,filepath,cast, wander=False):
         text=message,
         model_id=model_id,
         voice_settings=VoiceSettings(
-            stability=0.5,
-            similarity_boost=.5,
-            style=0.0,
-            use_speaker_boost=False,
+            stability=stability,
+            similarity_boost=similarity_boost,
+            style=style,
+            use_speaker_boost=use_speaker_boost,
         ),
     )
 
@@ -303,8 +343,8 @@ def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root, w
     has_third_party = any(turn['speaker'] == 'third_party' for turn in processed_script)
 
     voices = {
-        'host':["s0XGIcqmceN2l7kjsqoZ","DTKMou8ccj1ZaWGBiotd","C3x1TEM7scV4p2AXJyrp"],
-        'expert':["HDA9tsk27wYi3uq0fPcK", "OYTbf65OHHFELVut7v2H","pBZVCk298iJlHAcHQwLr"]
+        'host':["s0XGIcqmceN2l7kjsqoZ","cy8APH2iOLWD2g1zeaZn","C3x1TEM7scV4p2AXJyrp"],
+        'expert':["8sZxD42zKDvoEXNxBTdX", "P7x743VjyZEOihNNygQ9","pBZVCk298iJlHAcHQwLr"]
     }
     if wander:
         cast = {
@@ -318,6 +358,7 @@ def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root, w
             # Pick another expert voice that's not the one already chosen
             cast["third_party"] = random.choice([v for v in voices['expert'] if v != cast["expert"]])
     print(cast)
+    
     podcast_name = f"podcast_{random.randint(0,1000)}.mp3"
     
     print(processed_script[:5])
