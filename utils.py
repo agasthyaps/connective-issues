@@ -173,6 +173,7 @@ def format_script(script):
     # Replace <host> and <expert> tags with bold names
     script = re.sub(r'<host>(.*?)</host>', r'**cam:** \1', script)
     script = re.sub(r'<expert>(.*?)</expert>', r'**sage:** \1', script)
+    script = re.sub(r'<third_party>(.*?)</third_party>', r'**sage\'s friend:** \1', script)
     return script
 
 
@@ -183,7 +184,8 @@ def text_to_speech(message,filepath,cast, wander=False):
     model_id = "eleven_turbo_v2_5" if wander else "eleven_multilingual_v2"
     voices = {
             "host":cast['host'],
-            "expert":cast['expert'] 
+            "expert":cast['expert'], 
+            "third_party":cast['third_party'] if 'third_party' in cast else None
     }
     voice = voices[message["speaker"]]
     message = message["dialogue"]
@@ -294,6 +296,12 @@ def concatenate_audio(file_list, output_file, app_root, wander=False):
     return output_file
 
 def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root, wander=False):
+    print("Processing podcast script")
+    processed_script = process_transcript(podcast_script)
+
+    # check if the script has a third party
+    has_third_party = any(turn['speaker'] == 'third_party' for turn in processed_script)
+
     voices = {
         'host':["s0XGIcqmceN2l7kjsqoZ","DTKMou8ccj1ZaWGBiotd","C3x1TEM7scV4p2AXJyrp"],
         'expert':["HDA9tsk27wYi3uq0fPcK", "OYTbf65OHHFELVut7v2H","pBZVCk298iJlHAcHQwLr"]
@@ -304,11 +312,14 @@ def create_podcast_from_script(podcast_script, temp_dir, static_dir, app_root, w
         "expert":"s0XGIcqmceN2l7kjsqoZ"
         }
     else:
-        cast = {"host":random.choice(voices['host']), "expert":random.choice(voices['expert'])}
+        cast = {"host":random.choice(voices['host'])}
+        cast["expert"] = random.choice(voices['expert'])
+        if has_third_party:
+            # Pick another expert voice that's not the one already chosen
+            cast["third_party"] = random.choice([v for v in voices['expert'] if v != cast["expert"]])
     print(cast)
     podcast_name = f"podcast_{random.randint(0,1000)}.mp3"
-    print("Processing podcast script")
-    processed_script = process_transcript(podcast_script)
+    
     print(processed_script[:5])
     file_list = []
     print(f"Creating podcast with {len(processed_script)} turns.")

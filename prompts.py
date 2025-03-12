@@ -21,6 +21,7 @@ You use a critical lens to identify holes, gaps, limitations, or logical leaps i
 The outline should include:
 - An introduction that sets the stage for the discussion
 - A series of points (based on provided summaries and theme, if provided) that will be discussed in the episode. The episode should be structured around these points in order to make one cohesive narrative: think of this as closer to a socratic dialogue with a theme as a throughline rather than a literature review.
+- If the episode seems like it might be long, assign some points to be discussed by a third party domain expert that the podcast expert will interview. the episode will cut to parts of the interview when appropriate, and make indications of this when necessary.
 - IMPORTANT: if there is a listener-submitted piece, the entire conversation MUST integrate that piece throughout the episode.
 - overall focus: what if we looked at [ARTICLES] from [THEME] angle and through the lens of [LISTENER-SUBMITTED ARTICLES]?
 - if no theme or listener-submitted article is provided, you should still create a compelling narrative that connects the articles in an interesting way.
@@ -42,6 +43,7 @@ The script is a conversation between a curious host, cam, and his regular guest,
 sage and cam should admit when they don't know something, or correct each other when one makes a mistake or incorrect assumption.
 The host is meant to be a stand-in for the listener, asking questions and making comments that the listener might make, especially expressing skepticism or confusion.
 The expert is meant to be knowledgeable and informative, but also engaging and relatable.
+On longer episodes, the expert can cut to an excerpt from an interview with a third party to help explain their point. That third party is always the same entity within an episode.
 The tone of the conversation should be casual and conversational, but also informative and engaging.
 The script should include all the points from the outline.
 You must interpret the themes, overarching questions, and connections between the points in the outline and the materials provided, and use them to create a compelling narrative.
@@ -54,8 +56,8 @@ The "sign off" from the host should always include the phrase "actually useful".
 
 # FORMATTING
 Format the script like this:
-- each line of dialogue MUST be attributed to either the host or the expert.
-- the speaker of each line MUST be denoted by <host>TEXT</host> or <expert>TEXT</expert>.
+- each line of dialogue MUST be attributed to either the host, the expert, or the third party.
+- the speaker of each line MUST be denoted by <host>TEXT</host> or <expert>TEXT</expert> or <third_party>TEXT</third_party>.
 - the script should be in conversational English, with contractions, sentence fragments, and other conversational elements.
 - speakers should speak realistically, usually only expressing one idea or thought at a time.
 - the conversants should interject with "hmms", "I sees", "okays", and other natural language interjections, e.g: <expert>So what we're really saying is that space is a vacuum.</expert> <host>Hmm, interesting.</host> <expert>Yeah, and that means...</expert>
@@ -84,11 +86,11 @@ Format the script like this:
 <host>Ok, so speaking of myths, Reagan was all about creating alternate realities through his political narratives, right?</host>
 <expert>Mhm,</expert> 
 <host> So how does that relate to sports fandom?</host>
-<expert>Reagan’s political myths created a sort of alternate reality where his delusions were part of the public mindset. Sports fandom is kinda the same—it's like a communal delusion. Fans get really emotionally invested in their teams and players, building narratives that often ignore the more complex or negative stuff going on.</expert>
-<host>What do we mean exactly by "communal delusion" in sports fandom?</host>
-<expert>Yeah, ok so when we say communal delusion, we’re talking about the shared beliefs and emotional investments fans make in their teams, often glossing over or downplaying the negative aspects.</expert>
-<host> hmm, yeah </host>
-<expert> It’s like a collective suspension of disbelief, you know?</expert>
+<expert>So, I called up my friend who's a sports psychologist, and here's what he said:</expert>
+<third_party>Reagan’s political myths created a sort of alternate reality where his delusions were part of the public mindset. Sports fandom is kinda the same—it's like a communal delusion. Fans get really emotionally invested in their teams and players, building narratives that often ignore the more complex or negative stuff going on.</third_party>
+<host>Oh wow, so what do we mean exactly by "communal delusion" in sports fandom?</host>
+<expert>Yeah, ok so when we say communal delusion, we’re talking about the shared beliefs and emotional investments fans make in their teams. My friend likened it to a collective suspension of disbelief:</expert>
+<third_party>It's like a collective suspension of disbelief, and you often find fans glossing over or downplaying the negative aspects.</third_party>
 <host>Got it! So, how do you think fans deal with their admiration for an athlete's on-field performance versus, like, potentially controversial off-field behavior?</host>
 <expert>It’s pretty complicated.</expert>
 <host> ok…</host>
@@ -151,13 +153,11 @@ Format the script like this:
 <host>oh that, that's interesting!</host>
 <expert>Yeah, It’s kind of like a cycle, where each drive feeds into the next.</expert>
 <host>Got it. So, if the 'me' writing a shopping list and the 'me' figuring out a tough problem are different versions, how does that even work?</host>
-<expert>Think about it this way: </expert>
-<host>ok.</host> 
-<expert>you’re different when you’re tired versus when you’re wide awake.</expert> 
-<host>ok, I think I'm following you here.</host>
-<expert>We have different 'selves' for different tasks, and that’s totally fine. We’re not always one consistent 'self,' and that plays into how these drives operate.</expert>
-<host>Interesting. And what about those theories you were mentioning earlier, like the Free Energy Principle?</host>
-<expert>Right! Those are like attempts to explain consciousness. The Free Energy Principle is about predicting what’s next to minimize surprises, and Integrated Information Theory looks at how info comes together in our minds. They’re useful, but they don’t really explain everything—especially why consciousness exists at all.</expert>
+<expert>That's actually a great question. I called up a friend who's a consciousness researcher, and here's what he said:</expert>
+<third_party>Think of it like this: you’re different when you’re tired versus when you’re wide awake. We have different 'selves' for different tasks, and that’s totally fine. We’re not always one consistent 'self,' and that plays into how these drives operate.</third_party>
+<host>ok, I think I'm following you here. And what about those theories you were mentioning earlier, like the Free Energy Principle?</host>
+<expert>Right! Those are like attempts to explain consciousness. That came up in our conversation too: </expert>
+<third_party> The Free Energy Principle is about predicting what’s next to minimize surprises, and Integrated Information Theory looks at how info comes together in our minds. They’re useful, but they don’t really explain everything—especially why consciousness exists at all.</third_party>
 <host>So, how do we actually test these Information Drives and see if they hold up?</host>
 <expert>Great question! We can look for patterns that these drives predict, like if a drive shows up across different systems, or how systems might create surprises to innovate. But it’s still pretty tricky to test these ideas in a solid way.</expert>
 <host>And what does all this mean for personal identity?</host>
@@ -537,7 +537,7 @@ wander_example = """# EXAMPLE OUTPUT 1:
 <expert>Yeah, and remember: every sandwich tells a story.</expert>"""
 
 NEW_CASUAL_PROMPT = """
-You are a script editor. you receive a piece of dialogue and you rewrite it to sound more natural, with conversational crutches, etc. Do not respond to the dialogue: instead, rewrite it. Don't overdo it, and don't dumb it down. (eg, don't change something complex into something like "and stuff")
+You are a script editor. you receive a piece of dialogue and you rewrite it to sound more natural, with conversational crutches, etc. Do not respond to the dialogue: instead, rewrite it. Don't overdo it, and don't dumb it down. (eg, don't change something complex into something like "and stuff"). Keep in mind the previous dialogue to make sure you are generating a natural conversation.
 
 <example>
 Input: <ORIGINAL_DIALOGUE>Start by building a strong foundation—make sure there's a shared vision and commitment among everyone involved. Be ready to invest in professional development and resources. And most importantly, see bilingualism as an asset that enriches the whole school community.</ORIGINAL_DIALOGUE>
