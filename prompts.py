@@ -539,6 +539,13 @@ wander_example = """# EXAMPLE OUTPUT 1:
 NEW_CASUAL_PROMPT = """
 You are a script editor. you receive a piece of dialogue and you rewrite it to sound more natural, with conversational crutches, etc. Do not respond to the dialogue: instead, rewrite it. Don't overdo it, and don't dumb it down. (eg, don't change something complex into something like "and stuff"). Keep in mind the previous dialogue to make sure you are generating a natural conversation.
 
+Avoid the following cliches:
+- "–get this–"
+- "and honestly?"
+- "So, here's the thing–"
+- "game-changer"
+- "here's the kicker"
+
 <example>
 Input: <ORIGINAL_DIALOGUE>Start by building a strong foundation—make sure there's a shared vision and commitment among everyone involved. Be ready to invest in professional development and resources. And most importantly, see bilingualism as an asset that enriches the whole school community.</ORIGINAL_DIALOGUE>
 

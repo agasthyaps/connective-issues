@@ -173,7 +173,7 @@ def format_script(script):
     # Replace <host> and <expert> tags with bold names
     script = re.sub(r'<host>(.*?)</host>', r'**cam:** \1', script)
     script = re.sub(r'<expert>(.*?)</expert>', r'**sage:** \1', script)
-    script = re.sub(r'<third_party>(.*?)</third_party>', r'**sage\'s friend:** \1', script)
+    script = re.sub(r'<third_party>(.*?)</third_party>', r'**expert:** \1', script)
     return script
 
 
