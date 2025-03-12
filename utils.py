@@ -154,6 +154,11 @@ def process_casual_dialogue(script, casual_editor):
     casual_dialogues = []
     
     for turn in dialogues:
+        # 40% chance to process each line
+        if random.random() > 0.4:
+            casual_dialogues.append(f"<{turn['speaker']}>{turn['dialogue']}</{turn['speaker']}>")
+            continue
+            
         # Format the dialogue for the casual editor
         input_dialogue = f"<ORIGINAL_DIALOGUE>{turn['dialogue']}</ORIGINAL_DIALOGUE>"
         casual_response = conversation_engine(casual_editor, input_dialogue)
