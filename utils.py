@@ -202,7 +202,6 @@ def text_to_speech(message,filepath,cast, wander=False):
             "model_id":"eleven_multilingual_v2",
             "stability":0.41,
             "similarity_boost":0.77,
-            "use_speaker_boost":False,
         },
         "8sZxD42zKDvoEXNxBTdX":{
             "model_id":"eleven_turbo_v2_5",
@@ -226,14 +225,6 @@ def text_to_speech(message,filepath,cast, wander=False):
     model_id = settings[voice]["model_id"] if voice in settings else "eleven_multilingual_v2"
     stability = settings[voice]["stability"] if voice in settings else 0.5
     similarity_boost = settings[voice]["similarity_boost"] if voice in settings else 0.5
-    use_speaker_boost = settings[voice]["use_speaker_boost"] if voice in settings else False
-
-    # Create voice settings based on model
-    voice_settings_params = {
-        "stability": stability,
-        "similarity_boost": similarity_boost,
-        "use_speaker_boost": use_speaker_boost
-    }
 
     response = eleven_client.text_to_speech.convert(
         voice_id=voice, 
@@ -241,7 +232,8 @@ def text_to_speech(message,filepath,cast, wander=False):
         output_format="mp3_22050_32",
         text=message,
         model_id=model_id,
-        voice_settings=VoiceSettings(**voice_settings_params),
+        stability=stability,
+        similarity_boost=similarity_boost,
     )
 
     # Writing the audio stream to the file
