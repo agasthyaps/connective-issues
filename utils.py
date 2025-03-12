@@ -230,18 +230,24 @@ def text_to_speech(message,filepath,cast, wander=False):
     style = settings[voice]["style"] if voice in settings else 0.0
     use_speaker_boost = settings[voice]["use_speaker_boost"] if voice in settings else False
 
+    # Create voice settings based on model
+    voice_settings_params = {
+        "stability": stability,
+        "similarity_boost": similarity_boost,
+        "use_speaker_boost": use_speaker_boost
+    }
+    
+    # Only add style parameter for non-turbo models
+    if not model_id.startswith("eleven_turbo"):
+        voice_settings_params["style"] = style
+
     response = eleven_client.text_to_speech.convert(
         voice_id=voice, 
         optimize_streaming_latency="0",
         output_format="mp3_22050_32",
         text=message,
         model_id=model_id,
-        voice_settings=VoiceSettings(
-            stability=stability,
-            similarity_boost=similarity_boost,
-            style=style,
-            use_speaker_boost=use_speaker_boost,
-        ),
+        voice_settings=VoiceSettings(**voice_settings_params),
     )
 
     # Writing the audio stream to the file
