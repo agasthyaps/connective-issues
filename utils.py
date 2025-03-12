@@ -181,7 +181,7 @@ def text_to_speech(message,filepath,cast, wander=False):
     # Calling the text_to_speech conversion API with detailed parameters
     global eleven_client
 
-    settings = {
+    vs_dict = {
         "cy8APH2iOLWD2g1zeaZn":{
             "model_id":"eleven_turbo_v2_5",
             "stability":0.41,
@@ -223,10 +223,11 @@ def text_to_speech(message,filepath,cast, wander=False):
     voice = voices[message["speaker"]]
     message = message["dialogue"]
 
-    model_id = settings[voice]["model_id"] if voice in settings else "eleven_multilingual_v2"
-    stability = settings[voice]["stability"] if voice in settings else 0.5
-    similarity_boost = settings[voice]["similarity_boost"] if voice in settings else 0.5
-    use_speaker_boost = settings[voice]["use_speaker_boost"] if voice in settings else False
+    model_id = vs_dict[voice].get("model_id", "eleven_multilingual_v2") if voice in vs_dict else "eleven_multilingual_v2"
+    stability = vs_dict[voice].get("stability", 0.5) if voice in vs_dict else 0.5
+    similarity_boost = vs_dict[voice].get("similarity_boost", 0.5) if voice in vs_dict else 0.5
+    use_speaker_boost = vs_dict[voice].get("use_speaker_boost", True) if voice in vs_dict else True
+    style = vs_dict[voice].get("style", 0.0) if voice in vs_dict else 0.0
 
     response = eleven_client.text_to_speech.convert(
         voice_id=voice, 
@@ -238,6 +239,7 @@ def text_to_speech(message,filepath,cast, wander=False):
             stability=stability,
             similarity_boost=similarity_boost,
             use_speaker_boost=use_speaker_boost,
+            style=style,
         ),
     )
 
