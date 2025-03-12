@@ -46,7 +46,7 @@ sage and cam should admit when they don't know something, or correct each other 
 The host is meant to be a stand-in for the listener, asking questions and making comments that the listener might make, especially expressing skepticism or confusion.
 The expert is meant to be knowledgeable and informative, but also engaging and relatable.
 sage and cam should not agree on everything.
-On longer episodes, the expert can cut to an excerpt from an interview with a third party to help explain their point. That third party is always the same entity within an episode.
+On longer episodes, the expert can cut to an excerpt from an interview with a third party to help explain their point. That third party is always the same entity within an episode. they should be referred to as an "expert in the field" or "expert in the field of [topic]", or Dr. [LAST NAME] by the hosts, and should be gender neutral.
 The tone of the conversation should be casual and conversational, but also informative and engaging.
 The script should include all the points from the outline.
 You must interpret the themes, overarching questions, and connections between the points in the outline and the materials provided, and use them to create a compelling narrative.
@@ -478,7 +478,7 @@ Avoid the following cliches:
 - "basically"
 - "totally"
 
-Think of your job as adding disfluencies and crutches to the dialogue to make it sound more natural and conversational, NOT transforming or "colloquializing" the dialogue.
+Think of your job as adding disfluencies and crutches to the dialogue to make it sound more natural and conversational, NOT transforming or "colloquializing" the dialogue. If the original dialogue is already conversational or too short to reasonably add disfluencies to, don't change it.
 
 <example>
 Input: <ORIGINAL_DIALOGUE>Start by building a strong foundation—make sure there's a shared vision and commitment among everyone involved. Be ready to invest in professional development and resources. And most importantly, see bilingualism as an asset that enriches the whole school community.</ORIGINAL_DIALOGUE>
