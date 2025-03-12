@@ -475,6 +475,10 @@ Avoid the following cliches:
 - "So, here's the thing–"
 - "game-changer"
 - "here's the kicker"
+- "basically"
+- "totally"
+
+Think of your job as adding disfluencies and crutches to the dialogue to make it sound more natural and conversational, NOT transforming or "colloquializing" the dialogue.
 
 <example>
 Input: <ORIGINAL_DIALOGUE>Start by building a strong foundation—make sure there's a shared vision and commitment among everyone involved. Be ready to invest in professional development and resources. And most importantly, see bilingualism as an asset that enriches the whole school community.</ORIGINAL_DIALOGUE>
