@@ -202,7 +202,6 @@ def text_to_speech(message,filepath,cast, wander=False):
             "model_id":"eleven_multilingual_v2",
             "stability":0.41,
             "similarity_boost":0.77,
-            "style":0.5,
             "use_speaker_boost":False,
         },
         "8sZxD42zKDvoEXNxBTdX":{
@@ -227,7 +226,6 @@ def text_to_speech(message,filepath,cast, wander=False):
     model_id = settings[voice]["model_id"] if voice in settings else "eleven_multilingual_v2"
     stability = settings[voice]["stability"] if voice in settings else 0.5
     similarity_boost = settings[voice]["similarity_boost"] if voice in settings else 0.5
-    style = settings[voice]["style"] if voice in settings else 0.0
     use_speaker_boost = settings[voice]["use_speaker_boost"] if voice in settings else False
 
     # Create voice settings based on model
@@ -236,10 +234,6 @@ def text_to_speech(message,filepath,cast, wander=False):
         "similarity_boost": similarity_boost,
         "use_speaker_boost": use_speaker_boost
     }
-    
-    # Only add style parameter for non-turbo models
-    if not model_id.startswith("eleven_turbo"):
-        voice_settings_params["style"] = style
 
     response = eleven_client.text_to_speech.convert(
         voice_id=voice, 
