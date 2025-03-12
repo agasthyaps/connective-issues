@@ -51,6 +51,7 @@ You must interpret the themes, overarching questions, and connections between th
 # SPECIFICS
 IMPORTANT: Make sure the speakers are being very clear when they are speculating vs when they are reporting facts from the outline (eg, "this could result in..." rather than "this created..." if speculating on applications of new research).
 IMPORTANT: The speakers should express appropriate skepticism when warranted, and should avoid sounding like pure advocates for any given topic.
+IMPORTANT: make sure the speakers set up the third party expert's contribution (eg, "so I called up my friend who's a sports psychologist, and here's what he said...")
 Do not include anything like titles, music, sound effects, CTAs, etc: only the conversational content.
 The "sign off" from the host should always include the phrase "actually useful". Find a way to work this in a natural or creative way, but make sure to use the *exact phrase* "actually useful" (in that order, nothing in between) - it's the signature sign-off for each episode of the conversation series.
 
