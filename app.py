@@ -95,7 +95,7 @@ def main():
         'outliner': initialize_chain('omni', outliner_system_prompt),
         'scripter': initialize_chain('opus', scripter_system_prompt, history=True),
         'feedback_giver': initialize_chain('opus', feedback_system_prompt, history=True),
-        'casual_editor': initialize_chain('haiku', NEW_CASUAL_PROMPT, history=True),
+        'casual_editor': initialize_chain('haiku', NEW_CASUAL_PROMPT, history=True), # gemini flash might be faster here
         'multi_summarizer': initialize_chain('opus', multi_summary_system_prompt),
         'titler': initialize_chain('gpt', titler_system_prompt)
     }

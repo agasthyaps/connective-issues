@@ -23,6 +23,7 @@ The outline should include:
 - An introduction that sets the stage for the discussion
 - A series of points (based on provided summaries and theme, if provided) that will be discussed in the episode. The episode should be structured around these points in order to make one cohesive narrative: think of this as closer to a socratic dialogue with a theme as a throughline rather than a literature review.
 - If the episode seems like it might be long, assign some points to be discussed by a third party domain expert that the podcast expert will interview. the episode will cut to parts of the interview when appropriate, and make indications of this when necessary.
+- choose one point for cam and sage to disagree on; the disagreement should be deep enough that it can't be resolved in a single back and forth turn. it can be nuanced but not surface level (eg, "well, yes, but...", or "do you think that's the only way to look at it?", or "maybe we're not looking at it from the right angle" are not deep enough).
 - IMPORTANT: if there is a listener-submitted piece, the entire conversation MUST integrate that piece throughout the episode.
 - IMPORTANT: your overall focus should be: what if we looked at [ARTICLES] from [THEME] angle and through the lens of [LISTENER-SUBMITTED ARTICLES]?
 - if no theme or listener-submitted article is provided, you should still create a compelling narrative that connects the articles in an interesting way.
@@ -45,7 +46,7 @@ The script is a conversation between a host, cam, and his regular guest, a gener
 sage and cam should admit when they don't know something, or correct each other when one makes a mistake or incorrect assumption. you should allow these moments to happen to enhance the naturalness of the conversation.
 The host (cam) is meant to be a stand-in for the listener, asking questions and making comments that the listener might make, especially expressing skepticism or confusion.
 The expert (sage) is meant to be knowledgeable and informative, but also engaging and relatable.
-sage and cam should not agree on everything.
+sage and cam should not agree on everything, and when they disagree, they should be able to have a deep and thoughtful conversation about it, challenging each other's views.
 On longer episodes, the expert can cut to an excerpt from an interview with a third party to help explain their point. That third party is always the same entity within an episode. they should be referred to as an "expert in the field" or "expert in the field of [topic]", or Dr. [LAST NAME] by the hosts, and should be gender neutral (they vs he/she).
 The tone of the conversation should be casual and conversational, but also informative and engaging.
 The script should include all the points from the outline.
@@ -54,7 +55,8 @@ You must interpret the themes, overarching questions, and connections between th
 
 <specifics>
 IMPORTANT: Make sure the speakers are being very clear when they are speculating vs when they are reporting facts from the outline (eg, "this could result in..." rather than "this created..." if speculating on applications of new research).
-IMPORTANT: The speakers should express appropriate skepticism when warranted, and should avoid sounding like pure advocates for any given topic. bonus points if they disagree with each other about something important or nuanced.
+IMPORTANT: The speakers should express appropriate skepticism when warranted, and should avoid sounding like pure advocates for any given topic.
+IMPORTANT: cam and sage should disagree on one point; the disagreement should be deep enough that it can't be resolved in a single back and forth turn.
 IMPORTANT: make sure the speakers set up the third party expert's contribution (eg, "so I called up my friend who's a sports psychologist, and here's what they said...")
 Do not include anything like titles, music, sound effects, CTAs, etc: only the conversational content.
 The "sign off" from the host should always include the phrase "actually useful". Find a way to work this in a natural or creative way, but make sure to use the *exact phrase* "actually useful" (in that order, nothing in between) - it's the signature sign-off for each episode of the conversation series.
@@ -104,7 +106,7 @@ Format the script like this:
 <host> ok…</host>
 <expert> Just like Reagan’s followers kinda overlooked some of his questionable policies 'cause they bought into his larger-than-life persona, fans often do the same with athletes. They focus on the on-field stuff and, like, ignore the off-field controversies. Remember when Aaron Rodgers said he was "immunized" against COVID-19? </expert>
 <host>Oh yeah, I remember that.</host>
-...[more dialogue]
+...[more dialogue, including disagreement between cam and sage, etc]
 <host>This has been such a fascinating discussion, Sage. Any final thoughts?</host>
 <expert>Just that the power of narratives is huge, whether we're talking politics or sports. They shape how we see the world and can influence our beliefs and actions. If we understand this, we can be more critical and thoughtful about the narratives we consume.</expert>
 <host>Absolutely. This convo has really got me thinking about how we consume media and support public figures. Maybe we should all take a moment to reflect on the narratives we buy into, whether in politics or sports. What do you think, listeners? We’d love to hear your thoughts on our social media channels. Thanks for tuning in to "Connective Issues." We hope you found this episode actually useful. See you next time!</host>

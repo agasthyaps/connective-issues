@@ -149,7 +149,8 @@ def process_transcript(text):
     return results
 
 def process_casual_dialogue(script, casual_editor):
-    # Process each line of dialogue to make it more casual
+    # each line of dialogue is processed again to sound more casual with P(revise) = 0.4
+    # this is to keep net disfluencies down while still making the dialogue sound more casual overall
     dialogues = process_transcript(script)
     casual_dialogues = []
     
@@ -159,7 +160,7 @@ def process_casual_dialogue(script, casual_editor):
             casual_dialogues.append(f"<{turn['speaker']}>{turn['dialogue']}</{turn['speaker']}>")
             continue
             
-        # Format the dialogue for the casual editor
+        # Format the dialogue for the casual editor (see prompts.py)
         input_dialogue = f"<ORIGINAL_DIALOGUE>{turn['dialogue']}</ORIGINAL_DIALOGUE>"
         casual_response = conversation_engine(casual_editor, input_dialogue)
         
@@ -183,9 +184,8 @@ def format_script(script):
 
 
 def text_to_speech(message,filepath,cast, wander=False):
-    # Calling the text_to_speech conversion API with detailed parameters
     global eleven_client
-
+    # optimal (natural sounding) params for each voice
     vs_dict = {
         "cy8APH2iOLWD2g1zeaZn":{
             "model_id":"eleven_turbo_v2_5",
