@@ -77,32 +77,32 @@ def generate(text, app_root=None):
     # Create a temporary directory for the audio files
     with tempfile.TemporaryDirectory() as temp_dir:
         file_list = []
-        file_index = 0
+    file_index = 0
         
-        for chunk in client.models.generate_content_stream(
-            model=model,
-            contents=contents,
-            config=generate_content_config,
+    for chunk in client.models.generate_content_stream(
+        model=model,
+        contents=contents,
+        config=generate_content_config,
+    ):
+        if (
+            chunk.candidates is None
+            or chunk.candidates[0].content is None
+            or chunk.candidates[0].content.parts is None
         ):
-            if (
-                chunk.candidates is None
-                or chunk.candidates[0].content is None
-                or chunk.candidates[0].content.parts is None
-            ):
-                continue
-            if chunk.candidates[0].content.parts[0].inline_data and chunk.candidates[0].content.parts[0].inline_data.data:
+            continue
+        if chunk.candidates[0].content.parts[0].inline_data and chunk.candidates[0].content.parts[0].inline_data.data:
                 file_name = os.path.join(temp_dir, f"audio_{file_index}")
-                file_index += 1
-                inline_data = chunk.candidates[0].content.parts[0].inline_data
-                data_buffer = inline_data.data
-                file_extension = mimetypes.guess_extension(inline_data.mime_type)
-                if file_extension is None:
-                    file_extension = ".wav"
-                    data_buffer = convert_to_wav(inline_data.data, inline_data.mime_type)
-                save_binary_file(f"{file_name}{file_extension}", data_buffer)
+            file_index += 1
+            inline_data = chunk.candidates[0].content.parts[0].inline_data
+            data_buffer = inline_data.data
+            file_extension = mimetypes.guess_extension(inline_data.mime_type)
+            if file_extension is None:
+                file_extension = ".wav"
+                data_buffer = convert_to_wav(inline_data.data, inline_data.mime_type)
+            save_binary_file(f"{file_name}{file_extension}", data_buffer)
                 file_list.append(f"{file_name}{file_extension}")
-            else:
-                print(chunk.text)
+        else:
+            print(chunk.text)
 
         # Combine all audio files
         combined = AudioSegment.empty()

@@ -132,15 +132,8 @@ def upload():
     if podcasts_remaining <= 0:
         return jsonify({'error': 'You have reached the maximum number of podcast generations', 'podcasts_remaining': 0}), 403
 
-    
     session_id = str(uuid.uuid4())  # Generate a unique session ID
 
-    # if TESTING:
-    #     print("Testing mode: returning dummy data")
-    #     socketio.start_background_task(create_podcast, session_id, pdfs, theme)
-    #     return jsonify({'message': 'Podcast creation started', 'session_id': session_id})
-    # else:
-    print("we shouldn't be here")
     try:
         for i in range(4):  # Allow up to 4 PDFs
             if f'pdf_{i}' in request.files:
@@ -158,7 +151,24 @@ def upload():
         # Store uploaded files in server-side storage
         server_side_storage[session_id] = {'uploaded_files': uploaded_files}
 
-        # Start the podcast creation process in a background task
+        # If Google TTS is enabled, redirect to that route
+        if USE_GOOGLE_TTS:
+            # Extract text from PDFs
+            texts = []
+            for file in pdfs:
+                text = extract_text_from_pdf(file['pdf'])
+                if file['kind'] == 'me':
+                    text = "This piece was submitted by a listener. It may be an article, notes, a brainstorm, or something else entirely. Treat their thoughts seriously and try to make sense of them, especially in the context of any theme you may be focusing on.\n\n" + text
+                texts.append(text)
+
+            # Create a combined text with theme if provided
+            combined_text = f"{theme}\n\n" + "\n\n".join(texts) if theme else "\n\n".join(texts)
+
+            # Create a request context for the Google TTS route
+            with app.test_request_context(json={'notes': combined_text}):
+                return api_create_google_podcast()
+
+        # Otherwise, proceed with normal podcast creation
         socketio.start_background_task(create_podcast, session_id, pdfs, theme)
 
         podcasts_remaining -= 1
