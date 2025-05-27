@@ -43,6 +43,9 @@ server_side_storage = {}
 podteam = {}
 made_one = False
 
+# Add flag for Google TTS route
+USE_GOOGLE_TTS = os.environ.get('USE_GOOGLE_TTS', 'false').lower() == 'true'
+
 def initialize_app():
     global app_ready
     # Initialize the database
@@ -510,5 +513,76 @@ def handle_disconnect():
             print(f"Error in handle_disconnect: {str(e)}")
 
     disconnect()  # Ensure the client is disconnected
+
+@app.route('/api/create_google_podcast', methods=['POST'])
+def api_create_google_podcast():
+    if not USE_GOOGLE_TTS:
+        return jsonify({'error': 'Google TTS route is not enabled'}), 403
+        
+    try:
+        # Validate request
+        if not request.is_json:
+            return jsonify({'error': 'Content-Type must be application/json'}), 415
+        
+        data = request.json
+        notes = data.get('notes')
+        if not notes:
+            return jsonify({'error': 'Outline is required'}), 400
+            
+        # Generate session ID
+        session_id = str(uuid.uuid4())
+        
+        # Initialize Google-specific podteam
+        google_podteam = {
+            'outliner': initialize_chain('omni', google_outliner_system_prompt),
+            'scripter': initialize_chain('omni', google_scripter_system_prompt, history=True),
+        }
+        
+        # Create outline
+        outline = conversation_engine(google_podteam['outliner'], f"NOTES:\n{notes}")
+        
+        # Create script
+        script = conversation_engine(google_podteam['scripter'], f"OUTLINE:\n{outline}")
+        
+        # Create audio using Google TTS
+        from googletts import generate
+        audio_path = generate(script, app.root_path)
+        
+        if not os.path.exists(audio_path):
+            raise FileNotFoundError(f"Final audio file not created: {audio_path}")
+
+        audio_filename = os.path.basename(audio_path)
+        local_audio_path = os.path.join(STATIC_FOLDER, audio_filename)
+        
+        # Save to GCS and get the blob name
+        blob_name = db_helpers.save_shared_podcast(session_id, local_audio_path, script)
+        
+        # Get the audio URL
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(os.environ.get('GCS_BUCKET_NAME'))
+        blob = bucket.blob(blob_name)
+        
+        audio_url = url_for('serve_audio', share_id=session_id, _external=True)
+        
+        return jsonify({
+            'success': True,
+            'audio_url': audio_url,
+            'script': script,
+            'session_id': session_id
+        })
+        
+    except Exception as e:
+        print(f"Error in api_create_google_podcast: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+        
+    finally:
+        # Clean up temporary files
+        try:
+            if 'audio_path' in locals() and os.path.exists(audio_path):
+                os.remove(audio_path)
+            if 'local_audio_path' in locals() and os.path.exists(local_audio_path):
+                os.remove(local_audio_path)
+        except Exception as e:
+            print(f"Error cleaning up files: {str(e)}")
 
 
