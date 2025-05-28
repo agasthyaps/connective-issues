@@ -679,3 +679,33 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease-out;
 }
+
+/* Labs toggle styles */
+.labs-toggle {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.beaker-icon {
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.hidden-checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* When checkbox is checked, highlight icon */
+.hidden-checkbox:checked + .tooltip {
+    /* no direct sibling; we can't easily use this; will rely on JS for visual maybe */
+}
+
+.beaker-icon.active {
+    color: #bd5bcc;
+}

@@ -29,6 +29,24 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const submitFeedbackBtn = document.getElementById('submitFeedback');
     const blogLoadingAnimation = document.getElementById('blogLoadingAnimation');
 
+    /* Labs toggle */
+    const labsToggle = document.getElementById('labsToggle');
+    let useGoogleTTS = labsToggle ? labsToggle.checked : false;
+    if (labsToggle) {
+        labsToggle.addEventListener('change', function() {
+            useGoogleTTS = labsToggle.checked;
+            // Optional: visually indicate active state by toggling a class on the icon
+            const iconLabel = document.querySelector('label[for="labsToggle"]');
+            if (iconLabel) {
+                if (useGoogleTTS) {
+                    iconLabel.classList.add('active');
+                } else {
+                    iconLabel.classList.remove('active');
+                }
+            }
+        });
+    }
+
     let currentSessionId = null;
     let currentShareId = null;
     let pdfCount = 1;
@@ -389,6 +407,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
 
             const formData = new FormData(form);
+            // Append labs toggle state
+            formData.append('use_google', useGoogleTTS ? 'true' : 'false');
             showElement(loadingAnimation);
             showElement(messages);
             currentStatus.textContent = 'Conversation creation started. Please wait...';
@@ -424,6 +444,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 }
                 hideElement(loadingAnimation);
             });
+
+            // Disable labs toggle once podcast creation starts to prevent changes during processing
+            if (labsToggle) {
+                labsToggle.disabled = true;
+            }
         });
     } else {
         console.error('Form with id "uploadForm" not found');

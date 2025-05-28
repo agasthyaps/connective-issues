@@ -122,6 +122,7 @@ def upload():
     pdfs = []
     uploaded_files = []
     theme = request.form.get('theme', '')
+    use_google_param = request.form.get('use_google', 'false').lower() == 'true'
     podcasts_remaining = request.cookies.get('podcasts_remaining')
     
     if podcasts_remaining is None:
@@ -151,8 +152,8 @@ def upload():
         # Store uploaded files in server-side storage
         server_side_storage[session_id] = {'uploaded_files': uploaded_files}
 
-        # If Google TTS is enabled, redirect to that route
-        if USE_GOOGLE_TTS:
+        # If the labs toggle is enabled by the user, route to Google TTS flow
+        if use_google_param:
             # Extract text from PDFs
             texts = []
             for file in pdfs:
