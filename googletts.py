@@ -14,6 +14,7 @@ import logging
 import random
 from typing import Union, Dict
 import time
+import shutil
 
 
 def save_binary_file(file_name, data):
@@ -80,6 +81,7 @@ def generate(text, app_root=None):
     temp_dir = tempfile.mkdtemp()
     file_list = []
     file_index = 0
+    final_audio_path = None
     
     try:
         for chunk in client.models.generate_content_stream(
@@ -153,29 +155,29 @@ def generate(text, app_root=None):
                 logging.error(f"Error loading intro/outro: {str(e)}")
 
         # Export the final combined audio file
-        output_file = os.path.join(temp_dir, "final_podcast.mp3")
-        combined.export(output_file, format="mp3")
+        final_audio_path = os.path.join(temp_dir, "final_podcast.mp3")
+        combined.export(final_audio_path, format="mp3")
         
         # Copy the file to the static folder if app_root is provided
         if app_root:
             static_file = os.path.join(app_root, 'static', f"podcast_{int(time.time())}.mp3")
-            import shutil
-            shutil.copy2(output_file, static_file)
+            shutil.copy2(final_audio_path, static_file)
             return static_file
             
-        return output_file
+        return final_audio_path
 
     except Exception as e:
         logging.error(f"Error in generate: {str(e)}")
         raise
     finally:
-        # Clean up temporary files
+        # Clean up intermediate files but keep the final audio
         try:
             for file in file_list:
                 if os.path.exists(file):
                     os.remove(file)
-            if os.path.exists(temp_dir):
-                os.rmdir(temp_dir)
+            # Only remove the temp directory if we're not returning the final audio from it
+            if app_root and os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir)
         except Exception as e:
             logging.error(f"Error cleaning up temporary files: {str(e)}")
 
