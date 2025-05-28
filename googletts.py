@@ -38,7 +38,7 @@ def generate(text, app_root=None):
         api_key=os.environ.get("GEMINI_API_KEY"),
     )
 
-    model = "gemini-2.5-pro-preview-tts"
+    model = "gemini-2.5-flash-preview-tts"
     contents = [
         types.Content(
             role="user",
