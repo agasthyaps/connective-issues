@@ -49,7 +49,8 @@ def initialize_chain(model_shorthand, system_prompt, history=False):
         'opus': 'claude-3-7-sonnet-20250219',
         'haiku': 'claude-3-5-haiku-20241022',
         '4o': 'gpt-4o-2024-08-06',
-        'omni': 'o3-mini-2025-01-31'
+        'omni': 'o3-mini-2025-01-31',
+        'sonnet':'claude-sonnet-4-20250514'
     }
 
     name = model_name[model_shorthand]
@@ -60,7 +61,8 @@ def initialize_chain(model_shorthand, system_prompt, history=False):
         'opus': ChatAnthropic,
         '4o': ChatOpenAI,
         'omni': ChatOpenAI,
-        'haiku': ChatAnthropic
+        'haiku': ChatAnthropic,
+        'sonnet': ChatAnthropic
     }
 
     # Adjust model parameters for Omni

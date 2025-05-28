@@ -544,8 +544,8 @@ def api_create_google_podcast():
         
         # Initialize Google-specific podteam
         google_podteam = {
-            'outliner': initialize_chain('omni', google_outliner_system_prompt),
-            'scripter': initialize_chain('omni', google_scripter_system_prompt, history=True),
+            'outliner': initialize_chain('sonnet', google_outliner_system_prompt),
+            'scripter': initialize_chain('sonnet', google_scripter_system_prompt, history=True),
         }
         
         # Create outline
