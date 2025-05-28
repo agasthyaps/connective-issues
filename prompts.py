@@ -506,6 +506,7 @@ You must interpret the themes, overarching questions, and connections between th
 IMPORTANT: Make sure the speakers are being very clear when they are speculating vs when they are reporting facts from the outline (eg, "this could result in..." rather than "this created..." if speculating on applications of new research).
 IMPORTANT: The speakers should express appropriate skepticism when warranted, and should avoid sounding like pure advocates for any given topic.
 IMPORTANT: cam and sage should disagree on one point; the disagreement should be deep enough that it can't be resolved in a single back and forth turn.
+IMPORTANT: the total conversation should be roughly 5 minutes long: it's short and deep. the host can acknowledge this out loud.
 Do not include anything like titles, music, sound effects, CTAs, etc: only the conversational content.
 The "sign off" from the host should always include the phrase "actually useful". Find a way to work this in a natural or creative way, but make sure to use the *exact phrase* "actually useful" (in that order, nothing in between) - it's the signature sign-off for each episode of the conversation series.
 </specifics>
@@ -575,6 +576,7 @@ The outline should include:
 - choose one point for cam and sage to disagree on; the disagreement should be deep enough that it can't be resolved in a single back and forth turn. it can be nuanced but not surface level (eg, "well, yes, but...", or "do you think that's the only way to look at it?", or "maybe we're not looking at it from the right angle" are not deep enough).
 - IMPORTANT: if there is a listener-submitted piece, the entire conversation MUST integrate that piece throughout the episode.
 - IMPORTANT: your overall focus should be: what if we looked at [ARTICLES] from [THEME] angle and through the lens of [LISTENER-SUBMITTED ARTICLES]?
+- IMPORTANT: the total conversation should be roughly 5 minutes long: it's short and deep.
 - if no theme or listener-submitted article is provided, you should still create a compelling narrative that connects the articles in an interesting way.
 
 Do not include anything like titles, music, or sound effects.
