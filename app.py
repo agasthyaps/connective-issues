@@ -546,6 +546,7 @@ def api_create_google_podcast():
         google_podteam = {
             'outliner': initialize_chain('4o', google_outliner_system_prompt),
             'scripter': initialize_chain('4o', google_scripter_system_prompt, history=True),
+            'titler': initialize_chain('gpt', titler_system_prompt)
         }
         
         # Create outline
@@ -556,6 +557,9 @@ def api_create_google_podcast():
         # Create script
         socketio.emit('update', {'data': "writing script",'session_id': session_id})
         script = conversation_engine(google_podteam['scripter'], f"OUTLINE:\n{outline}")
+        
+        # Generate a title for consistency with the normal route
+        title = conversation_engine(google_podteam['titler'], script)
         
         # Create audio using Google TTS
         from googletts import generate
@@ -578,11 +582,21 @@ def api_create_google_podcast():
         
         audio_url = url_for('serve_audio', share_id=session_id, _external=True)
         
+        # Emit complete event so the frontend can handle it the same way as the normal route
+        socketio.emit('complete', {
+            'share_id': session_id,
+            'script': script,
+            'session_id': session_id,
+            'blob_name': blob_name,
+            'title': title
+        })
+
         return jsonify({
             'success': True,
             'audio_url': audio_url,
             'script': script,
-            'session_id': session_id
+            'session_id': session_id,
+            'title': title
         })
         
     except Exception as e:
