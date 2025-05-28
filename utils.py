@@ -48,7 +48,7 @@ def initialize_chain(model_shorthand, system_prompt, history=False):
         'llama': 'llama3-8b-8192',
         'opus': 'claude-3-7-sonnet-20250219',
         'haiku': 'claude-3-5-haiku-20241022',
-        '4o': 'gpt-4o-2024-08-06',
+        '4o': 'gpt-4.1',
         'omni': 'o3-mini-2025-01-31',
         'sonnet':'claude-sonnet-4-20250514'
     }
