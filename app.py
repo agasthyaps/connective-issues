@@ -639,7 +639,7 @@ def create_google_podcast(session_id, notes):
     try:
         google_podteam = {
             'outliner': initialize_chain('4o', google_outliner_system_prompt),
-            'scripter': initialize_chain('4o', google_scripter_system_prompt, history=True),
+            'scripter': initialize_chain('4o', google_scripter_system_prompt, history=True, max_tokens=4096),
             'titler': initialize_chain('gpt', titler_system_prompt)
         }
 
