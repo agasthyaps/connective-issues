@@ -549,13 +549,17 @@ def api_create_google_podcast():
         }
         
         # Create outline
+        # emit update
+        socketio.emit('update', {'data': "outlining",'session_id': session_id})
         outline = conversation_engine(google_podteam['outliner'], f"NOTES:\n{notes}")
         
         # Create script
+        socketio.emit('update', {'data': "writing script",'session_id': session_id})
         script = conversation_engine(google_podteam['scripter'], f"OUTLINE:\n{outline}")
         
         # Create audio using Google TTS
         from googletts import generate
+        socketio.emit('update', {'data': "recording",'session_id': session_id})
         audio_path = generate(script, app.root_path)
         
         if not os.path.exists(audio_path):
