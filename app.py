@@ -164,9 +164,26 @@ def upload():
             # Create a combined text with theme if provided
             combined_text = f"{theme}\n\n" + "\n\n".join(texts) if theme else "\n\n".join(texts)
 
-            # Create a request context for the Google TTS route
-            with app.test_request_context(json={'notes': combined_text}):
-                return api_create_google_podcast()
+            # Generate a session_id upfront so the frontend can listen for updates
+            session_id = str(uuid.uuid4())
+
+            # Store notes for potential blog generation or future use
+            server_side_storage[session_id] = {
+                'processed_texts': [combined_text],
+                'theme': theme
+            }
+
+            # Start background task for Google podcast creation
+            socketio.start_background_task(create_google_podcast, session_id, combined_text)
+
+            podcasts_remaining -= 1
+            response = jsonify({
+                'message': 'Google podcast creation started',
+                'session_id': session_id,
+                'podcasts_remaining': podcasts_remaining
+            })
+            set_cookie_with_samesite(response, 'podcasts_remaining', str(podcasts_remaining), max_age=15*60)
+            return response
 
         # Otherwise, proceed with normal podcast creation
         socketio.start_background_task(create_podcast, session_id, pdfs, theme)
@@ -612,5 +629,53 @@ def api_create_google_podcast():
                 os.remove(local_audio_path)
         except Exception as e:
             print(f"Error cleaning up files: {str(e)}")
+
+# -------------------- GOOGLE PODCAST BACKGROUND TASK -------------------- #
+
+def create_google_podcast(session_id, notes):
+    """Background task to generate a podcast using Google TTS so that socket
+    events are emitted after the client has established the connection."""
+    try:
+        google_podteam = {
+            'outliner': initialize_chain('4o', google_outliner_system_prompt),
+            'scripter': initialize_chain('4o', google_scripter_system_prompt, history=True),
+            'titler': initialize_chain('gpt', titler_system_prompt)
+        }
+
+        # Emit progress updates
+        socketio.emit('update', {'data': 'outlining', 'session_id': session_id})
+        outline = conversation_engine(google_podteam['outliner'], f"NOTES:\n{notes}")
+
+        socketio.emit('update', {'data': 'writing script', 'session_id': session_id})
+        script = conversation_engine(google_podteam['scripter'], f"OUTLINE:\n{outline}")
+
+        title = conversation_engine(google_podteam['titler'], script)
+
+        # Generate audio using Google TTS
+        from googletts import generate
+        socketio.emit('update', {'data': 'recording', 'session_id': session_id})
+        audio_path = generate(script, app.root_path)
+
+        if not os.path.exists(audio_path):
+            raise FileNotFoundError(f"Final audio file not created: {audio_path}")
+
+        audio_filename = os.path.basename(audio_path)
+        local_audio_path = os.path.join(STATIC_FOLDER, audio_filename)
+
+        # Save to GCS and get the blob name
+        blob_name = db_helpers.save_shared_podcast(session_id, local_audio_path, script)
+
+        # Emit completion event
+        socketio.emit('complete', {
+            'share_id': session_id,
+            'script': script,
+            'session_id': session_id,
+            'blob_name': blob_name,
+            'title': title
+        })
+
+    except Exception as e:
+        print(f"Error in create_google_podcast: {str(e)}")
+        socketio.emit('error', {'data': str(e), 'session_id': session_id})
 
 
