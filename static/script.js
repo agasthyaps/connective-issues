@@ -480,7 +480,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 console.log('Updating audio player with:', audioPath);
                 updateAudioPlayer(audioPath);
 
-                const formattedScript = data.script.replace(/\*\*(cam|sage|expert):\*\*/g, '<span class="speaker">$1:</span>');
+                // Normalize speaker labels for Google TTS scripts
+                let normalizedScript = data.script.replace(/Speaker 1:/g, '**cam:**').replace(/Speaker 2:/g, '**sage:**');
+                const formattedScript = normalizedScript.replace(/\*\*(cam|sage|expert):\*\*/g, '<span class="speaker">$1:</span>');
                 finalScript.innerHTML = formattedScript.replace(/\n/g, '<br>');
                 conversationTitle.textContent = data.title;
 

@@ -680,18 +680,19 @@
     transition: all 0.3s ease-out;
 }
 
-/* Labs toggle styles */
+/* Labs toggle adjacent to create button */
 .labs-toggle {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
+    margin-left: 8px;
 }
 
 .beaker-icon {
     font-size: 1.5rem;
     cursor: pointer;
+    opacity: 0.4; /* default inactive */
+    transition: opacity 0.2s ease;
 }
 
 .hidden-checkbox {
@@ -707,5 +708,5 @@
 }
 
 .beaker-icon.active {
-    color: #bd5bcc;
+    opacity: 1;
 }

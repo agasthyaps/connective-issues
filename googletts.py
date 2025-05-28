@@ -38,6 +38,10 @@ def generate(text, app_root=None):
     client = genai.Client(
         api_key=os.environ.get("GEMINI_API_KEY"),
     )
+    voice_roster = ["Zephyr", "Puck", "Charon", "Kore", "Fenrir", "Leda", "Orus", "Aoede", "Callirrhoe", "Autonoe", "Enceladus", "Iapetus", "Umbriel", "Algieba", "Despina", "Erinome", "Algenib", "Rasalgethi", "Laomedeia", "Achernar", "Alnilam", "Schedar", "Gacrux", "Pulcherrima", "Achird", "Zubenelgenubi", "Vindemiatrix", "Sadachbia", "Sadaltager", "Sulafat"]
+    voice_one = random.choice(voice_roster)
+    voice_roster.remove(voice_one)
+    voice_two = random.choice(voice_roster)
 
     model = "gemini-2.5-flash-preview-tts"
     contents = [
@@ -60,7 +64,7 @@ def generate(text, app_root=None):
                         speaker="Speaker 1",
                         voice_config=types.VoiceConfig(
                             prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                                voice_name="Fenrir"
+                                voice_name=voice_one
                             )
                         ),
                     ),
@@ -68,7 +72,7 @@ def generate(text, app_root=None):
                         speaker="Speaker 2",
                         voice_config=types.VoiceConfig(
                             prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                                voice_name="Gacrux"
+                                voice_name=voice_two
                             )
                         ),
                     ),
