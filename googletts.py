@@ -12,6 +12,7 @@ import tempfile
 from pydub import AudioSegment
 import logging
 import random
+from typing import Union, Dict
 
 
 def save_binary_file(file_name, data):
@@ -198,7 +199,7 @@ def convert_to_wav(audio_data: bytes, mime_type: str) -> bytes:
     )
     return header + audio_data
 
-def parse_audio_mime_type(mime_type: str) -> dict[str, int | None]:
+def parse_audio_mime_type(mime_type: str) -> Dict[str, Union[int, None]]:
     """Parses bits per sample and rate from an audio MIME type string.
 
     Assumes bits per sample is encoded like "L16" and rate as "rate=xxxxx".
